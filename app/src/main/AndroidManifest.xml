@@ -15,6 +15,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="crystal.games.gimmecollage.app.FriendPicker"
+            android:label="@string/title_activity_friend_picker" >
+        </activity>
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>
