@@ -29,7 +29,6 @@ public class InstagramSession {
     private static final String API_ID = "id";
     private static final String API_NAME = "name";
     private static final String API_ACCESS_TOKEN = "access_token";
-    private static final String API_FRIENDS_SET = "friends_set";
 
     public InstagramSession(Context context) {
         sharedPref = context.getSharedPreferences(SHARED, Context.MODE_PRIVATE);
@@ -53,16 +52,6 @@ public class InstagramSession {
 
     public void storeAccessToken(String accessToken) {
         editor.putString(API_ACCESS_TOKEN, accessToken);
-        editor.commit();
-    }
-
-    public void storeFriendsList(List<String> friendsList) {
-        Set<String> str_set = new HashSet();
-        for (String it : friendsList) {
-            str_set.add(it);
-        }
-        // TODO: putStringSet() is only under 11 SDK version!
-//        editor.putStringSet(API_FRIENDS_SET, str_set);
         editor.commit();
     }
 
@@ -109,19 +98,5 @@ public class InstagramSession {
      */
     public String getAccessToken() {
         return sharedPref.getString(API_ACCESS_TOKEN, null);
-    }
-
-    public String[] getFriendsList() {
-        Set<String> str_set = new HashSet();
-        // TODO: putStringSet() is only under 11 SDK version!
-//        sharedPref.getStringSet(API_FRIENDS_SET, str_set);
-        String[] str_arr = new String[str_set.size()];
-        int i = 0;
-        for (String item : str_set) {
-            str_arr[i] = item;
-            i++;
-        }
-        Log.v(TAG, "getFriendsList, size = " + str_arr.length);
-        return str_arr;
     }
 }

@@ -16,8 +16,6 @@ import org.json.JSONTokener;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -33,7 +31,7 @@ public class InstagramApp {
 
     private InstagramSession mSession;
     private InstagramDialog mDialog;
-    private OAuthAuthenticationListener mListener;
+    private APIRequestListener mListener;
     private ProgressDialog mProgress;
     private String mAuthUrl;
     private String mTokenUrl;
@@ -43,12 +41,14 @@ public class InstagramApp {
     private String mClientId;
     private String mClientSecret;
 
-
     private static int WHAT_FINALIZE = 0;
     private static int WHAT_ERROR = 1;
     private static int WHAT_FETCH_INFO = 2;
     private static int WHAT_FETCH_USER = 3;
-    private static int WHAT_FETCHING_FOLLOWS = 4;
+    private static int WHAT_FETCHING_FRIENDS = 4;
+
+    private List<String> m_vFriendList = new ArrayList<String>();
+    private List<String> m_vProfilePicUsersFollows = new ArrayList<String>();
 
     /**
      * Callback url, as set in 'Manage OAuth Costumers' page
@@ -175,14 +175,15 @@ public class InstagramApp {
 
     }
 
-    public void fetchFollows() {
-        mProgress.setMessage("Fetching follows...");
+    public void fetchFriends() {
+        mProgress.setMessage("Fetching friends...");
+        mProgress.show();
 
         new Thread() {
             @Override
             public void run() {
-                Log.i(TAG, "Fetching follows");
-                int what = WHAT_FETCHING_FOLLOWS;
+                Log.i(TAG, "Fetching friends");
+                int what = WHAT_FETCHING_FRIENDS;
                 try {
                     URL url = new URL(API_URL + "/users/" + mSession.getId() + "/follows" + "/?access_token=" + mAccessToken);
 
@@ -195,19 +196,17 @@ public class InstagramApp {
                     String response = streamToString(urlConnection.getInputStream());
                     System.out.println(response);
                     JSONObject jsonObj = (JSONObject) new JSONTokener(response).nextValue();
-
+                    m_vFriendList.clear();
+                    m_vProfilePicUsersFollows.clear();
                     JSONArray follows_data = jsonObj.getJSONArray("data");
-                    List<String> m_vFriendList = new ArrayList<String>();
-                    List<String> m_vProfilePicUsersFollows = new ArrayList<String>();
                     for (int i = 0; i < follows_data.length(); i++) {
                         JSONObject jsonUser = follows_data.getJSONObject(i);
-                        String strUserName = jsonUser.getString("username");
+                        String strFullName = jsonUser.getString("full_name");
                         String strProfilePic = jsonUser.getString("profile_picture");
-                        m_vFriendList.add(strUserName);
+                        m_vFriendList.add(strFullName);
                         m_vProfilePicUsersFollows.add(strProfilePic);
-                        Log.v(TAG, "Follow: " + strUserName + ", ProfilePic [" + strProfilePic + "]");
+                        Log.v(TAG, "Follow: " + strFullName + ", ProfilePic [" + strProfilePic + "]");
                     }
-                    mSession.storeFriendsList(m_vFriendList);
                 } catch (Exception ex) {
                     what = WHAT_ERROR;
                     ex.printStackTrace();
@@ -236,9 +235,11 @@ public class InstagramApp {
             } else if(msg.what == WHAT_FETCH_INFO) {
                 fetchUserName();
             } else if (msg.what == WHAT_FETCH_USER) {
-                fetchFollows();
-            } else if (msg.what == WHAT_FETCHING_FOLLOWS) {
+                // finalize
+                mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 4, 0));
+            } else if (msg.what == WHAT_FETCHING_FRIENDS) {
                 // TODO: load some friend media
+                // finalize
                 mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 4, 0));
             } else {
                 mProgress.dismiss();
@@ -251,7 +252,7 @@ public class InstagramApp {
         return (mAccessToken == null) ? false : true;
     }
 
-    public void setListener(OAuthAuthenticationListener listener) {
+    public void setListener(APIRequestListener listener) {
         mListener = listener;
     }
 
@@ -308,10 +309,17 @@ public class InstagramApp {
     }
 
     public String[] getFriendsNames() {
-        return mSession.getFriendsList();
+        String[] str_arr = new String[m_vFriendList.size()];
+        int i = 0;
+        for (String item : m_vFriendList) {
+            str_arr[i] = item;
+            i++;
+        }
+        Log.v(TAG, "getFriendsList, size = " + str_arr.length);
+        return str_arr;
     }
 
-    public interface OAuthAuthenticationListener {
+    public interface APIRequestListener {
         public abstract void onSuccess();
 
         public abstract void onFail(String error);

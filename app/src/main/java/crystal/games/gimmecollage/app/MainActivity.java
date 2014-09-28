@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import crystal.games.gimmecollage.instagram_api.InstagramApp;
-import crystal.games.gimmecollage.instagram_api.InstagramApp.OAuthAuthenticationListener;
 
 
 public class MainActivity extends Activity {
@@ -25,6 +24,9 @@ public class MainActivity extends Activity {
     private TextView tvSummary;
     private static final String TAG = "MainActivity";
 
+    enum Task { None, FetchFriends };
+    private Task m_eNextTask = Task.None;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +34,7 @@ public class MainActivity extends Activity {
 
         mApp = new InstagramApp(this, ApplicationData.CLIENT_ID,
                 ApplicationData.CLIENT_SECRET, ApplicationData.CALLBACK_URL);
-        mApp.setListener(listener);
+        mApp.setListener(auth_listener);
 
         tvSummary = (TextView) findViewById(R.id.textView);
 
@@ -65,6 +67,7 @@ public class MainActivity extends Activity {
                     final AlertDialog alert = builder.create();
                     alert.show();
                 } else {
+                    m_eNextTask = Task.None;
                     mApp.authorize();
                 }
             }
@@ -75,14 +78,32 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View view) {
-//                mApp.fetchFollows();
-                Intent intent = new Intent(MainActivity.this, FriendPicker.class);
-                Bundle bundle = new Bundle();
-                bundle.putStringArray("friends_array", mApp.getFriendsNames());
-                intent.putExtras(bundle);
 
-                startActivity(intent);
-                Log.v(TAG, "Start FriendPicker activity");
+                if (!mApp.hasAccessToken()) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(
+                            MainActivity.this);
+                    builder.setMessage("You are not connected. Connect to Instagram?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(
+                                                DialogInterface dialog, int id) {
+                                            m_eNextTask = Task.FetchFriends;
+                                            mApp.authorize();
+                                        }
+                                    })
+                            .setNegativeButton("No",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(
+                                                DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                    final AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    runFetchingFriends();
+                }
             }
         });
 
@@ -112,17 +133,48 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    InstagramApp.OAuthAuthenticationListener listener = new InstagramApp.OAuthAuthenticationListener() {
+    InstagramApp.APIRequestListener auth_listener = new InstagramApp.APIRequestListener() {
 
         @Override
         public void onSuccess() {
             tvSummary.setText("Connected as " + mApp.getUserName());
             btnConnect.setText("Disconnect");
+            if (m_eNextTask == Task.FetchFriends) {
+                m_eNextTask = Task.None;
+                runFetchingFriends();
+            }
         }
 
         @Override
         public void onFail(String error) {
             Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
+            m_eNextTask = Task.None;
         }
     };
+
+    InstagramApp.APIRequestListener friends_load_listener = new InstagramApp.APIRequestListener() {
+
+        @Override
+        public void onSuccess() {
+            Log.v(TAG, "Friends info successfully loaded!");
+            Intent intent = new Intent(MainActivity.this, FriendPicker.class);
+            Bundle bundle = new Bundle();
+            bundle.putStringArray("friends_array", mApp.getFriendsNames());
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+            Log.v(TAG, "Start FriendPicker activity");
+        }
+
+        @Override
+        public void onFail(String error) {
+            Log.v(TAG, "Failed to load friends info");
+            Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private void runFetchingFriends() {
+        mApp.setListener(friends_load_listener);
+        mApp.fetchFriends();
+    }
 }
