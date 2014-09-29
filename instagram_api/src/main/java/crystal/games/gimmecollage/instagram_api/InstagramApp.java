@@ -2,6 +2,8 @@ package crystal.games.gimmecollage.instagram_api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -102,6 +104,7 @@ public class InstagramApp {
             public void run() {
                 Log.i(TAG, "Getting access token");
                 int what = WHAT_FETCH_INFO;
+                InputStream is = null;
                 try {
                     URL url = new URL(TOKEN_URL);
                     //URL url = new URL(mTokenUrl + "&code=" + code);
@@ -118,9 +121,14 @@ public class InstagramApp {
                             "&redirect_uri="+mCallbackUrl+
                             "&code=" + code);
                     writer.flush();
-                    String response = streamToString(urlConnection.getInputStream());
-                    Log.i(TAG, "response " + response);
-                    JSONObject jsonObj = (JSONObject) new JSONTokener(response).nextValue();
+                    int response = urlConnection.getResponseCode();
+                    Log.d(TAG, "The response is: " + response);
+                    is = urlConnection.getInputStream();
+
+                    // Convert the InputStream into a string
+                    String contentAsString = streamToString(is);
+                    Log.i(TAG, "response " + contentAsString);
+                    JSONObject jsonObj = (JSONObject) new JSONTokener(contentAsString).nextValue();
 
                     mAccessToken = jsonObj.getString("access_token");
                     Log.i(TAG, "Got access token: " + mAccessToken);
@@ -149,18 +157,25 @@ public class InstagramApp {
             public void run() {
                 Log.i(TAG, "Fetching user info");
                 int what = WHAT_FETCH_USER;
+                InputStream is = null;
                 try {
                     URL url = new URL(API_URL + "/users/" + mSession.getId() + "/?access_token=" + mAccessToken);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(10000 /* milliseconds */);
+                    conn.setConnectTimeout(15000 /* milliseconds */);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    // Starts the query
+                    conn.connect();
+                    int response = conn.getResponseCode();
+                    Log.d(TAG, "The response is: " + response);
+                    is = conn.getInputStream();
 
-                    Log.d(TAG, "Opening URL " + url.toString());
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setDoInput(true);
-                    urlConnection.setDoOutput(true);
-                    urlConnection.connect();
-                    String response = streamToString(urlConnection.getInputStream());
-                    System.out.println(response);
-                    JSONObject jsonObj = (JSONObject) new JSONTokener(response).nextValue();
+                    // Convert the InputStream into a string
+                    String contentAsString = streamToString(is);
+                    //return contentAsString;
+                    System.out.println(contentAsString);
+                    JSONObject jsonObj = (JSONObject) new JSONTokener(contentAsString).nextValue();
                     String name = jsonObj.getJSONObject("data").getString("full_name");
                     String bio = jsonObj.getJSONObject("data").getString("bio");
                     Log.i(TAG, "Got name: " + name + ", bio [" + bio + "]");
@@ -184,7 +199,39 @@ public class InstagramApp {
             public void run() {
                 Log.i(TAG, "Fetching friends");
                 int what = WHAT_FETCHING_FRIENDS;
+                InputStream is = null;
                 try {
+                    URL url = new URL(API_URL + "/users/" + mSession.getId() + "/follows" + "/?access_token=" + mAccessToken);
+                    Log.d(TAG, "Opening URL " + url.toString());
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(10000 /* milliseconds */);
+                    conn.setConnectTimeout(15000 /* milliseconds */);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    // Starts the query
+                    conn.connect();
+                    int response = conn.getResponseCode();
+                    Log.d(TAG, "The response is: " + response);
+                    is = conn.getInputStream();
+
+                    // Convert the InputStream into a string
+                    String contentAsString = streamToString(is);
+                    //return contentAsString;
+                    System.out.println(contentAsString);
+                    JSONObject jsonObj = (JSONObject) new JSONTokener(contentAsString).nextValue();
+                    m_vFriendList.clear();
+                    m_vProfilePicUsersFollows.clear();
+                    JSONArray follows_data = jsonObj.getJSONArray("data");
+                    for (int i = 0; i < follows_data.length(); i++) {
+                        JSONObject jsonUser = follows_data.getJSONObject(i);
+                        String strFullName = jsonUser.getString("full_name");
+                        String strProfilePic = jsonUser.getString("profile_picture");
+                        m_vFriendList.add(strFullName);
+                        m_vProfilePicUsersFollows.add(strProfilePic);
+                        Log.v(TAG, "Follow: " + strFullName + ", ProfilePic [" + strProfilePic + "]");
+                    }
+
+                    /*
                     URL url = new URL(API_URL + "/users/" + mSession.getId() + "/follows" + "/?access_token=" + mAccessToken);
 
                     Log.d(TAG, "Opening URL " + url.toString());
@@ -207,6 +254,7 @@ public class InstagramApp {
                         m_vProfilePicUsersFollows.add(strProfilePic);
                         Log.v(TAG, "Follow: " + strFullName + ", ProfilePic [" + strProfilePic + "]");
                     }
+                    */
                 } catch (Exception ex) {
                     what = WHAT_ERROR;
                     ex.printStackTrace();
@@ -273,6 +321,15 @@ public class InstagramApp {
 //        webAuthIntent.setData(Uri.parse(AUTH_URL));
 //        mCtx.startActivity(webAuthIntent);
         mDialog.show();
+    }
+
+    // Reads an InputStream and converts it to a String.
+    public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
+        Reader reader = null;
+        reader = new InputStreamReader(stream, "UTF-8");
+        char[] buffer = new char[len];
+        reader.read(buffer);
+        return new String(buffer);
     }
 
     private String streamToString(InputStream is) throws IOException {

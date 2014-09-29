@@ -2,34 +2,22 @@
 <pre-dex-items>
 
     <item
-        dex="/Users/prohor/Code/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-873c6415a1977fe5ea080717e7d850493a66e202.jar"
-        jar="/Users/prohor/Code/gimme-collage/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
+        dex="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-452e056844af78dff83592249256fe82f127f1bb.jar"
+        jar="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
     <item
-        dex="/Users/prohor/Code/gimme-collage/app/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-84aeb4d8349fa80e346d463e59c717a8887f7a51.jar"
-        jar="/Applications/Android Studio.app/Contents/AndroidSDK/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        dex="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-bfe6379f31d17615f5ca4b83bd0a7235fba0720f.jar"
+        jar="/usr/share/android-studio/data/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
     <item
-        dex="/Users/prohor/Code/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-13dc5555aefd970033e65789a7c68a572401afef.jar"
-        jar="/Users/prohor/Code/gimme-collage/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/20.0.0/classes.jar"
+        dex="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-9a9aa6deb265d4cc7d129a0c69e34620cadf8f60.jar"
+        jar="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/exploded-aar/gimme-collage/instagram_api/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef"/>
-    <item
-        dex="/Users/prohor/Code/gimme-collage/app/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-42cde87f687ac5df19a8d2277ef7c2d7fe872962.jar"
-        jar="/Users/prohor/Code/gimme-collage/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
-    <item
-        dex="/Users/prohor/Code/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-b897525d8b20b2ff3a2c74efd24de6bcf0a36794.jar"
-        jar="/Users/prohor/Code/gimme-collage/app/build/intermediates/exploded-aar/gimme-collage/instagram_api/unspecified/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="fc5fe4a50f7c1e5d8b21107e30c255ee7ee8fc7e"/>
+        sha1="2cfe9727d99027938f4208ff099856c1830928d1"/>
 
 </pre-dex-items>
