@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="crystal.games.gimmecollage.app" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -19,7 +21,10 @@
             android:name="crystal.games.gimmecollage.app.FriendPicker"
             android:label="@string/title_activity_friend_picker" >
         </activity>
+        <activity
+            android:name="crystal.games.gimmecollage.app.ImageProcessor"
+            android:label="@string/title_activity_image_processor" >
+        </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>
