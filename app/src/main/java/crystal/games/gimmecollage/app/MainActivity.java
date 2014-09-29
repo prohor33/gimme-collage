@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
                     final AlertDialog alert = builder.create();
                     alert.show();
                 } else {
-                    m_eNextTask = Task.None;
+                    mApp.setListener(auth_listener);
                     mApp.authorize();
                 }
             }
@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
                                         public void onClick(
                                                 DialogInterface dialog, int id) {
                                             m_eNextTask = Task.FetchFriends;
+                                            mApp.setListener(auth_listener);
                                             mApp.authorize();
                                         }
                                     })

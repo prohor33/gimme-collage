@@ -225,36 +225,13 @@ public class InstagramApp {
                     for (int i = 0; i < follows_data.length(); i++) {
                         JSONObject jsonUser = follows_data.getJSONObject(i);
                         String strFullName = jsonUser.getString("full_name");
+                        if (strFullName.isEmpty())
+                            strFullName = jsonUser.getString("username");
                         String strProfilePic = jsonUser.getString("profile_picture");
                         m_vFriendList.add(strFullName);
                         m_vProfilePicUsersFollows.add(strProfilePic);
                         Log.v(TAG, "Follow: " + strFullName + ", ProfilePic [" + strProfilePic + "]");
                     }
-
-                    /*
-                    URL url = new URL(API_URL + "/users/" + mSession.getId() + "/follows" + "/?access_token=" + mAccessToken);
-
-                    Log.d(TAG, "Opening URL " + url.toString());
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setDoInput(true);
-                    urlConnection.setDoOutput(true);
-                    urlConnection.connect();
-                    String response = streamToString(urlConnection.getInputStream());
-                    System.out.println(response);
-                    JSONObject jsonObj = (JSONObject) new JSONTokener(response).nextValue();
-                    m_vFriendList.clear();
-                    m_vProfilePicUsersFollows.clear();
-                    JSONArray follows_data = jsonObj.getJSONArray("data");
-                    for (int i = 0; i < follows_data.length(); i++) {
-                        JSONObject jsonUser = follows_data.getJSONObject(i);
-                        String strFullName = jsonUser.getString("full_name");
-                        String strProfilePic = jsonUser.getString("profile_picture");
-                        m_vFriendList.add(strFullName);
-                        m_vProfilePicUsersFollows.add(strProfilePic);
-                        Log.v(TAG, "Follow: " + strFullName + ", ProfilePic [" + strProfilePic + "]");
-                    }
-                    */
                 } catch (Exception ex) {
                     what = WHAT_ERROR;
                     ex.printStackTrace();
