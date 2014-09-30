@@ -18,7 +18,6 @@ import crystal.games.gimmecollage.instagram_api.InstagramApp;
 
 public class MainActivity extends Activity {
 
-    private InstagramApp mApp;
     private Button btnConnect;
     private Button btnGetImages;
     private TextView tvSummary;
@@ -32,9 +31,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mApp = new InstagramApp(this, ApplicationData.CLIENT_ID,
+        InstagramApp.getInstance().Init(this, ApplicationData.CLIENT_ID,
                 ApplicationData.CLIENT_SECRET, ApplicationData.CALLBACK_URL);
-        mApp.setListener(auth_listener);
+        InstagramApp.getInstance().setListener(auth_listener);
 
         tvSummary = (TextView) findViewById(R.id.textView);
 
@@ -43,7 +42,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View view) {
-                if (mApp.hasAccessToken()) {
+                if (InstagramApp.getInstance().hasAccessToken()) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(
                             MainActivity.this);
                     builder.setMessage("Disconnect from Instagram?")
@@ -52,7 +51,7 @@ public class MainActivity extends Activity {
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
                                                 DialogInterface dialog, int id) {
-                                            mApp.resetAccessToken();
+                                            InstagramApp.getInstance().resetAccessToken();
                                             btnConnect.setText("Connect");
                                             tvSummary.setText("Not connected");
                                         }
@@ -67,8 +66,8 @@ public class MainActivity extends Activity {
                     final AlertDialog alert = builder.create();
                     alert.show();
                 } else {
-                    mApp.setListener(auth_listener);
-                    mApp.authorize();
+                    InstagramApp.getInstance().setListener(auth_listener);
+                    InstagramApp.getInstance().authorize();
                 }
             }
         });
@@ -79,7 +78,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                if (!mApp.hasAccessToken()) {
+                if (!InstagramApp.getInstance().hasAccessToken()) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(
                             MainActivity.this);
                     builder.setMessage("You are not connected. Connect to Instagram?")
@@ -89,8 +88,8 @@ public class MainActivity extends Activity {
                                         public void onClick(
                                                 DialogInterface dialog, int id) {
                                             m_eNextTask = Task.FetchFriends;
-                                            mApp.setListener(auth_listener);
-                                            mApp.authorize();
+                                            InstagramApp.getInstance().setListener(auth_listener);
+                                            InstagramApp.getInstance().authorize();
                                         }
                                     })
                             .setNegativeButton("No",
@@ -108,8 +107,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        if (mApp.hasAccessToken()) {
-            tvSummary.setText("Connected as " + mApp.getUserName());
+        if (InstagramApp.getInstance().hasAccessToken()) {
+            tvSummary.setText("Connected as " + InstagramApp.getInstance().getUserName());
             btnConnect.setText("Disconnect");
         }
     }
@@ -138,7 +137,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onSuccess() {
-            tvSummary.setText("Connected as " + mApp.getUserName());
+            tvSummary.setText("Connected as " + InstagramApp.getInstance().getUserName());
             btnConnect.setText("Disconnect");
             if (m_eNextTask == Task.FetchFriends) {
                 m_eNextTask = Task.None;
@@ -160,7 +159,8 @@ public class MainActivity extends Activity {
             Log.v(TAG, "Friends info successfully loaded!");
             Intent intent = new Intent(MainActivity.this, FriendPicker.class);
             Bundle bundle = new Bundle();
-            bundle.putStringArray("friends_array", mApp.getFriendsNames());
+            bundle.putStringArray("friends_names_array", InstagramApp.getInstance().getFriendsNames());
+            bundle.putStringArray("friends_ids_array", InstagramApp.getInstance().getFriendsIds());
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
     };
 
     private void runFetchingFriends() {
-        mApp.setListener(friends_load_listener);
-        mApp.fetchFriends();
+        InstagramApp.getInstance().setListener(friends_load_listener);
+        InstagramApp.getInstance().fetchFriends();
     }
 }

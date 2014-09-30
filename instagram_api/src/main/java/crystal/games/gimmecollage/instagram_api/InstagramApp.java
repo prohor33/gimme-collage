@@ -23,6 +23,16 @@ import crystal.games.gimmecollage.instagram_api.InstagramDialog.OAuthDialogListe
 
 public class InstagramApp {
 
+    // Singletone pattern
+    private static InstagramApp m_pInstance;
+    public static synchronized InstagramApp getInstance() {
+        if (m_pInstance == null) {
+            m_pInstance = new InstagramApp();
+        }
+        return m_pInstance;
+    }
+    protected InstagramApp() {};
+
     private InstagramSession mSession;
     private InstagramDialog mDialog;
     private APIRequestListener mListener;
@@ -36,13 +46,18 @@ public class InstagramApp {
     private String mClientSecret;
 
     private static int WHAT_FINALIZE = 0;
-    private static int WHAT_ERROR = 1;
-    private static int WHAT_FETCH_INFO = 2;
-    private static int WHAT_FETCH_USER = 3;
-    private static int WHAT_FETCHING_FRIENDS = 4;
+    private static int WHAT_ERROR = -1;
+    private static int WHAT_FETCH_INFO = 1;
+    private static int WHAT_FETCH_USER = 2;
+    private static int WHAT_FETCHING_FRIENDS = 3;
+    private static int WHAT_FETCHING_FRIEND_IMAGES = 4;
 
     private List<String> m_vFriendList = new ArrayList<String>();
-    private List<String> m_vProfilePicUsersFollows = new ArrayList<String>();
+    private List<String> m_vFriendsProfilePics = new ArrayList<String>();
+    private List<String> m_vFriendsIds = new ArrayList<String>();
+
+    private List<String> m_vFriendImages = new ArrayList<String>();
+    private List<Integer> m_vImageLikeCount = new ArrayList<Integer>();
 
     /**
      * Callback url, as set in 'Manage OAuth Costumers' page
@@ -56,7 +71,7 @@ public class InstagramApp {
 
     private static final String TAG = "InstagramAPI";
 
-    public InstagramApp(Context context, String clientId, String clientSecret,
+    public void Init(Context context, String clientId, String clientSecret,
                         String callbackUrl) {
 
         mClientId = clientId;
@@ -212,16 +227,19 @@ public class InstagramApp {
                     System.out.println(contentAsString);
                     JSONObject jsonObj = (JSONObject) new JSONTokener(contentAsString).nextValue();
                     m_vFriendList.clear();
-                    m_vProfilePicUsersFollows.clear();
-                    JSONArray follows_data = jsonObj.getJSONArray("data");
-                    for (int i = 0; i < follows_data.length(); i++) {
-                        JSONObject jsonUser = follows_data.getJSONObject(i);
+                    m_vFriendsProfilePics.clear();
+                    m_vFriendsIds.clear();
+                    JSONArray friends_data = jsonObj.getJSONArray("data");
+                    for (int i = 0; i < friends_data.length(); i++) {
+                        JSONObject jsonUser = friends_data.getJSONObject(i);
                         String strFullName = jsonUser.getString("full_name");
                         if (strFullName.isEmpty())
                             strFullName = jsonUser.getString("username");
                         String strProfilePic = jsonUser.getString("profile_picture");
+                        String strId = jsonUser.getString("id");
                         m_vFriendList.add(strFullName);
-                        m_vProfilePicUsersFollows.add(strProfilePic);
+                        m_vFriendsProfilePics.add(strProfilePic);
+                        m_vFriendsIds.add(strId);
                         Log.v(TAG, "Follow: " + strFullName + ", ProfilePic [" + strProfilePic + "]");
                     }
                 } catch (Exception ex) {
@@ -235,6 +253,67 @@ public class InstagramApp {
 
     }
 
+    public void fetchUserMedia(final String strUserId) {
+        mProgress.setMessage("Fetching userid=" + strUserId + " media...");
+        mProgress.show();
+
+        new Thread() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Fetching userid=" + strUserId + " media...");
+                int what = WHAT_FETCHING_FRIEND_IMAGES;
+                InputStream is = null;
+                try {
+                    int media_count_to_load = 100;
+                    URL url = new URL(API_URL + "/users/" + strUserId + "/media/recent?count=" +
+                            media_count_to_load + "&access_token=" + mAccessToken);
+                    Log.d(TAG, "Opening URL " + url.toString());
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(10000 /* milliseconds */);
+                    conn.setConnectTimeout(15000 /* milliseconds */);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    // Starts the query
+                    conn.connect();
+                    int response = conn.getResponseCode();
+                    Log.d(TAG, "The response is: " + response);
+                    is = conn.getInputStream();
+
+                    // Convert the InputStream into a string
+                    String contentAsString = streamToString(is);
+                    System.out.println(contentAsString);
+                    JSONObject jsonObj = (JSONObject) new JSONTokener(contentAsString).nextValue();
+                    m_vFriendImages.clear();
+                    m_vImageLikeCount.clear();
+                    JSONArray images_data = jsonObj.getJSONArray("data");
+                    for (int i = 0; i < images_data.length(); i++) {
+                        JSONObject jsonMedia = images_data.getJSONObject(i);
+                        // fetching images url
+                        JSONObject jsonImages = jsonMedia.getJSONObject("images");
+                        if (jsonImages.isNull("standard_resolution"))
+                            continue;
+                        JSONObject jsonStandartRes = jsonImages.getJSONObject("standard_resolution");
+                        String strImage = jsonStandartRes.getString("url");
+
+                        // get likes count
+                        JSONObject jsonLikes = jsonMedia.getJSONObject("likes");
+                        int iLikesCount = jsonLikes.getInt("count");
+                        Log.v(TAG, "Image: " + strImage + ", Likes = " + iLikesCount);
+
+                        m_vFriendImages.add(strImage);
+                        m_vImageLikeCount.add(iLikesCount);
+                    }
+                } catch (Exception ex) {
+                    what = WHAT_ERROR;
+                    ex.printStackTrace();
+                }
+
+                mHandler.sendMessage(mHandler.obtainMessage(what, 4, 0));
+            }
+        }.start();
+
+    }
+
 
     private Handler mHandler = new Handler() {
         @Override
@@ -243,21 +322,24 @@ public class InstagramApp {
                 mProgress.dismiss();
                 if(msg.arg1 == 1) {
                     mListener.onFail("Failed to get access token");
-                }
-                else if(msg.arg1 == 2) {
+                } else if(msg.arg1 == 2) {
                     mListener.onFail("Failed to get user information");
                 } else if(msg.arg1 == 3) {
-                    mListener.onFail("Failed to get follows information");
+                    mListener.onFail("Failed to get friends");
+                } else if(msg.arg1 == 4) {
+                    mListener.onFail("Failed to get friend image");
                 }
             } else if(msg.what == WHAT_FETCH_INFO) {
                 fetchUserName();
             } else if (msg.what == WHAT_FETCH_USER) {
                 // finalize
-                mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 4, 0));
+                mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 0, 0));
             } else if (msg.what == WHAT_FETCHING_FRIENDS) {
-                // TODO: load some friend media
                 // finalize
-                mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 4, 0));
+                mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 0, 0));
+            } else if (msg.what == WHAT_FETCHING_FRIEND_IMAGES) {
+                // finalize
+                mHandler.sendMessage(mHandler.obtainMessage(WHAT_FINALIZE, 0, 0));
             } else {
                 mProgress.dismiss();
                 mListener.onSuccess();
@@ -332,8 +414,41 @@ public class InstagramApp {
             str_arr[i] = item;
             i++;
         }
-        Log.v(TAG, "getFriendsList, size = " + str_arr.length);
+        Log.v(TAG, "getFriendsNames, size = " + str_arr.length);
         return str_arr;
+    }
+
+    public String[] getFriendsIds() {
+        String[] str_arr = new String[m_vFriendsIds.size()];
+        int i = 0;
+        for (String item : m_vFriendsIds) {
+            str_arr[i] = item;
+            i++;
+        }
+        Log.v(TAG, "getFriendsIds, size = " + str_arr.length);
+        return str_arr;
+    }
+
+    public String[] getFriendImages() {
+        String[] str_arr = new String[m_vFriendImages.size()];
+        int i = 0;
+        for (String item : m_vFriendImages) {
+            str_arr[i] = item;
+            i++;
+        }
+        Log.v(TAG, "getFriendImages, size = " + str_arr.length);
+        return str_arr;
+    }
+
+    public int[] getImagesLikeCount() {
+        int[] arr = new int[m_vImageLikeCount.size()];
+        int i = 0;
+        for (int item : m_vImageLikeCount) {
+            arr[i] = item;
+            i++;
+        }
+        Log.v(TAG, "getImagesLikeCount, size = " + arr.length);
+        return arr;
     }
 
     public interface APIRequestListener {
