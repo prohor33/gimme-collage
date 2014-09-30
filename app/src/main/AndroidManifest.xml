@@ -7,7 +7,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name="crystal.games.gimmecollage.app.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,10 +16,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="crystal.games.gimmecollage.app.FriendPicker"
+            android:name=".FriendPicker"
             android:label="@string/title_activity_friend_picker" >
         </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>

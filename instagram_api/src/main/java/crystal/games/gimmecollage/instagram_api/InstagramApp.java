@@ -2,8 +2,6 @@ package crystal.games.gimmecollage.instagram_api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -23,12 +21,6 @@ import android.os.Message;
 import android.util.Log;
 import crystal.games.gimmecollage.instagram_api.InstagramDialog.OAuthDialogListener;
 
-/**
- *
- * @author Thiago Locatelli <thiago.locatelli@gmail.com>
- * @author Lorensius W. L T <lorenz@londatiga.net>
- *
- */
 public class InstagramApp {
 
     private InstagramSession mSession;
@@ -298,15 +290,6 @@ public class InstagramApp {
 //        webAuthIntent.setData(Uri.parse(AUTH_URL));
 //        mCtx.startActivity(webAuthIntent);
         mDialog.show();
-    }
-
-    // Reads an InputStream and converts it to a String.
-    public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return new String(buffer);
     }
 
     private String streamToString(InputStream is) throws IOException {

@@ -2,22 +2,10 @@
 <pre-dex-items>
 
     <item
-        dex="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-452e056844af78dff83592249256fe82f127f1bb.jar"
-        jar="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        dex="D:\Development\Projects\gimme-collage\app\build\intermediates\pre-dexed\debug\classes-01617f72d7fb676ac93f69c2af177f5a82dba4f1.jar"
+        jar="D:\Development\Projects\gimme-collage\app\build\intermediates\exploded-aar\gimme-collage\instagram_api\unspecified\classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
-    <item
-        dex="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-bfe6379f31d17615f5ca4b83bd0a7235fba0720f.jar"
-        jar="/usr/share/android-studio/data/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
-    <item
-        dex="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/pre-dexed/debug/classes-9a9aa6deb265d4cc7d129a0c69e34620cadf8f60.jar"
-        jar="/home/kisame/AndroidStudioProjects/gimme-collage/app/build/intermediates/exploded-aar/gimme-collage/instagram_api/unspecified/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="2cfe9727d99027938f4208ff099856c1830928d1"/>
+        sha1="e522661c851028a5d94027211a6b05afe725263a"/>
 
 </pre-dex-items>
