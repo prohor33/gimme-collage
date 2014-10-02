@@ -22,4 +22,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':instagram_api')
     compile 'com.android.support:appcompat-v7:20.0.0'
+    compile files('libs/picasso-2.3.4.jar')
 }

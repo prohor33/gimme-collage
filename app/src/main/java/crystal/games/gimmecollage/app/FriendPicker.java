@@ -7,11 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,73 +19,87 @@ import java.util.List;
 import crystal.games.gimmecollage.instagram_api.InstagramApp;
 import crystal.games.gimmecollage.instagram_api.InstagramSession;
 
+import com.squareup.picasso.Picasso;
+
 /**
  * Created by prohor on 28/09/14.
  */
 
 public class FriendPicker extends Activity {
 
-    private static final String TAG = "FriendPicker";
+    private static final String DEBUG_TAG = "FriendPicker";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_friend_picker);
 
-        List<InstagramSession.UserInfo> userInfos = InstagramApp.getInstance().getSession().getSelfFollows();
-        String[] friends_names_array = new String[userInfos.size()];
-        for(int i = 0;i < userInfos.size();i++) {
-            friends_names_array[i] = userInfos.get(i).full_name;
-        }
+        GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
+        // Here we must load mImageUrls
+        mUserInfos = InstagramApp.getInstance().getSession().getSelfFollows();
 
-        ListView list = new ListView(this);
-        list.setAdapter(new MyAdapter(this, friends_names_array));
-        list.setClickable(true);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView parent, View view,
-                                    int position, long id) {
+        friendGridView.setAdapter(new FriendPickerAdapter(this));
 
-                Log.v(TAG, "click " + position);
+        friendGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 pickFriend(position);
+                // Toast.makeText(FriendPicker.this, "" + position, Toast.LENGTH_SHORT).show();
             }
         });
-
-        setContentView(list);
     }
 
-    private class MyAdapter extends ArrayAdapter<String> {
+    public class FriendPickerAdapter extends BaseAdapter {
+        private Context mContext;
 
-        public MyAdapter(Context context, String[] strings) {
-            super(context, -1, strings);
+        public FriendPickerAdapter(Context context) { mContext = context; }
+
+        public int getCount() {
+            return mUserInfos.size();
         }
 
-        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            ImageView imageView;
+            TextView textView;
 
-            LinearLayout listLayout = new LinearLayout(FriendPicker.this);
-            listLayout.setLayoutParams(new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT,
-                    AbsListView.LayoutParams.WRAP_CONTENT));
-            listLayout.setId(5000);
+            if (view == null) {
+                view = getLayoutInflater().inflate(R.layout.layout_friend, parent, false);
+                view.setTag(R.id.picture, view.findViewById(R.id.picture));
+                view.setTag(R.id.text, view.findViewById(R.id.text));
+            }
 
-            TextView listText = new TextView(FriendPicker.this);
-            listText.setId(5001);
-            listText.setTextSize(24);
+            imageView = (ImageView) view.getTag(R.id.picture);
+            textView = (TextView) view.getTag(R.id.text);
 
-            listLayout.addView(listText);
+            InstagramSession.UserInfo userInfo = mUserInfos.get(position);
+            Picasso.with(mContext).load(userInfo.profile_picture).into(imageView);
+            String name = userInfo.full_name.isEmpty() ? userInfo.username : userInfo.full_name;
+            textView.setText(name);
+            Log.d(DEBUG_TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
 
-            listText.setText(super.getItem(position));
-
-            return listLayout;
+            return view;
         }
+
     }
+
+    private List<InstagramSession.UserInfo> mUserInfos;
 
     private void pickFriend(int pos) {
         List<InstagramSession.UserInfo> userInfos = InstagramApp.getInstance().getSession().getSelfFollows();
         if (pos < 0 || pos >= userInfos.size()) {
-            Log.v(TAG, "Error pickFriend(): index is out of range");
+            Log.v(DEBUG_TAG, "Error pickFriend(): index is out of range");
             return;
         }
-        Log.v(TAG, "pick friend:" + userInfos.get(pos).username);
+        Log.v(DEBUG_TAG, "pick friend:" + userInfos.get(pos).username);
 
         InstagramApp.getInstance().updateImageInfo(userInfos.get(pos).id, images_list_load_listener);
     }
@@ -95,7 +108,7 @@ public class FriendPicker extends Activity {
 
         @Override
         public void onSuccess() {
-            Log.v(TAG, "Friend media list successfully loaded!");
+            Log.v(DEBUG_TAG, "Friend media list successfully loaded!");
             Intent intent = new Intent(FriendPicker.this, ImageProcessor.class);
             Bundle bundle = new Bundle();
 
@@ -115,12 +128,12 @@ public class FriendPicker extends Activity {
             intent.putExtras(bundle);
 
             startActivity(intent);
-            Log.v(TAG, "Start ImageProcessor activity");
+            Log.v(DEBUG_TAG, "Start ImageProcessor activity");
         }
 
         @Override
         public void onFail(String error) {
-            Log.v(TAG, "Failed to load friend media list");
+            Log.v(DEBUG_TAG, "Failed to load friend media list");
             Toast.makeText(FriendPicker.this, error, Toast.LENGTH_SHORT).show();
         }
     };

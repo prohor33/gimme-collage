@@ -6,6 +6,12 @@
         jar="D:\Development\Projects\gimme-collage\app\build\intermediates\exploded-aar\gimme-collage\instagram_api\unspecified\classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="8183366fa418ea2da34aec71ad7314d152b659f1"/>
+        sha1="172aefe3c9522733c56f211abec84f8c32568fca"/>
+    <item
+        dex="D:\Development\Projects\gimme-collage\app\build\intermediates\pre-dexed\debug\picasso-2.3.4-ea31b3e5ac2687d9688689d1eea9d13328255777.jar"
+        jar="D:\Development\Projects\gimme-collage\app\libs\picasso-2.3.4.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="3b646ddbdac8a33fc45b64564011da81d23e4635"/>
 
 </pre-dex-items>
