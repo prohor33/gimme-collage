@@ -34,7 +34,11 @@ public class FriendPicker extends Activity {
         List<InstagramSession.UserInfo> userInfos = InstagramApp.getInstance().getSession().getSelfFollows();
         String[] friends_names_array = new String[userInfos.size()];
         for(int i = 0;i < userInfos.size();i++) {
-            friends_names_array[i] = userInfos.get(i).full_name;
+            String name = userInfos.get(i).full_name;
+            // shouldn't let the element to be empty
+            if (name.isEmpty())
+                name = userInfos.get(i).username;
+            friends_names_array[i] = name;
         }
 
 
