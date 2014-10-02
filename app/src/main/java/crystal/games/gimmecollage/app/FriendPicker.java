@@ -15,34 +15,28 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import crystal.games.gimmecollage.instagram_api.InstagramApp;
+import crystal.games.gimmecollage.instagram_api.InstagramSession;
 
 /**
  * Created by prohor on 28/09/14.
  */
+
 public class FriendPicker extends Activity {
 
     private static final String TAG = "FriendPicker";
 
-    private List<FriendData> m_lFriendsData = new ArrayList<FriendData>();
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle bundle = this.getIntent().getExtras();
-        String[] friends_names_array = bundle.getStringArray("friends_names_array");
-        String[] friends_ids_array = bundle.getStringArray("friends_ids_array");
-        if (friends_names_array.length != friends_ids_array.length) {
-            Log.v(TAG, "Error onCreate: different arrays length");
-            return;
+        List<InstagramSession.UserInfo> userInfos = InstagramApp.getInstance().getSession().getSelfFollows();
+        String[] friends_names_array = new String[userInfos.size()];
+        for(int i = 0;i < userInfos.size();i++) {
+            friends_names_array[i] = userInfos.get(i).full_name;
         }
-        m_lFriendsData.clear();
-        for (int i = 0; i < friends_names_array.length; ++i) {
-            m_lFriendsData.add(new FriendData(friends_names_array[i], friends_ids_array[i]));
-        }
+
 
         ListView list = new ListView(this);
         list.setAdapter(new MyAdapter(this, friends_names_array));
@@ -87,14 +81,14 @@ public class FriendPicker extends Activity {
     }
 
     private void pickFriend(int pos) {
-        if (pos < 0 || pos >= m_lFriendsData.size()) {
+        List<InstagramSession.UserInfo> userInfos = InstagramApp.getInstance().getSession().getSelfFollows();
+        if (pos < 0 || pos >= userInfos.size()) {
             Log.v(TAG, "Error pickFriend(): index is out of range");
             return;
         }
-        Log.v(TAG, "pick friend:" + m_lFriendsData.get(pos).m_strUsername);
+        Log.v(TAG, "pick friend:" + userInfos.get(pos).username);
 
-        InstagramApp.getInstance().setListener(images_list_load_listener);
-        InstagramApp.getInstance().fetchUserMedia(m_lFriendsData.get(pos).m_strId);
+        InstagramApp.getInstance().updateImageInfo(userInfos.get(pos).id, images_list_load_listener);
     }
 
     InstagramApp.APIRequestListener images_list_load_listener = new InstagramApp.APIRequestListener() {
@@ -104,8 +98,20 @@ public class FriendPicker extends Activity {
             Log.v(TAG, "Friend media list successfully loaded!");
             Intent intent = new Intent(FriendPicker.this, ImageProcessor.class);
             Bundle bundle = new Bundle();
-            bundle.putStringArray("images_array", InstagramApp.getInstance().getFriendImages());
-            bundle.putIntArray("image_like_count_array", InstagramApp.getInstance().getImagesLikeCount());
+
+            List<InstagramSession.ImageInfo> imageInfos =
+                    InstagramApp.getInstance().getSession().getImageInfos();
+            String[] images_array = new String[imageInfos.size()];
+            int[] image_like_count_array = new int[imageInfos.size()];
+
+            for (int i = 0;i < imageInfos.size();i++) {
+                images_array[i] = imageInfos.get(i).standard_resolution.url;
+                image_like_count_array[i] = imageInfos.get(i).likes_count;
+            }
+
+            bundle.putStringArray("images_array", images_array);
+            bundle.putIntArray("image_like_count_array", image_like_count_array);
+
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -118,14 +124,4 @@ public class FriendPicker extends Activity {
             Toast.makeText(FriendPicker.this, error, Toast.LENGTH_SHORT).show();
         }
     };
-}
-
-class FriendData {
-    FriendData(String username, String id) {
-        m_strUsername = username;
-        m_strId = id;
-    }
-    String m_strUsername;
-    String m_strProfilePicture;
-    String m_strId;
 }
