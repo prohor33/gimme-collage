@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import crystal.games.gimmecollage.instagram_api.InstagramApp;
+import crystal.games.gimmecollage.instagram_api.InstagramSession;
+
 
 public class ImageProcessor extends Activity {
 
@@ -66,22 +69,16 @@ public class ImageProcessor extends Activity {
             }
         });
 
-        Bundle bundle = this.getIntent().getExtras();
-        String[] images_array = bundle.getStringArray("images_array");
-        int[] image_like_count_array = bundle.getIntArray("image_like_count_array");
+        List<InstagramSession.ImageInfo> imageInfos =
+                InstagramApp.getInstance().getSession().getImageInfos();
 
         m_tvSummary = (TextView) findViewById(R.id.textView);
-        m_tvSummary.setText("Image urls to load: " + images_array.length);
-
-
-        if (images_array.length != image_like_count_array.length) {
-            Log.v(TAG, "Error: different array length");
-            return;
-        }
+        m_tvSummary.setText("Image urls to load: " + imageInfos.size());
 
         m_lImages.clear();
-        for (int i = 0; i < images_array.length; i++) {
-            m_lImages.add(new ImageData(images_array[i], image_like_count_array[i]));
+        for (int i = 0; i < imageInfos.size(); i++) {
+            m_lImages.add(new ImageData(imageInfos.get(i).standard_resolution.url,
+                    imageInfos.get(i).likes_count));
         }
 
         class ImageComparator implements Comparator<ImageData> {
