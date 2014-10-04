@@ -20,12 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -107,29 +108,55 @@ public class ImageProcessor extends Activity {
         // Let's sort images by likes count
         Collections.sort(m_lImages, new ImageComparator());
 
-        int image_count = m_lImages.size();
-        int collage_image_count = 0;
-        ArrayList<Integer> lCollageImageCount = new ArrayList<Integer>(Arrays.asList(2, 4, 6, 12, 20));
-        for (Integer good_image_count : lCollageImageCount) {
-            if (image_count >= good_image_count)
-                collage_image_count = good_image_count;
+        CollageMaker.getInstance().putCollageType(CollageMaker.CollageType.CenterWithGridAround);
+        CollageMaker.CollageConfig pCollageConf = CollageMaker.getInstance().getCollageConf();
+
+        RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
+        for (int i = 0; i < pCollageConf.getPhotoCount(); i++) {
+            ImageView ivImage = new ImageView(ImageProcessor.this);
+
+            if (i < m_lImages.size()) {
+                Picasso.with(ImageProcessor.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
+            } else {
+                ivImage.setImageResource(R.drawable.no_photo);
+            }
+
+            CollageMaker.PhotoPosition pPhotoPos = pCollageConf.getPhotoPos(i);
+            final float density = getResources().getDisplayMetrics().density;
+            int collage_size_px = 320 - 40; // TODO: remove hard code
+            int pixels = (int) (collage_size_px * density + 0.5f);  // dps to pixels
+            pPhotoPos.putCollageSize(pixels); // collage size in pixels
+
+            RelativeLayout.LayoutParams params =
+                    new RelativeLayout.LayoutParams(pPhotoPos.getSize(), pPhotoPos.getSize());
+            params.leftMargin = pPhotoPos.getX();   // TODO: why this is not pixels?
+            params.topMargin = pPhotoPos.getY();
+            rlCollage.addView(ivImage, params);
         }
 
-        if (collage_image_count == 0) {
-            Log.v(TAG, "Too few images for collage: " + image_count);
-            m_tvSummary.setText("Too few images for collage: " + image_count);
-            return;
-        }
-
-        Log.v(TAG, "Pick " + collage_image_count + " images for collage.");
-
-        for (int i = 0; i < (image_count - collage_image_count); i++)
-            m_lImages.remove(m_lImages.size() - 1);
-
-        int index = 0;
-        for (ImageData image : m_lImages) {
-            new DownloadImageTask(index++).execute(image.m_strUrl);
-        }
+//        int image_count = m_lImages.size();
+//        int collage_image_count = 0;
+//        ArrayList<Integer> lCollageImageCount = new ArrayList<Integer>(Arrays.asList(2, 4, 6, 12, 20));
+//        for (Integer good_image_count : lCollageImageCount) {
+//            if (image_count >= good_image_count)
+//                collage_image_count = good_image_count;
+//        }
+//
+//        if (collage_image_count == 0) {
+//            Log.v(TAG, "Too few images for collage: " + image_count);
+//            m_tvSummary.setText("Too few images for collage: " + image_count);
+//            return;
+//        }
+//
+//        Log.v(TAG, "Pick " + collage_image_count + " images for collage.");
+//
+//        for (int i = 0; i < (image_count - collage_image_count); i++)
+//            m_lImages.remove(m_lImages.size() - 1);
+//
+//        int index = 0;
+//        for (ImageData image : m_lImages) {
+//            new DownloadImageTask(index++).execute(image.m_strUrl);
+//        }
     }
 
 

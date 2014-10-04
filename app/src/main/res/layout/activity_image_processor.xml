@@ -11,8 +11,9 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/layoutCollage"
         android:layout_weight="1">
 
     <TextView
@@ -27,8 +28,6 @@
         android:id="@+id/imageView"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:maxWidth="200dp"
-        android:maxHeight="200dp"
         android:longClickable="false"
         android:layout_alignParentEnd="false"
         android:layout_alignParentTop="false"
@@ -40,8 +39,9 @@
         android:layout_height="wrap_content"
         android:text="Share"
         android:id="@+id/btnShare"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp" />
     </RelativeLayout>
 
     <HorizontalScrollView
