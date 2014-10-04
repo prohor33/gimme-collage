@@ -7,6 +7,7 @@
     <string name="title_activity_friend_picker">FriendPicker</string>
     <string name="action_search">Search for a friend...</string>
     <string name="title_activity_image_processor">ImageProcessor</string>
+    <string name="desc">description</string>
 
 
 </resources>

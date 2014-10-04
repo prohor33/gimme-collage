@@ -118,22 +118,6 @@ public class FriendPicker extends ActionBarActivity {
         public void onSuccess() {
             Log.v(DEBUG_TAG, "Friend media list successfully loaded!");
             Intent intent = new Intent(FriendPicker.this, ImageProcessor.class);
-            Bundle bundle = new Bundle();
-
-            List<InstagramSession.ImageInfo> imageInfos =
-                    InstagramApp.getInstance().getSession().getImageInfos();
-            String[] images_array = new String[imageInfos.size()];
-            int[] image_like_count_array = new int[imageInfos.size()];
-
-            for (int i = 0;i < imageInfos.size();i++) {
-                images_array[i] = imageInfos.get(i).standard_resolution.url;
-                image_like_count_array[i] = imageInfos.get(i).likes_count;
-            }
-
-            bundle.putStringArray("images_array", images_array);
-            bundle.putIntArray("image_like_count_array", image_like_count_array);
-
-            intent.putExtras(bundle);
 
             startActivity(intent);
             Log.v(DEBUG_TAG, "Start ImageProcessor activity");
