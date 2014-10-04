@@ -3,8 +3,13 @@ package crystal.games.gimmecollage.app;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,6 +37,9 @@ public class FriendPicker extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_picker);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
@@ -84,7 +92,7 @@ public class FriendPicker extends ActionBarActivity {
             Picasso.with(mContext).load(userInfo.profile_picture).into(imageView);
             String name = userInfo.full_name.isEmpty() ? userInfo.username : userInfo.full_name;
             textView.setText(name);
-            Log.d(DEBUG_TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
+            //Log.d(DEBUG_TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
 
             return view;
         }
@@ -137,4 +145,13 @@ public class FriendPicker extends ActionBarActivity {
             Toast.makeText(FriendPicker.this, error, Toast.LENGTH_SHORT).show();
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.friend_picker, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        // Configure the search info and add any event listeners
+        return super.onCreateOptionsMenu(menu);
+    }
 }

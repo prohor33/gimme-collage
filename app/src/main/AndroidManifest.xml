@@ -22,7 +22,11 @@
         <activity
             android:name=".FriendPicker"
             android:label="@string/title_activity_friend_picker"
-            android:theme="@style/AppTheme">
+            android:parentActivityName="crystal.games.gimmecollage.app.MainActivity">
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="crystal.games.gimmecollage.app.MainActivity" />
         </activity>
         <activity
             android:name="crystal.games.gimmecollage.app.ImageProcessor"
