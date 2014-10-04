@@ -1,10 +1,10 @@
 package crystal.games.gimmecollage.app;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import crystal.games.gimmecollage.instagram_api.InstagramApp;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     private Button btnConnect;
     private Button btnGetImages;

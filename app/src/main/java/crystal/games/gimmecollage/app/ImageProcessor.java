@@ -1,6 +1,5 @@
 package crystal.games.gimmecollage.app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class ImageProcessor extends Activity {
+public class ImageProcessor extends ActionBarActivity {
 
     private static final String TAG = "ImageProcessor";
 
