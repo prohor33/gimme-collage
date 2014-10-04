@@ -1,9 +1,9 @@
 package crystal.games.gimmecollage.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +25,7 @@ import com.squareup.picasso.Picasso;
  * Created by prohor on 28/09/14.
  */
 
-public class FriendPicker extends Activity {
+public class FriendPicker extends ActionBarActivity {
 
     private static final String DEBUG_TAG = "FriendPicker";
 
