@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.File;
@@ -68,6 +70,20 @@ public class ImageProcessor extends Activity {
                 shareCollage();
             }
         });
+
+        LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
+        final int template_count = 7;
+        for (int i = 1; i <= template_count; i++) {
+            ImageView ivTemplate = new ImageView(ImageProcessor.this);
+            ivTemplate.setId(100 + i);
+            ivTemplate.setContentDescription(getString(R.string.desc));
+            int img_id = this.getResources().getIdentifier("collage_template_" + i,
+                    "drawable", this.getPackageName());
+            ivTemplate.setImageResource(img_id);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+            ivTemplate.setLayoutParams(layoutParams);
+            llTemplates.addView(ivTemplate);
+        }
 
         List<InstagramSession.ImageInfo> imageInfos =
                 InstagramApp.getInstance().getSession().getImageInfos();
@@ -231,8 +247,10 @@ public class ImageProcessor extends Activity {
 
         Log.v(TAG, "Collage is successfully generated!");
 
-        ImageView imageView = (ImageView)findViewById(R.id.imageView);
-        imageView.setImageBitmap(collageImage);
+        ImageView ivCollage = (ImageView)findViewById(R.id.imageView);
+        ivCollage.setImageBitmap(collageImage);
+//        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(300, 300);
+//        ivCollage.setLayoutParams(layoutParams);
         m_imgCollage = collageImage;
         btnShare.setEnabled(true);
     }
