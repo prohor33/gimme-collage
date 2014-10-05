@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,7 +59,8 @@ public class ImageProcessor extends ActionBarActivity {
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
     private TextView m_tvSummary;
     private Bitmap m_imgCollage = null;
-    private Button btnShare;
+    private Button m_btnShare;
+    private final int m_iTemplateImagesID = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +72,9 @@ public class ImageProcessor extends ActionBarActivity {
 
         m_imgCollage = null;
 
-        btnShare = (Button) findViewById(R.id.btnShare);
-        btnShare.setEnabled(false);
-        btnShare.setOnClickListener(new View.OnClickListener() {
+        m_btnShare = (Button) findViewById(R.id.btnShare);
+        m_btnShare.setEnabled(false);
+        m_btnShare.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
@@ -79,17 +82,32 @@ public class ImageProcessor extends ActionBarActivity {
             }
         });
 
-        LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
+        final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         final int template_count = 7;
         for (int i = 1; i <= template_count; i++) {
             ImageView ivTemplate = new ImageView(ImageProcessor.this);
-            ivTemplate.setId(100 + i);
+            ivTemplate.setId(m_iTemplateImagesID + i);
             ivTemplate.setContentDescription(getString(R.string.desc));
             int img_id = this.getResources().getIdentifier("collage_template_" + i,
                     "drawable", this.getPackageName());
             ivTemplate.setImageResource(img_id);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
             ivTemplate.setLayoutParams(layoutParams);
+
+            ivTemplate.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // reset all the others
+                    for (int i = 0; i < llTemplates.getChildCount(); i++) {
+                        ImageView iv2 = (ImageView)llTemplates.getChildAt(i);
+                        iv2.setColorFilter(0);
+                    }
+
+                    ImageView iv = (ImageView)v;
+                    int index = iv.getId() - m_iTemplateImagesID;
+                    iv.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
+                }
+            });
+
             llTemplates.addView(ivTemplate);
         }
 
@@ -286,7 +304,7 @@ public class ImageProcessor extends ActionBarActivity {
 //        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(300, 300);
 //        ivCollage.setLayoutParams(layoutParams);
         m_imgCollage = collageImage;
-        btnShare.setEnabled(true);
+        m_btnShare.setEnabled(true);
     }
 
     private void shareCollage() {
@@ -294,7 +312,7 @@ public class ImageProcessor extends ActionBarActivity {
             Log.v(TAG, "Error: collage isn't ready yet");
         }
         // Save file on disk and open share dialog
-        btnShare.setEnabled(false);
+        m_btnShare.setEnabled(false);
         new SaveFileTask().execute(m_imgCollage);
     }
 
@@ -344,7 +362,7 @@ public class ImageProcessor extends ActionBarActivity {
     }
 
     private void onCollageFileSave(File fileResult) {
-        btnShare.setEnabled(true);
+        m_btnShare.setEnabled(true);
         if (fileResult == null) {
             Log.v(TAG, "Null file pointer");
             return;
