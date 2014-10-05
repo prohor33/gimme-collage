@@ -32,6 +32,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import crystal.games.gimmecollage.collagemaker.CollageConfig;
+import crystal.games.gimmecollage.collagemaker.CollageMaker;
+import crystal.games.gimmecollage.collagemaker.PhotoPosition;
 import crystal.games.gimmecollage.instagram_api.InstagramApp;
 import crystal.games.gimmecollage.instagram_api.InstagramSession;
 
@@ -113,7 +116,7 @@ public class ImageProcessor extends ActionBarActivity {
         Collections.sort(m_lImages, new ImageComparator());
 
         CollageMaker.getInstance().putCollageType(CollageMaker.CollageType.CenterWithGridAround);
-        CollageMaker.CollageConfig pCollageConf = CollageMaker.getInstance().getCollageConf();
+        CollageConfig pCollageConf = CollageMaker.getInstance().getCollageConf();
 
         RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
         for (int i = 0; i < pCollageConf.getPhotoCount(); i++) {
@@ -125,7 +128,7 @@ public class ImageProcessor extends ActionBarActivity {
                 ivImage.setImageResource(R.drawable.no_photo);
             }
 
-            CollageMaker.PhotoPosition pPhotoPos = pCollageConf.getPhotoPos(i);
+            PhotoPosition pPhotoPos = pCollageConf.getPhotoPos(i);
             final float density = getResources().getDisplayMetrics().density;
             int collage_size_px = 320 - 40; // TODO: remove hard code
             int pixels = (int) (collage_size_px * density + 0.5f);  // dps to pixels
