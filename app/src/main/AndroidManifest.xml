@@ -31,6 +31,11 @@
         <activity
             android:name="crystal.games.gimmecollage.app.ImageProcessor"
             android:label="@string/title_activity_image_processor">
+            android:parentActivityName="crystal.games.gimmecollage.app.FriendPicker">
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="crystal.games.gimmecollage.app.FriendPicker" />
         </activity>
     </application>
 
