@@ -32,6 +32,18 @@ public class CollageMaker {
         m_eType = type;
     }
 
+    public void moveToTheOtherCollageType(int type_index) {
+        if (type_index < 0 || type_index >= CollageType.values().length) {
+            Log.v(TAG, "Error: wrong collage type index = " + type_index);
+            return;
+        }
+        moveToTheOtherCollageType(CollageMaker.CollageType.values()[type_index]);
+    }
+
+    public void moveToTheOtherCollageType(CollageType type) {
+
+    }
+
     public enum CollageType {
         Grid,
         CenterWithGridAround

@@ -10,26 +10,26 @@ public class PhotoPosition {
         this.m_dY = y;
         this.m_dSize = size;
         m_dAngle = 0;  // by default
-        m_iCollageSize = 100;  // in pixels
+        m_iCoefToPixels = 100;  // in pixels
     }
     public PhotoPosition(float x, float y, float size, float angle) {
         this(x, y, size);
         this.m_dAngle = angle;
     }
-    public void putCollageSize(int collage_size) {
-        this.m_iCollageSize = collage_size;
+    public void putCoefToPixels(int collage_size) {
+        this.m_iCoefToPixels = collage_size;
     }
     public int getSize() {
-        return (int)(m_iCollageSize * m_dSize);
+        return (int)(m_iCoefToPixels * m_dSize);
     }
     public int getX() {
-        return (int)(m_iCollageSize * m_dX);
+        return (int)(m_iCoefToPixels * m_dX);
     }
     public int getY() {
-        return (int)(m_iCollageSize * m_dY);
+        return (int)(m_iCoefToPixels * m_dY);
     }
     public int getAngle() {
-        return (int)(m_iCollageSize * m_dAngle);
+        return (int)(m_iCoefToPixels * m_dAngle);
     }
 
     private float m_dX;
@@ -37,5 +37,5 @@ public class PhotoPosition {
     private float m_dSize;
     private float m_dAngle;
 
-    private int m_iCollageSize;
+    private int m_iCoefToPixels;
 }

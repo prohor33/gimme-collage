@@ -30,12 +30,14 @@ public class CollageConfig {
                 int grid_size_x = 4;
                 int grid_size_y = 4;
                 float size = 1.0f / grid_size_x;
-                m_vPhotoPos.add(new PhotoPosition(size, size, size * (grid_size_x - 2)));
+                m_vPhotoPos.add(new PhotoPosition(size, size,
+                        size * (grid_size_x - 2)));
                 for (int x = 0; x < grid_size_x; x++) {
                     for (int y = 0; y < grid_size_y; y++) {
                         if (x == 0 || x == (grid_size_x - 1) ||
                                 y == 0 || y == (grid_size_y - 1)) {
-                            m_vPhotoPos.add(new PhotoPosition(size * x, size * y, size));
+                            m_vPhotoPos.add(new PhotoPosition(size * x,
+                                    size * y, size));
                         }
                     }
                 }

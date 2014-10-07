@@ -40,6 +40,7 @@ public class FriendPicker extends ActionBarActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
@@ -117,10 +118,10 @@ public class FriendPicker extends ActionBarActivity {
         @Override
         public void onSuccess() {
             Log.v(DEBUG_TAG, "Friend media list successfully loaded!");
-            Intent intent = new Intent(FriendPicker.this, ImageProcessor.class);
+            Intent intent = new Intent(FriendPicker.this, MainActivity.class);
 
             startActivity(intent);
-            Log.v(DEBUG_TAG, "Start ImageProcessor activity");
+            Log.v(DEBUG_TAG, "Start MainActivity activity");
         }
 
         @Override
