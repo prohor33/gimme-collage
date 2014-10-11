@@ -158,15 +158,13 @@ public class MainActivity extends ActionBarActivity {
 
             PhotoPosition pPhotoPos = pCollageConf.getPhotoPos(i);
 
-            // TODO: normal padding!
             int collage_padding = 10;
             int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
-            collage_padding = Utils.pixelsToDPS(this, collage_padding);
             pPhotoPos.putCoefToPixels(collage_size_x);
 
             RelativeLayout.LayoutParams params =
                     new RelativeLayout.LayoutParams(pPhotoPos.getSize(), pPhotoPos.getSize());
-            params.leftMargin = pPhotoPos.getX() + collage_padding;   // TODO: why this is not pixels?
+            params.leftMargin = pPhotoPos.getX() + collage_padding;
             params.topMargin = pPhotoPos.getY() + collage_padding;
 
             ivImage.setOnClickListener(new View.OnClickListener() {
@@ -174,7 +172,7 @@ public class MainActivity extends ActionBarActivity {
                     ImageView iv = (ImageView)v;
                     int index = iv.getId() - m_iCollageImageViewsID;
 
-                    // Start so called main activity
+                    // Start LoginActivity activity
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }
