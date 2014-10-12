@@ -1,6 +1,9 @@
 package crystal.games.gimmecollage.collagemaker;
 
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +44,12 @@ public class CollageMaker {
     }
 
     public void moveToTheOtherCollageType(CollageType type) {
+        putCollageType(type);
+        ArrangeImages();
+    }
 
+    public void setCollageLayout(RelativeLayout collage_layout) {
+        m_rlCollage = collage_layout;
     }
 
     public enum CollageType {
@@ -50,6 +58,7 @@ public class CollageMaker {
     };
     private CollageType m_eType;
     private Map<CollageType, CollageConfig> m_mCollages;
+    private RelativeLayout m_rlCollage = null;
 
     private static CollageMaker m_pInstance;
     private CollageMaker() {
@@ -57,6 +66,21 @@ public class CollageMaker {
         m_mCollages = new HashMap<CollageType, CollageConfig>();
         for (CollageType type : CollageType.values()) {
             m_mCollages.put(type, new CollageConfig(type));
+        }
+    }
+
+    private void ArrangeImages() {
+        for (int i = 0; i < m_rlCollage.getChildCount(); i++) {
+            ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
+
+            PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
+            int collage_padding = 10;
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)iv.getLayoutParams();
+            params.height = pPhotoPos.getSize();
+            params.width = pPhotoPos.getSize();
+            params.leftMargin = pPhotoPos.getX() + collage_padding;
+            params.topMargin = pPhotoPos.getY() + collage_padding;
+            iv.setLayoutParams(params);
         }
     }
 }

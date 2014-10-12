@@ -85,15 +85,18 @@ public class MainActivity extends ActionBarActivity {
 
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         final int template_count = 7;
-        for (int i = 1; i <= template_count; i++) {
+        for (int i = 0; i < template_count; i++) {
             ImageView ivTemplate = new ImageView(MainActivity.this);
             ivTemplate.setId(m_iTemplateImageViewsID + i);
             ivTemplate.setContentDescription(getString(R.string.desc));
-            int img_id = this.getResources().getIdentifier("collage_template_" + i,
+            int img_id = this.getResources().getIdentifier("collage_template_" + (i + 1),
                     "drawable", this.getPackageName());
             ivTemplate.setImageResource(img_id);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
             ivTemplate.setLayoutParams(layoutParams);
+            if (i == 1) {
+                ivTemplate.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
+            }
 
             ivTemplate.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -143,6 +146,7 @@ public class MainActivity extends ActionBarActivity {
         CollageConfig pCollageConf = CollageMaker.getInstance().getCollageConf();
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
+        CollageMaker.getInstance().setCollageLayout(rlCollage);
         for (int i = 0; i < pCollageConf.getPhotoCount(); i++) {
             ImageView ivImage = new ImageView(MainActivity.this);
             ivImage.setId(m_iCollageImageViewsID + i);
@@ -160,6 +164,7 @@ public class MainActivity extends ActionBarActivity {
 
             int collage_padding = 10;
             int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
+            // TODO: shouldn't set it each time for each image
             pPhotoPos.putCoefToPixels(collage_size_x);
 
             RelativeLayout.LayoutParams params =
