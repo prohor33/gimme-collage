@@ -94,7 +94,7 @@ public class MainActivity extends ActionBarActivity {
             ivTemplate.setImageResource(img_id);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
             ivTemplate.setLayoutParams(layoutParams);
-            if (i == 1) {
+            if (i == 0) {
                 ivTemplate.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
             }
 
@@ -142,12 +142,14 @@ public class MainActivity extends ActionBarActivity {
         // Let's sort images by likes count
         Collections.sort(m_lImages, new ImageComparator());
 
-        CollageMaker.getInstance().putCollageType(CollageMaker.CollageType.CenterWithGridAround);
-        CollageConfig pCollageConf = CollageMaker.getInstance().getCollageConf();
+        int collage_padding = 10;
+        int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
+        CollageMaker.getInstance().putCollageSize(collage_size_x);
+//        CollageMaker.getInstance().putCollageType(CollageMaker.CollageType.CenterWithGridAround);
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
         CollageMaker.getInstance().setCollageLayout(rlCollage);
-        for (int i = 0; i < pCollageConf.getPhotoCount(); i++) {
+        for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
             ImageView ivImage = new ImageView(MainActivity.this);
             ivImage.setId(m_iCollageImageViewsID + i);
 
@@ -160,18 +162,6 @@ public class MainActivity extends ActionBarActivity {
             ivImage.setBackgroundResource(R.drawable.collage_image_back);
             ivImage.setPadding(0, 0, 0, 0);
 
-            PhotoPosition pPhotoPos = pCollageConf.getPhotoPos(i);
-
-            int collage_padding = 10;
-            int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
-            // TODO: shouldn't set it each time for each image
-            pPhotoPos.putCoefToPixels(collage_size_x);
-
-            RelativeLayout.LayoutParams params =
-                    new RelativeLayout.LayoutParams(pPhotoPos.getSize(), pPhotoPos.getSize());
-            params.leftMargin = pPhotoPos.getX() + collage_padding;
-            params.topMargin = pPhotoPos.getY() + collage_padding;
-
             ivImage.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     ImageView iv = (ImageView)v;
@@ -183,8 +173,10 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
 
-            rlCollage.addView(ivImage, params);
+            rlCollage.addView(ivImage);
         }
+
+        CollageMaker.getInstance().moveToTheOtherCollageType(CollageMaker.CollageType.Grid);
 
 //        int image_count = m_lImages.size();
 //        int collage_image_count = 0;

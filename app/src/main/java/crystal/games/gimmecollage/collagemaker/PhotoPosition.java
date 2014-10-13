@@ -10,32 +10,26 @@ public class PhotoPosition {
         this.m_dY = y;
         this.m_dSize = size;
         m_dAngle = 0;  // by default
-        m_iCoefToPixels = 100;  // in pixels
     }
     public PhotoPosition(float x, float y, float size, float angle) {
         this(x, y, size);
         this.m_dAngle = angle;
     }
-    public void putCoefToPixels(int collage_size) {
-        this.m_iCoefToPixels = collage_size;
+    public float getSize() {
+        return m_dSize;
     }
-    public int getSize() {
-        return (int)(m_iCoefToPixels * m_dSize);
+    public float getX() {
+        return m_dX;
     }
-    public int getX() {
-        return (int)(m_iCoefToPixels * m_dX);
+    public float getY() {
+        return m_dY;
     }
-    public int getY() {
-        return (int)(m_iCoefToPixels * m_dY);
-    }
-    public int getAngle() {
-        return (int)(m_iCoefToPixels * m_dAngle);
+    public float getAngle() {
+        return m_dAngle;
     }
 
     private float m_dX;
     private float m_dY;
     private float m_dSize;
     private float m_dAngle;
-
-    private int m_iCoefToPixels;
 }
