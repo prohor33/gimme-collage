@@ -1,6 +1,12 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- <item name="android:buttonStyle">@style/MyButton</item> -->
     </style>
 
+    <style name="MyButton" parent="android:Widget.Button">
+        <item name="android:background">#ff5278b2</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    
 </resources>

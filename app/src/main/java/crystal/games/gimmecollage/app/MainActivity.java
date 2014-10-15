@@ -156,7 +156,7 @@ public class MainActivity extends ActionBarActivity {
             if (i < m_lImages.size()) {
                 Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
             } else {
-                ivImage.setImageResource(R.drawable.plus_image);
+                ivImage.setImageResource(R.drawable.ic_launcher);
             }
 
             ivImage.setBackgroundResource(R.drawable.collage_image_back);

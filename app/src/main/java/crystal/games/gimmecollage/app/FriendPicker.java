@@ -44,7 +44,7 @@ public class FriendPicker extends ActionBarActivity {
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
-        // Here we must load mImageUrls
+        // getting self follows...
         mUserInfos = InstagramApp.getInstance().getSession().getSelfFollows();
 
         friendGridView.setAdapter(new FriendPickerAdapter(this));
@@ -103,14 +103,13 @@ public class FriendPicker extends ActionBarActivity {
     private List<InstagramSession.UserInfo> mUserInfos;
 
     private void pickFriend(int pos) {
-        List<InstagramSession.UserInfo> userInfos = InstagramApp.getInstance().getSession().getSelfFollows();
-        if (pos < 0 || pos >= userInfos.size()) {
+        if (pos < 0 || pos >= mUserInfos.size()) {
             Log.v(DEBUG_TAG, "Error pickFriend(): index is out of range");
             return;
         }
-        Log.v(DEBUG_TAG, "pick friend:" + userInfos.get(pos).username);
+        Log.v(DEBUG_TAG, "pick friend:" + mUserInfos.get(pos).username);
 
-        InstagramApp.getInstance().updateImageInfo(userInfos.get(pos).id, images_list_load_listener);
+        InstagramApp.getInstance().updateImageInfo(mUserInfos.get(pos).id, images_list_load_listener);
     }
 
     InstagramApp.APIRequestListener images_list_load_listener = new InstagramApp.APIRequestListener() {
