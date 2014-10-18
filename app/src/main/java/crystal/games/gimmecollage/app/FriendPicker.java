@@ -21,8 +21,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import crystal.games.gimmecollage.instagram_api.InstagramApp;
-import crystal.games.gimmecollage.instagram_api.InstagramSession;
+import crystal.games.gimmecollage.instagram_api.InstagramAPI;
+import crystal.games.gimmecollage.instagram_api.Storage;
 
 import com.squareup.picasso.Picasso;
 
@@ -45,7 +45,7 @@ public class FriendPicker extends ActionBarActivity {
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
         // getting self follows...
-        mUserInfos = InstagramApp.getInstance().getSession().getSelfFollows();
+        mUserInfos = InstagramAPI.getFollows();
 
         friendGridView.setAdapter(new FriendPickerAdapter(this));
 
@@ -89,7 +89,7 @@ public class FriendPicker extends ActionBarActivity {
             imageView = (ImageView) view.getTag(R.id.picture);
             textView = (TextView) view.getTag(R.id.text);
 
-            InstagramSession.UserInfo userInfo = mUserInfos.get(position);
+            Storage.UserInfo userInfo = mUserInfos.get(position);
             Picasso.with(mContext).load(userInfo.profile_picture).into(imageView);
             String name = userInfo.full_name.isEmpty() ? userInfo.username : userInfo.full_name;
             textView.setText(name);
@@ -100,7 +100,7 @@ public class FriendPicker extends ActionBarActivity {
 
     }
 
-    private List<InstagramSession.UserInfo> mUserInfos;
+    private List<Storage.UserInfo> mUserInfos;
 
     private void pickFriend(int pos) {
         if (pos < 0 || pos >= mUserInfos.size()) {
@@ -109,10 +109,10 @@ public class FriendPicker extends ActionBarActivity {
         }
         Log.v(DEBUG_TAG, "pick friend:" + mUserInfos.get(pos).username);
 
-        InstagramApp.getInstance().updateImageInfo(mUserInfos.get(pos).id, images_list_load_listener);
+        InstagramAPI.with(images_list_load_listener).updateImages(mUserInfos.get(pos).id);
     }
 
-    InstagramApp.APIRequestListener images_list_load_listener = new InstagramApp.APIRequestListener() {
+    InstagramAPI.Listener images_list_load_listener = new InstagramAPI.Listener() {
 
         @Override
         public void onSuccess() {

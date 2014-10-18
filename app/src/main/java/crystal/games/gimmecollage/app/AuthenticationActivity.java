@@ -5,6 +5,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebView;
+import android.widget.Toast;
+
+import crystal.games.gimmecollage.instagram_api.InstagramAPI;
 
 
 public class AuthenticationActivity extends ActionBarActivity {
@@ -14,8 +20,25 @@ public class AuthenticationActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-        Intent intent = getIntent();
-        //int sourceId = intent.getIntExtra(LoginActivity.SIGNUP_ID, LoginActivity.SOURCE_ID_NONE);
+        CookieSyncManager.createInstance(this);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.removeAllCookie();
+
+        WebView webView = (WebView) findViewById(R.id.webView);
+        InstagramAPI.Listener authListener = new InstagramAPI.Listener() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(AuthenticationActivity.this, "Success: ", Toast.LENGTH_LONG).show();
+                AuthenticationActivity.this.finish();
+            }
+
+            @Override
+            public void onFail(String error) {
+                Toast.makeText(AuthenticationActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+            }
+        };
+
+        InstagramAPI.with(authListener).startAuthentication(webView);
     }
 
 

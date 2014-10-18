@@ -10,4 +10,12 @@
     <string name="desc">description</string>
     <string name="title_activity_authentication">AuthenticationActivity</string>
 
+    <!-- LoginActivity strings  -->
+    <string name="source_instagram_name">Instagram</string>
+    <string name="source_instagram_login">Log in</string>
+    <string name="source_instagram_logout">Log out</string>
+    <string name="source_instagram_hint_logged">Logged as</string>
+    <string name="source_instagram_hint_not_logged">Please sign in with your Instagram account.</string>
+
+
 </resources>

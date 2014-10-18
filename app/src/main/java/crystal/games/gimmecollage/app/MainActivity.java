@@ -38,7 +38,8 @@ import java.util.List;
 import crystal.games.gimmecollage.collagemaker.CollageConfig;
 import crystal.games.gimmecollage.collagemaker.CollageMaker;
 import crystal.games.gimmecollage.collagemaker.PhotoPosition;
-import crystal.games.gimmecollage.instagram_api.InstagramSession;
+import crystal.games.gimmecollage.instagram_api.InstagramAPI;
+import crystal.games.gimmecollage.instagram_api.Storage;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -67,6 +68,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialization of InstagramAPI...!
+        InstagramAPI.init(this, ApplicationData.CLIENT_ID, ApplicationData.CLIENT_SECRET,
+                ApplicationData.CALLBACK_URL);
+        InstagramAPI.resetAuthentication();
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -119,8 +125,8 @@ public class MainActivity extends ActionBarActivity {
         // for debug
 //        List<InstagramSession.ImageInfo> imageInfos =
 //                InstagramApp.getInstance().getSession().getImageInfos();
-        List<InstagramSession.ImageInfo> imageInfos =
-                new ArrayList<InstagramSession.ImageInfo>();
+        List<Storage.ImageInfo> imageInfos =
+                new ArrayList<Storage.ImageInfo>();
 
         m_tvSummary = (TextView) findViewById(R.id.textView);
         m_tvSummary.setText("Image urls to load: " + imageInfos.size());
