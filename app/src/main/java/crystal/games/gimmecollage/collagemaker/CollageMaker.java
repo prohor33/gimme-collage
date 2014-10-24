@@ -57,7 +57,7 @@ public class CollageMaker {
 
     public void moveToTheOtherCollageType(CollageType type) {
         putCollageType(type);
-        ArrangeImages();
+        UpdateCollageRestructuring();
     }
 
     public void setCollageLayout(RelativeLayout collage_layout) {
@@ -75,6 +75,19 @@ public class CollageMaker {
             max_count = count > max_count ? count : max_count;
         }
         return max_count;
+    }
+
+    public void UpdateCollageRestructuring() {
+        if (m_rlCollage == null)
+            return;
+        if (getCollageConf().getPhotoCount() > m_rlCollage.getChildCount()) {
+            Log.v(TAG, "Error: too few image views");
+            return;
+        }
+
+        // TODO: should we do this each frame?
+        PrepareImages();
+        updateImageViews(1.0f);
     }
 
     public enum CollageType {
@@ -99,25 +112,13 @@ public class CollageMaker {
         this.m_iCollageSize = 100;  // in pixels
     }
 
-    private void ArrangeImages() {
-        if (getCollageConf().getPhotoCount() > m_rlCollage.getChildCount()) {
-            Log.v(TAG, "Error: too few image views");
-            return;
-        }
 
+
+    private void PrepareImages() {
         for (int i = 0; i < m_rlCollage.getChildCount(); i++) {
             ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
 
             if (i < getCollageConf().getPhotoCount()) {
-                PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
-                int collage_padding = 10;
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
-                params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
-                params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
-                params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
-                params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
-
-                iv.setLayoutParams(params);
                 iv.setVisibility(ImageView.VISIBLE);
             } else {
                 iv.setVisibility(ImageView.GONE);
@@ -125,44 +126,30 @@ public class CollageMaker {
         }
     }
 
-//    private class SaveFileTask extends AsyncTask<Float, Void, Void> {
-//
-//        protected Void doInBackground(Float... speeds) {
-//            Float speed = speeds[0];
-//            Prepare();
-//        }
-//        protected Void onPostExecute() {
-//
-//        }
-//
-//        private void Prepare() {
-//            for (int i = 0; i < m_rlCollage.getChildCount(); i++) {
-//                ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
-//
-//                if (i < getCollageConf().getPhotoCount()) {
-//                    iv.setVisibility(ImageView.VISIBLE);
-//                } else {
-//                    iv.setVisibility(ImageView.GONE);
-//                }
-//            }
-//        }
-//        private boolean updateImageViews(Float speed) {
-//            for (int i = 0; i < m_rlCollage.getChildCount() &&
-//                    i < getCollageConf().getPhotoCount(); i++) {
-//                ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
-//
-//                PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
-//                int collage_padding = 10;
-//                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
-//                int target_h = (int) (m_iCollageSize * pPhotoPos.getSize());
-//                int target_w = (int) (m_iCollageSize * pPhotoPos.getSize());
-//                int target_left = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
-//                int target_top = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
-//
-//
-//                iv.setLayoutParams(params);
-//            }
-//        }
-//    }
+    private void updateImageViews(Float speed) {
+        for (int i = 0; i < m_rlCollage.getChildCount() &&
+                i < getCollageConf().getPhotoCount(); i++) {
+            ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
+
+            PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
+            int collage_padding = 10;
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+            int target_h = (int) (m_iCollageSize * pPhotoPos.getSize());
+            int target_w = (int) (m_iCollageSize * pPhotoPos.getSize());
+            int target_left = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
+            int target_top = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
+            float size_speed = 1.0f * speed;
+//            params.height += Math.signum(target_h - params.height) * size_speed;
+//            params.width += Math.signum(target_w - params.width) * size_speed;
+//            params.leftMargin += Math.signum(target_left - params.leftMargin) * speed;
+//            params.topMargin += Math.signum(target_top - params.topMargin) * speed;
+            params.height = target_h;
+            params.width = target_w;
+            params.leftMargin = target_left;
+            params.topMargin = target_top;
+            iv.setLayoutParams(params);
+            Log.v(TAG, "updateImageViews()");
+        }
+    }
 }
 

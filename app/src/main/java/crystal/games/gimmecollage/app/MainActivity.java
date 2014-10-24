@@ -152,6 +152,7 @@ public class MainActivity extends ActionBarActivity {
         int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
 //        CollageMaker.getInstance().putCollageType(CollageMaker.CollageType.CenterWithGridAround);
+        Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
         CollageMaker.getInstance().setCollageLayout(rlCollage);
@@ -162,7 +163,7 @@ public class MainActivity extends ActionBarActivity {
             if (i < m_lImages.size()) {
                 Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
             } else {
-                ivImage.setImageResource(R.drawable.ic_launcher);
+                ivImage.setImageResource(R.drawable.plus_image);
             }
 
             ivImage.setBackgroundResource(R.drawable.collage_image_back);
