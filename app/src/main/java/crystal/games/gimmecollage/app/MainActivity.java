@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceScreen;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -31,13 +30,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import crystal.games.gimmecollage.collagemaker.CollageConfig;
 import crystal.games.gimmecollage.collagemaker.CollageMaker;
-import crystal.games.gimmecollage.collagemaker.PhotoPosition;
 import crystal.games.gimmecollage.instagram_api.InstagramAPI;
 import crystal.games.gimmecollage.instagram_api.Storage;
 
@@ -89,53 +87,18 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
-        final int template_count = 7;
-        for (int i = 0; i < template_count; i++) {
-            ImageView ivTemplate = new ImageView(MainActivity.this);
-            ivTemplate.setId(m_iTemplateImageViewsID + i);
-            ivTemplate.setContentDescription(getString(R.string.desc));
-            int img_id = this.getResources().getIdentifier("collage_template_" + (i + 1),
-                    "drawable", this.getPackageName());
-            ivTemplate.setImageResource(img_id);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
-            ivTemplate.setLayoutParams(layoutParams);
-            if (i == 0) {
-                ivTemplate.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
-            }
+        AddCollageSelectorLayout();
 
-            ivTemplate.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    // reset all the others
-                    for (int i = 0; i < llTemplates.getChildCount(); i++) {
-                        ImageView iv2 = (ImageView)llTemplates.getChildAt(i);
-                        iv2.setColorFilter(0);
-                    }
-
-                    ImageView iv = (ImageView)v;
-                    int index = iv.getId() - m_iTemplateImageViewsID;
-                    iv.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
-                    CollageMaker.getInstance().moveToTheOtherCollageType(index);
-                }
-            });
-
-            llTemplates.addView(ivTemplate);
-        }
-
-        // for debug
-//        List<InstagramSession.ImageInfo> imageInfos =
-//                InstagramApp.getInstance().getSession().getImageInfos();
-        List<Storage.ImageInfo> imageInfos =
-                new ArrayList<Storage.ImageInfo>();
+        List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
 
         m_tvSummary = (TextView) findViewById(R.id.textView);
-        m_tvSummary.setText("Image urls to load: " + imageInfos.size());
+        m_tvSummary.setText("Image urls to load: " + imagesInfo.size());
         m_tvSummary.setVisibility(View.GONE);
 
         m_lImages.clear();
-        for (int i = 0; i < imageInfos.size(); i++) {
-            m_lImages.add(new ImageData(imageInfos.get(i).standard_resolution.url,
-                    imageInfos.get(i).likes_count));
+        for (int i = 0; i < imagesInfo.size(); i++) {
+            m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
+                    imagesInfo.get(i).likes_count));
         }
 
         class ImageComparator implements Comparator<ImageData> {
@@ -148,66 +111,10 @@ public class MainActivity extends ActionBarActivity {
         // Let's sort images by likes count
         Collections.sort(m_lImages, new ImageComparator());
 
-        int collage_padding = 10;
-        int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
-        CollageMaker.getInstance().putCollageSize(collage_size_x);
-//        CollageMaker.getInstance().putCollageType(CollageMaker.CollageType.CenterWithGridAround);
-        Log.v(TAG, "init()");
-
-        final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
-        CollageMaker.getInstance().setCollageLayout(rlCollage);
-        for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
-            ImageView ivImage = new ImageView(MainActivity.this);
-            ivImage.setId(m_iCollageImageViewsID + i);
-
-            if (i < m_lImages.size()) {
-                Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
-            } else {
-                ivImage.setImageResource(R.drawable.plus_image);
-            }
-
-            ivImage.setBackgroundResource(R.drawable.collage_image_back);
-            ivImage.setPadding(0, 0, 0, 0);
-
-            ivImage.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    ImageView iv = (ImageView)v;
-                    int index = iv.getId() - m_iCollageImageViewsID;
-
-                    // Start LoginActivity activity
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            });
-
-            rlCollage.addView(ivImage);
-        }
-
+        AddCollageLayout();
         CollageMaker.getInstance().moveToTheOtherCollageType(CollageMaker.CollageType.Grid);
 
-//        int image_count = m_lImages.size();
-//        int collage_image_count = 0;
-//        ArrayList<Integer> lCollageImageCount = new ArrayList<Integer>(Arrays.asList(2, 4, 6, 12, 20));
-//        for (Integer good_image_count : lCollageImageCount) {
-//            if (image_count >= good_image_count)
-//                collage_image_count = good_image_count;
-//        }
-//
-//        if (collage_image_count == 0) {
-//            Log.v(TAG, "Too few images for collage: " + image_count);
-//            m_tvSummary.setText("Too few images for collage: " + image_count);
-//            return;
-//        }
-//
-//        Log.v(TAG, "Pick " + collage_image_count + " images for collage.");
-//
-//        for (int i = 0; i < (image_count - collage_image_count); i++)
-//            m_lImages.remove(m_lImages.size() - 1);
-//
-//        int index = 0;
-//        for (ImageData image : m_lImages) {
-//            new DownloadImageTask(index++).execute(image.m_strUrl);
-//        }
+        //LoadImagesAndUniteToOne();
     }
 
 
@@ -271,11 +178,11 @@ public class MainActivity extends ActionBarActivity {
         if (images_loaded == m_lImages.size()) {
             Log.v(TAG, "All images are successfully loaded!");
             m_tvSummary.setText("All " + images_loaded + " images are successfully loaded!");
-            MakeCollage();
+            UniteImagesToOne();
         }
     }
 
-    private void MakeCollage() {
+    private void UniteImagesToOne() {
         // for now support only standard resolution
         // TODO: support multiple resolutions
         int img_size_x = 612;
@@ -399,5 +306,102 @@ public class MainActivity extends ActionBarActivity {
 
         sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileResult));
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
+
+    private void AddCollageSelectorLayout(){
+        final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
+        final int template_count = 7;
+        for (int i = 0; i < template_count; i++) {
+            ImageView ivTemplate = new ImageView(MainActivity.this);
+            ivTemplate.setId(m_iTemplateImageViewsID + i);
+            ivTemplate.setContentDescription(getString(R.string.desc));
+            int img_id = this.getResources().getIdentifier("collage_template_" + (i + 1),
+                    "drawable", this.getPackageName());
+            ivTemplate.setImageResource(img_id);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+            ivTemplate.setLayoutParams(layoutParams);
+            if (i == 0) {
+                ivTemplate.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
+            }
+
+            ivTemplate.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // reset all the others
+                    for (int i = 0; i < llTemplates.getChildCount(); i++) {
+                        ImageView iv2 = (ImageView)llTemplates.getChildAt(i);
+                        iv2.setColorFilter(0);
+                    }
+
+                    ImageView iv = (ImageView)v;
+                    int index = iv.getId() - m_iTemplateImageViewsID;
+                    iv.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
+                    CollageMaker.getInstance().moveToTheOtherCollageType(index);
+                }
+            });
+
+            llTemplates.addView(ivTemplate);
+        }
+    }
+
+    private void AddCollageLayout() {
+        int collage_padding = 10;
+        int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
+        CollageMaker.getInstance().putCollageSize(collage_size_x);
+        Log.v(TAG, "init()");
+
+        final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
+        CollageMaker.getInstance().setCollageLayout(rlCollage);
+        for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
+            ImageView ivImage = new ImageView(MainActivity.this);
+            ivImage.setId(m_iCollageImageViewsID + i);
+
+            if (i < m_lImages.size()) {
+                Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
+            } else {
+                ivImage.setImageResource(R.drawable.plus_image);
+            }
+
+            ivImage.setBackgroundResource(R.drawable.collage_image_back);
+            ivImage.setPadding(0, 0, 0, 0);
+
+            ivImage.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    ImageView iv = (ImageView)v;
+                    int index = iv.getId() - m_iCollageImageViewsID;
+
+                    // Start LoginActivity activity
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            rlCollage.addView(ivImage);
+        }
+    }
+
+    private void LoadImagesAndUniteToOne() {
+        int image_count = m_lImages.size();
+        int collage_image_count = 0;
+        ArrayList<Integer> lCollageImageCount = new ArrayList<Integer>(Arrays.asList(2, 4, 6, 12, 20));
+        for (Integer good_image_count : lCollageImageCount) {
+            if (image_count >= good_image_count)
+                collage_image_count = good_image_count;
+        }
+
+        if (collage_image_count == 0) {
+            Log.v(TAG, "Too few images for collage: " + image_count);
+            m_tvSummary.setText("Too few images for collage: " + image_count);
+            return;
+        }
+
+        Log.v(TAG, "Pick " + collage_image_count + " images for collage.");
+
+        for (int i = 0; i < (image_count - collage_image_count); i++)
+            m_lImages.remove(m_lImages.size() - 1);
+
+        int index = 0;
+        for (ImageData image : m_lImages) {
+            new DownloadImageTask(index++).execute(image.m_strUrl);
+        }
     }
 }
