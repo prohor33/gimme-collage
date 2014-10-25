@@ -112,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
         Collections.sort(m_lImages, new ImageComparator());
 
         AddCollageLayout();
-        CollageMaker.getInstance().moveToTheOtherCollageType(CollageMaker.CollageType.Grid);
+        CollageMaker.getInstance().InitImageViews();
 
         //LoadImagesAndUniteToOne();
     }

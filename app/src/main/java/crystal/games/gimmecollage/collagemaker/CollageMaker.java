@@ -1,21 +1,15 @@
 package crystal.games.gimmecollage.collagemaker;
 
-import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import crystal.games.gimmecollage.app.MainActivity;
 
 /**
  * Created by prohor on 04/10/14.
@@ -24,7 +18,6 @@ public class CollageMaker {
 
     private static final String TAG = "CollageMaker";
 
-    // Singletone pattern
     public static synchronized CollageMaker getInstance() {
         if (m_pInstance == null) {
             m_pInstance = new CollageMaker();
@@ -87,7 +80,23 @@ public class CollageMaker {
 
         // TODO: should we do this each frame?
         PrepareImages();
-        updateImageViews(1.0f);
+        RunAnimImageViews();
+    }
+
+    public void InitImageViews() {
+        for (int i = 0; i < m_rlCollage.getChildCount() &&
+                i < getCollageConf().getPhotoCount(); i++) {
+            final ImageView iv = (ImageView) m_rlCollage.getChildAt(i);
+
+            PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
+            int collage_padding = 10;
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+            params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
+            params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
+            params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
+            params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
+            iv.setLayoutParams(params);
+        }
     }
 
     public enum CollageType {
@@ -96,7 +105,7 @@ public class CollageMaker {
     };
 
 
-    private CollageType m_eType;
+    private CollageType m_eType = CollageType.Grid;
     private Map<CollageType, CollageConfig> m_mCollages;
     private RelativeLayout m_rlCollage = null;
     private int m_iCollageSize;
@@ -126,30 +135,78 @@ public class CollageMaker {
         }
     }
 
-    private void updateImageViews(Float speed) {
+    private void RunAnimImageViews() {
         for (int i = 0; i < m_rlCollage.getChildCount() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
+            final ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
             int collage_padding = 10;
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
-            int target_h = (int) (m_iCollageSize * pPhotoPos.getSize());
-            int target_w = (int) (m_iCollageSize * pPhotoPos.getSize());
-            int target_left = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
-            int target_top = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
-            float size_speed = 1.0f * speed;
-//            params.height += Math.signum(target_h - params.height) * size_speed;
-//            params.width += Math.signum(target_w - params.width) * size_speed;
-//            params.leftMargin += Math.signum(target_left - params.leftMargin) * speed;
-//            params.topMargin += Math.signum(target_top - params.topMargin) * speed;
-            params.height = target_h;
-            params.width = target_w;
-            params.leftMargin = target_left;
-            params.topMargin = target_top;
-            iv.setLayoutParams(params);
-            Log.v(TAG, "updateImageViews()");
+            final int new_h = (int) (m_iCollageSize * pPhotoPos.getSize());
+            final int new_w = (int) (m_iCollageSize * pPhotoPos.getSize());
+            final int new_left = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
+            final int new_top = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
+            Log.v(TAG, "RunAnimImageViews()");
+            float coef_w = (float)new_w / params.width;
+            float coef_h = (float)new_h / params.height;
+            int delta_left = new_left - params.leftMargin;
+            int delta_top = new_top - params.topMargin;
+            if (i == 0) {
+                Log.v(TAG, "params.leftMargin = " + params.leftMargin);
+                Log.v(TAG, "params.topMargin = " + params.topMargin);
+                Log.v(TAG, "params.width = " + params.width);
+                Log.v(TAG, "params.height = " + params.height);
+                Log.v(TAG, "delta_left / params.width = " + (float)delta_left / params.width);
+            }
+            final int anim_duration = 500;
+            TranslateAnimation translateAnimation = new TranslateAnimation(
+                    Animation.ABSOLUTE, 0.0f,
+                    Animation.ABSOLUTE, delta_left,
+                    Animation.ABSOLUTE, 0.0f,
+                    Animation.ABSOLUTE, delta_top);
+            translateAnimation.setDuration(anim_duration);
+            translateAnimation.setRepeatCount(0);
+
+            Animation scaleAnimation = new ScaleAnimation(
+                    1.0f, coef_w,
+                    1.0f, coef_h,
+                    Animation.RELATIVE_TO_SELF, (float)delta_left / params.width,
+                    Animation.RELATIVE_TO_SELF, (float)delta_top / params.height);
+            scaleAnimation.setDuration(anim_duration);
+            scaleAnimation.setRepeatCount(0);
+
+            AnimationSet animSet = new AnimationSet(true);
+            animSet.setFillEnabled(true);
+            animSet.setFillAfter(true);
+
+            animSet.setAnimationListener(new TranslateAnimation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation animation) { }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+
+                @Override
+                public void onAnimationEnd(Animation animation)
+                {
+                    iv.clearAnimation();
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)iv.getLayoutParams();
+                    params.width = new_w;
+                    params.height = new_h;
+                    params.topMargin = new_top;
+                    params.leftMargin = new_left;
+                    iv.setLayoutParams(params);
+                }
+            });
+
+            animSet.addAnimation(translateAnimation);
+            animSet.addAnimation(scaleAnimation);
+            iv.startAnimation(animSet);
         }
     }
+
+
 }
 
