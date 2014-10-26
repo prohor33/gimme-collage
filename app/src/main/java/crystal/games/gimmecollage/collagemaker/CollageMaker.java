@@ -6,10 +6,14 @@ import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import crystal.games.gimmecollage.app.MainActivity;
+import crystal.games.gimmecollage.app.Utils;
 
 /**
  * Created by prohor on 04/10/14.
@@ -40,7 +44,7 @@ public class CollageMaker {
         m_eType = type;
     }
 
-    public void moveToTheOtherCollageType(int type_index) {
+    public void MoveToTheOtherCollageType(int type_index) {
         if (type_index < 0 || type_index >= CollageType.values().length) {
             Log.v(TAG, "Error: wrong collage type index = " + type_index);
             return;
@@ -59,6 +63,9 @@ public class CollageMaker {
 
     public void putCollageSize(int collage_size) {
         this.m_iCollageSize = collage_size;
+    }
+    public void putCollagePadding(int collage_padding) {
+        this.m_iCollagePadding = collage_padding;
     }
 
     public int getMaxImageCount() {
@@ -89,13 +96,34 @@ public class CollageMaker {
             final ImageView iv = (ImageView) m_rlCollage.getChildAt(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
-            int collage_padding = 10;
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
             params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
             params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
-            params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
-            params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
+            params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + m_iCollagePadding;
+            params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_iCollagePadding;
             iv.setLayoutParams(params);
+        }
+    }
+
+    public void DrawCollageTypeSelector(MainActivity.CollageTypeSelectorImageView ivSelector,
+                                        int index, int size) {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
+        ivSelector.setLayoutParams(layoutParams);
+        if (index < 0 || index >= m_mCollages.size())
+            return;
+        final int selector_padding = size / 20;
+        size -= selector_padding * 2;
+        CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
+        for (int i = 0; i < config.getPhotoCount(); i++) {
+            PhotoPosition photo_pos = config.getPhotoPos(i);
+            int s_x = (int)(size * photo_pos.getX()) + selector_padding;
+            int s_y = (int)(size * photo_pos.getY()) + selector_padding;
+            int e_x = s_x + (int)(size * photo_pos.getSize());
+            int e_y = s_y + (int)(size * photo_pos.getSize());
+            ivSelector.AddLine(new MainActivity.Line(s_x, s_y, e_x, s_y));
+            ivSelector.AddLine(new MainActivity.Line(e_x, s_y, e_x, e_y));
+            ivSelector.AddLine(new MainActivity.Line(e_x, e_y, s_x, e_y));
+            ivSelector.AddLine(new MainActivity.Line(s_x, e_y, s_x, s_y));
         }
     }
 
@@ -109,6 +137,7 @@ public class CollageMaker {
     private Map<CollageType, CollageConfig> m_mCollages;
     private RelativeLayout m_rlCollage = null;
     private int m_iCollageSize;
+    private int m_iCollagePadding = 10;
 
     private static CollageMaker m_pInstance;
     private CollageMaker() {
@@ -141,24 +170,16 @@ public class CollageMaker {
             final ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
-            int collage_padding = 10;
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)iv.getLayoutParams();
             final int new_h = (int) (m_iCollageSize * pPhotoPos.getSize());
             final int new_w = (int) (m_iCollageSize * pPhotoPos.getSize());
-            final int new_left = (int) (m_iCollageSize * pPhotoPos.getX()) + collage_padding;
-            final int new_top = (int) (m_iCollageSize * pPhotoPos.getY()) + collage_padding;
-            Log.v(TAG, "RunAnimImageViews()");
+            final int new_left = (int) (m_iCollageSize * pPhotoPos.getX()) + m_iCollagePadding;
+            final int new_top = (int) (m_iCollageSize * pPhotoPos.getY()) + m_iCollagePadding;
+//            Log.v(TAG, "RunAnimImageViews()");
             float coef_w = (float)new_w / params.width;
             float coef_h = (float)new_h / params.height;
             int delta_left = new_left - params.leftMargin;
             int delta_top = new_top - params.topMargin;
-            if (i == 0) {
-                Log.v(TAG, "params.leftMargin = " + params.leftMargin);
-                Log.v(TAG, "params.topMargin = " + params.topMargin);
-                Log.v(TAG, "params.width = " + params.width);
-                Log.v(TAG, "params.height = " + params.height);
-                Log.v(TAG, "delta_left / params.width = " + (float)delta_left / params.width);
-            }
             final int anim_duration = 500;
             TranslateAnimation translateAnimation = new TranslateAnimation(
                     Animation.ABSOLUTE, 0.0f,

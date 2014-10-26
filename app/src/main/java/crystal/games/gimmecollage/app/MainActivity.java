@@ -1,11 +1,13 @@
 package crystal.games.gimmecollage.app;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,15 +15,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -56,9 +57,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
-    private TextView m_tvSummary;
     private Bitmap m_imgCollage = null;
-    private Button m_btnShare;
     private final int m_iTemplateImageViewsID = 100;
     private final int m_iCollageImageViewsID = 200;
 
@@ -77,24 +76,9 @@ public class MainActivity extends ActionBarActivity {
 
         m_imgCollage = null;
 
-        m_btnShare = (Button) findViewById(R.id.btnShare);
-        m_btnShare.setEnabled(false);
-        m_btnShare.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                shareCollage();
-            }
-        });
-
-        AddCollageSelectorLayout();
+        AddCollageTypeSelectorLayout();
 
         List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
-
-        m_tvSummary = (TextView) findViewById(R.id.textView);
-        m_tvSummary.setText("Image urls to load: " + imagesInfo.size());
-        m_tvSummary.setVisibility(View.GONE);
-
         m_lImages.clear();
         for (int i = 0; i < imagesInfo.size(); i++) {
             m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
@@ -162,7 +146,6 @@ public class MainActivity extends ActionBarActivity {
 
         protected void onPostExecute(Bitmap result) {
             Log.v(TAG, "Image number " + m_iImageIndex + " successfully loaded");
-            m_tvSummary.setText("Image number " + m_iImageIndex + " successfully loaded");
             onImageLoad(m_iImageIndex, result);
         }
     }
@@ -177,7 +160,6 @@ public class MainActivity extends ActionBarActivity {
         }
         if (images_loaded == m_lImages.size()) {
             Log.v(TAG, "All images are successfully loaded!");
-            m_tvSummary.setText("All " + images_loaded + " images are successfully loaded!");
             UniteImagesToOne();
         }
     }
@@ -235,15 +217,13 @@ public class MainActivity extends ActionBarActivity {
 //        ImageView ivCollage = (ImageView)findViewById(R.id.imageView);
 //        ivCollage.setImageBitmap(collageImage);
         m_imgCollage = collageImage;
-        m_btnShare.setEnabled(true);
     }
 
-    private void shareCollage() {
+    private void ShareCollage() {
         if (m_imgCollage == null) {
             Log.v(TAG, "Error: collage isn't ready yet");
         }
         // Save file on disk and open share dialog
-        m_btnShare.setEnabled(false);
         new SaveFileTask().execute(m_imgCollage);
     }
 
@@ -293,7 +273,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void onCollageFileSave(File fileResult) {
-        m_btnShare.setEnabled(true);
         if (fileResult == null) {
             Log.v(TAG, "Null file pointer");
             return;
@@ -308,45 +287,92 @@ public class MainActivity extends ActionBarActivity {
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
 
-    private void AddCollageSelectorLayout(){
+    private void AddCollageTypeSelectorLayout() {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         final int template_count = 7;
         for (int i = 0; i < template_count; i++) {
-            ImageView ivTemplate = new ImageView(MainActivity.this);
-            ivTemplate.setId(m_iTemplateImageViewsID + i);
-            ivTemplate.setContentDescription(getString(R.string.desc));
-            int img_id = this.getResources().getIdentifier("collage_template_" + (i + 1),
-                    "drawable", this.getPackageName());
-            ivTemplate.setImageResource(img_id);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
-            ivTemplate.setLayoutParams(layoutParams);
-            if (i == 0) {
-                ivTemplate.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
-            }
+            final int selector_size = 130;
+            CollageTypeSelectorImageView ivSelector =
+                    new CollageTypeSelectorImageView(MainActivity.this, null, selector_size);
+            ivSelector.setId(m_iTemplateImageViewsID + i);
+            ivSelector.setContentDescription(getString(R.string.desc));
+            CollageMaker.getInstance().DrawCollageTypeSelector(ivSelector, i, selector_size);
 
-            ivTemplate.setOnClickListener(new View.OnClickListener() {
+            ivSelector.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // reset all the others
                     for (int i = 0; i < llTemplates.getChildCount(); i++) {
-                        ImageView iv2 = (ImageView)llTemplates.getChildAt(i);
+                        ImageView iv2 = (ImageView) llTemplates.getChildAt(i);
                         iv2.setColorFilter(0);
                     }
 
-                    ImageView iv = (ImageView)v;
+                    ImageView iv = (ImageView) v;
                     int index = iv.getId() - m_iTemplateImageViewsID;
-                    iv.setColorFilter(Color.parseColor("#33B5E5"), PorterDuff.Mode.MULTIPLY);
-                    CollageMaker.getInstance().moveToTheOtherCollageType(index);
+                    CollageMaker.getInstance().MoveToTheOtherCollageType(index);
                 }
             });
 
-            llTemplates.addView(ivTemplate);
+            llTemplates.addView(ivSelector);
+        }
+    }
+
+    static public class Line {
+        float startX, startY, stopX, stopY;
+        public Line(float startX, float startY, float stopX, float stopY) {
+            this.startX = startX;
+            this.startY = startY;
+            this.stopX = stopX;
+            this.stopY = stopY;
+        }
+        public Line(float startX, float startY) { // for convenience
+            this(startX, startY, startX, startY);
+        }
+    }
+
+    public class CollageTypeSelectorImageView extends ImageView {
+        private Paint currentPaint;
+        private ArrayList<Line> lines = new ArrayList<Line>();
+        private int selectorSize;
+
+        public CollageTypeSelectorImageView(Context context,
+                                            AttributeSet attrs, int selector_size) {
+            super(context, attrs);
+
+            currentPaint = new Paint();
+            currentPaint.setDither(true);
+            currentPaint.setColor(0xFFCCCCCC);  // alpha.r.g.b
+            currentPaint.setStyle(Paint.Style.STROKE);
+            currentPaint.setStrokeJoin(Paint.Join.ROUND);
+            currentPaint.setStrokeCap(Paint.Cap.ROUND);
+            currentPaint.setStrokeWidth(3);
+
+            selectorSize = selector_size;
+        }
+
+        public void AddLine(Line line) {
+            lines.add(line);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            currentPaint.setStyle(Paint.Style.FILL);
+            currentPaint.setColor(0xfffb8c00);  // orange
+            canvas.drawRect(0, 0, selectorSize, selectorSize, currentPaint);
+
+            currentPaint.setColor(0xffffffff);  // white
+            currentPaint.setStyle(Paint.Style.STROKE);
+            for (Line l : lines) {
+                canvas.drawLine(l.startX, l.startY, l.stopX, l.stopY, currentPaint);
+            }
         }
     }
 
     private void AddCollageLayout() {
-        int collage_padding = 10;
+        final int collage_padding = 45;
         int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
+        CollageMaker.getInstance().putCollagePadding(collage_padding);
         Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
@@ -390,7 +416,6 @@ public class MainActivity extends ActionBarActivity {
 
         if (collage_image_count == 0) {
             Log.v(TAG, "Too few images for collage: " + image_count);
-            m_tvSummary.setText("Too few images for collage: " + image_count);
             return;
         }
 
