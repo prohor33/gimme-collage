@@ -40,6 +40,9 @@ public class CollageMaker {
         return m_mCollages.get(eType);
     }
 
+    public int getCollageTypeIndex() {
+        return m_eType.ordinal();
+    }
     public void putCollageType(CollageType type) {
         m_eType = type;
     }
@@ -57,7 +60,7 @@ public class CollageMaker {
         UpdateCollageRestructuring();
     }
 
-    public void setCollageLayout(RelativeLayout collage_layout) {
+    public void putCollageLayout(RelativeLayout collage_layout) {
         m_rlCollage = collage_layout;
     }
 
@@ -91,6 +94,10 @@ public class CollageMaker {
     }
 
     public void InitImageViews() {
+        PrepareImages();
+        Log.v(TAG, "InitImageViews()");
+        Log.v(TAG, "m_rlCollage.getChildCount() = " + m_rlCollage.getChildCount());
+        Log.v(TAG, "getCollageConf().getPhotoCount() = " + getCollageConf().getPhotoCount());
         for (int i = 0; i < m_rlCollage.getChildCount() &&
                 i < getCollageConf().getPhotoCount(); i++) {
             final ImageView iv = (ImageView) m_rlCollage.getChildAt(i);
@@ -129,7 +136,10 @@ public class CollageMaker {
 
     public enum CollageType {
         Grid,
-        CenterWithGridAround
+        CenterWithGridAround,
+        Test1,
+        Test2,
+        Test3
     };
 
 

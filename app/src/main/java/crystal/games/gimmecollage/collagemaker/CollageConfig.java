@@ -43,6 +43,49 @@ public class CollageConfig {
                 }
                 break;
             }
+            case Test1: {
+                int grid_size_x = 4;
+                int grid_size_y = 4;
+                float size = 1.0f / grid_size_x;
+                m_vPhotoPos.add(new PhotoPosition(0, 0,
+                        size * (grid_size_x - 1)));
+                for (int x = 0; x < grid_size_x; x++) {
+                    for (int y = 0; y < grid_size_y; y++) {
+                        if (x == (grid_size_x - 1) || y == (grid_size_y - 1)) {
+                            m_vPhotoPos.add(new PhotoPosition(size * x, size * y, size));
+                        }
+                    }
+                }
+                break;
+            }
+            case Test2: {
+                int grid_size_x = 6;
+                int grid_size_y = 6;
+                float size = 1.0f / grid_size_x;
+                m_vPhotoPos.add(new PhotoPosition(size, size,
+                        size * (grid_size_x - 2)));
+                for (int x = 0; x < grid_size_x; x++) {
+                    for (int y = 0; y < grid_size_y; y++) {
+                        if (x == 0 || x == (grid_size_x - 1) ||
+                                y == 0 || y == (grid_size_y - 1)) {
+                            m_vPhotoPos.add(new PhotoPosition(size * x,
+                                    size * y, size));
+                        }
+                    }
+                }
+                break;
+            }
+            case Test3: {
+                int grid_size_x = 6;
+                int grid_size_y = 6;
+                float size = 1.0f / grid_size_x;
+                for (int x = 0; x < grid_size_x; x++) {
+                    for (int y = 0; y < grid_size_y; y++) {
+                        m_vPhotoPos.add(new PhotoPosition(size * x, size * y, size));
+                    }
+                }
+                break;
+            }
             default: {
                 Log.v(TAG, "Error: wrong collage type");
                 break;

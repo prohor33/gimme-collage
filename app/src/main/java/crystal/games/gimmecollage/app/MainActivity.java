@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -289,11 +287,10 @@ public class MainActivity extends ActionBarActivity {
 
     private void AddCollageTypeSelectorLayout() {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
-        final int template_count = 7;
-        for (int i = 0; i < template_count; i++) {
+        for (int i = 0; i < CollageMaker.CollageType.values().length; i++) {
             final int selector_size = 130;
             CollageTypeSelectorImageView ivSelector =
-                    new CollageTypeSelectorImageView(MainActivity.this, null, selector_size);
+                    new CollageTypeSelectorImageView(MainActivity.this, null, selector_size, i);
             ivSelector.setId(m_iTemplateImageViewsID + i);
             ivSelector.setContentDescription(getString(R.string.desc));
             CollageMaker.getInstance().DrawCollageTypeSelector(ivSelector, i, selector_size);
@@ -333,9 +330,10 @@ public class MainActivity extends ActionBarActivity {
         private Paint currentPaint;
         private ArrayList<Line> lines = new ArrayList<Line>();
         private int selectorSize;
+        private int selectorIndex;
 
-        public CollageTypeSelectorImageView(Context context,
-                                            AttributeSet attrs, int selector_size) {
+        public CollageTypeSelectorImageView(Context context, AttributeSet attrs,
+                                            int selector_size, int index) {
             super(context, attrs);
 
             currentPaint = new Paint();
@@ -347,6 +345,7 @@ public class MainActivity extends ActionBarActivity {
             currentPaint.setStrokeWidth(3);
 
             selectorSize = selector_size;
+            selectorIndex = index;
         }
 
         public void AddLine(Line line) {
@@ -357,10 +356,15 @@ public class MainActivity extends ActionBarActivity {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
             currentPaint.setStyle(Paint.Style.FILL);
-            currentPaint.setColor(0xfffb8c00);  // orange
+//            currentPaint.setColor(0xfffb8c00);  // orange
+            currentPaint.setColor(0xfffba941);  // orange
             canvas.drawRect(0, 0, selectorSize, selectorSize, currentPaint);
 
-            currentPaint.setColor(0xffffffff);  // white
+            if (selectorIndex == CollageMaker.getInstance().getCollageTypeIndex()) {
+                currentPaint.setColor(0xffffffff);  // white
+            } else {
+                currentPaint.setColor(0xFF918e8b);  // gray
+            }
             currentPaint.setStyle(Paint.Style.STROKE);
             for (Line l : lines) {
                 canvas.drawLine(l.startX, l.startY, l.stopX, l.stopY, currentPaint);
@@ -376,7 +380,7 @@ public class MainActivity extends ActionBarActivity {
         Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
-        CollageMaker.getInstance().setCollageLayout(rlCollage);
+        CollageMaker.getInstance().putCollageLayout(rlCollage);
         for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
             ImageView ivImage = new ImageView(MainActivity.this);
             ivImage.setId(m_iCollageImageViewsID + i);
