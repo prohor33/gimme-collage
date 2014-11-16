@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.faizmalkani.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -67,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
         // Initialization of InstagramAPI...!
         InstagramAPI.init(this, ApplicationData.CLIENT_ID, ApplicationData.CLIENT_SECRET,
                 ApplicationData.CALLBACK_URL);
-        InstagramAPI.resetAuthentication();
+//        InstagramAPI.resetAuthentication();
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -95,6 +96,28 @@ public class MainActivity extends ActionBarActivity {
 
         AddCollageLayout();
         CollageMaker.getInstance().InitImageViews();
+
+        FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton0);
+        mFab0.setColor(getResources().getColor(R.color.purple));    // maroon
+        mFab0.setDrawable(getResources().getDrawable(R.drawable.ic_content_discard));
+        mFab0.hide(true);
+        FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton1);
+        mFab1.setColor(getResources().getColor(R.color.android_green));
+        mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_navigation_accept));
+        mFab1.hide(true);
+
+        final FloatingActionButton mFab = (FloatingActionButton)findViewById(R.id.fabbutton);
+        mFab.setColor(getResources().getColor(R.color.action_btn_clr));
+        mFab.setDrawable(getResources().getDrawable(R.drawable.ic_action_plus));
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton0);
+                mFab0.hide(!mFab0.getHidden());
+                FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton1);
+                mFab1.hide(!mFab1.getHidden());
+            }
+        });
 
         //LoadImagesAndUniteToOne();
     }
@@ -288,7 +311,7 @@ public class MainActivity extends ActionBarActivity {
     private void AddCollageTypeSelectorLayout() {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         for (int i = 0; i < CollageMaker.CollageType.values().length; i++) {
-            final int selector_size = 130;
+            final int selector_size = 90;
             CollageTypeSelectorImageView ivSelector =
                     new CollageTypeSelectorImageView(MainActivity.this, null, selector_size, i);
             ivSelector.setId(m_iTemplateImageViewsID + i);
@@ -376,7 +399,8 @@ public class MainActivity extends ActionBarActivity {
         final int collage_padding = 45;
         int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
-        CollageMaker.getInstance().putCollagePadding(collage_padding);
+        CollageMaker.getInstance().putCollagePaddingX(collage_padding);
+        CollageMaker.getInstance().putCollagePaddingY(collage_padding / 2);
         Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
@@ -388,7 +412,7 @@ public class MainActivity extends ActionBarActivity {
             if (i < m_lImages.size()) {
                 Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
             } else {
-                ivImage.setImageResource(R.drawable.plus_image);
+                ivImage.setImageResource(R.drawable.ic_plus_image);
             }
 
             ivImage.setBackgroundResource(R.drawable.collage_image_back);
@@ -397,7 +421,7 @@ public class MainActivity extends ActionBarActivity {
             ivImage.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     ImageView iv = (ImageView)v;
-                    int index = iv.getId() - m_iCollageImageViewsID;
+//                    int index = iv.getId() - m_iCollageImageViewsID;
 
                     // Start LoginActivity activity
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);

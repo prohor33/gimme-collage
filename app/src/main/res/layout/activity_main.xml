@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
         android:layout_weight="0"
-        android:layout_gravity="bottom">
+        android:layout_gravity="top">
 
         <LinearLayout
             android:id="@+id/layoutTemplates"
@@ -31,5 +31,52 @@
             android:weightSum="1">
         </LinearLayout>
     </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="98dp"
+        android:layout_gravity="bottom">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="right">
+
+            <com.faizmalkani.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabbutton0"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
+                android:drawable="@drawable/ic_no_photo"
+                android:color="#ff5278b2"
+                android:visibility="invisible" />
+
+            <com.faizmalkani.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabbutton1"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
+                android:drawable="@drawable/ic_no_photo"
+                android:color="#ff5278b2"
+                android:visibility="invisible" />
+
+            <com.faizmalkani.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabbutton"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
+                android:drawable="@drawable/ic_no_photo"
+                android:color="#ff5278b2"
+                />
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>
