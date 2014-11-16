@@ -1,5 +1,6 @@
 package crystal.games.gimmecollage.collagemaker;
 
+import android.graphics.Point;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -66,11 +67,8 @@ public class CollageMaker {
     public void putCollageSize(int collage_size) {
         this.m_iCollageSize = collage_size;
     }
-    public void putCollagePaddingX(int collage_padding) {
-        this.m_iCollagePaddingX = collage_padding;
-    }
-    public void putCollagePaddingY(int collage_padding) {
-        this.m_iCollagePaddingY = collage_padding;
+    public void putCollagePadding(Point collage_padding) {
+        this.m_pCollagePadding = collage_padding;
     }
 
     public int getMaxImageCount() {
@@ -108,8 +106,8 @@ public class CollageMaker {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
             params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
             params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
-            params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + m_iCollagePaddingX;
-            params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_iCollagePaddingY;
+            params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + m_pCollagePadding.x;
+            params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_pCollagePadding.y;
             iv.setLayoutParams(params);
         }
     }
@@ -149,8 +147,7 @@ public class CollageMaker {
     private Map<CollageType, CollageConfig> m_mCollages;
     private RelativeLayout m_rlCollage = null;
     private int m_iCollageSize;
-    private int m_iCollagePaddingX = 10;
-    private int m_iCollagePaddingY = 10;
+    private Point m_pCollagePadding = new Point(10, 10);
 
     private static CollageMaker m_pInstance;
     private CollageMaker() {
@@ -186,8 +183,8 @@ public class CollageMaker {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)iv.getLayoutParams();
             final int new_h = (int) (m_iCollageSize * pPhotoPos.getSize());
             final int new_w = (int) (m_iCollageSize * pPhotoPos.getSize());
-            final int new_left = (int) (m_iCollageSize * pPhotoPos.getX()) + m_iCollagePaddingX;
-            final int new_top = (int) (m_iCollageSize * pPhotoPos.getY()) + m_iCollagePaddingY;
+            final int new_left = (int) (m_iCollageSize * pPhotoPos.getX()) + m_pCollagePadding.x;
+            final int new_top = (int) (m_iCollageSize * pPhotoPos.getY()) + m_pCollagePadding.y;
 //            Log.v(TAG, "RunAnimImageViews()");
             float coef_w = (float)new_w / params.width;
             float coef_h = (float)new_h / params.height;

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -97,27 +98,7 @@ public class MainActivity extends ActionBarActivity {
         AddCollageLayout();
         CollageMaker.getInstance().InitImageViews();
 
-        FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton0);
-        mFab0.setColor(getResources().getColor(R.color.purple));    // maroon
-        mFab0.setDrawable(getResources().getDrawable(R.drawable.ic_content_discard));
-        mFab0.hide(true);
-        FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton1);
-        mFab1.setColor(getResources().getColor(R.color.android_green));
-        mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_navigation_accept));
-        mFab1.hide(true);
-
-        final FloatingActionButton mFab = (FloatingActionButton)findViewById(R.id.fabbutton);
-        mFab.setColor(getResources().getColor(R.color.action_btn_clr));
-        mFab.setDrawable(getResources().getDrawable(R.drawable.ic_action_plus));
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton0);
-                mFab0.hide(!mFab0.getHidden());
-                FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton1);
-                mFab1.hide(!mFab1.getHidden());
-            }
-        });
+        AddFloatingActionButton();
 
         //LoadImagesAndUniteToOne();
     }
@@ -399,8 +380,7 @@ public class MainActivity extends ActionBarActivity {
         final int collage_padding = 45;
         int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
-        CollageMaker.getInstance().putCollagePaddingX(collage_padding);
-        CollageMaker.getInstance().putCollagePaddingY(collage_padding / 2);
+        CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, collage_padding / 2));
         Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
@@ -456,5 +436,32 @@ public class MainActivity extends ActionBarActivity {
         for (ImageData image : m_lImages) {
             new DownloadImageTask(index++).execute(image.m_strUrl);
         }
+    }
+
+    private void AddFloatingActionButton() {
+        final FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton);
+        mFab0.setColor(getResources().getColor(R.color.android_green));
+        mFab0.setDrawable(getResources().getDrawable(R.drawable.ic_navigation_accept));
+        mFab0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FloatingActionButton mFab0 = (FloatingActionButton) findViewById(R.id.fabbutton0);
+                mFab0.hide(!mFab0.getHidden());
+                FloatingActionButton mFab1 = (FloatingActionButton) findViewById(R.id.fabbutton1);
+                mFab1.hide(!mFab1.getHidden());
+            }
+        });
+
+        FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton0);
+        mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
+        mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_social_add_person));
+        mFab1.hide(true);
+        mFab1.setHiddenPosX(mFab0.getLeft());
+        FloatingActionButton mFab2 = (FloatingActionButton)findViewById(R.id.fabbutton1);
+        mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
+        mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
+        mFab2.hide(true);
+        mFab2.setHiddenPosX(mFab0.getLeft());
+        Log.v(TAG, "mFab0.getLeft() = " + mFab0.getLeft());
     }
 }

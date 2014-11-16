@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +27,7 @@ import crystal.games.gimmecollage.app.R;
 
 public class FloatingActionButton extends View {
 
+    private static final String TAG = "FloatingActionButton";
     private final Interpolator mInterpolator = new AccelerateDecelerateInterpolator();
     private final Paint mButtonPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mDrawablePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -35,11 +37,11 @@ public class FloatingActionButton extends View {
     /**
      * The FAB button's Y position when it is displayed.
      */
-    private float mYDisplayed = -1;
+    private float mXDisplayed = -1;
     /**
      * The FAB button's Y position when it is hidden.
      */
-    private float mYHidden = -1;
+    private float mXHidden = -1;
 
     public FloatingActionButton(Context context) {
         this(context, null);
@@ -78,8 +80,8 @@ public class FloatingActionButton extends View {
         Point size = new Point();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             display.getSize(size);
-            mYHidden = size.y;
-        } else mYHidden = display.getHeight();
+            mXHidden = size.x;
+        } else mXHidden = display.getWidth();
     }
 
     public static int darkenColor(int color) {
@@ -115,9 +117,9 @@ public class FloatingActionButton extends View {
         super.onLayout(changed, left, top, right, bottom);
 
         // Store the FAB button's displayed Y position if we are not already aware of it
-        if (mYDisplayed == -1) {
+        if (mXDisplayed == -1) {
 
-            mYDisplayed = ViewHelper.getY(this);
+            mXDisplayed = ViewHelper.getY(this);
         }
     }
 
@@ -135,14 +137,22 @@ public class FloatingActionButton extends View {
     }
 
     public void hide(boolean hide) {
+        if (!mHidden) {
+            // save current pos
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                mXDisplayed = this.getX();
+            else
+                mXDisplayed = this.getLeft();
+        }
+
         // If the hidden state is being updated
         if (mHidden != hide) {
 
             // Store the new hidden state
             mHidden = hide;
 
-            // Animate the FAB to it's new Y position
-            ObjectAnimator animator = ObjectAnimator.ofFloat(this, "y", mHidden ? mYHidden : mYDisplayed).setDuration(500);
+            // Animate the FAB to it's new X position
+            ObjectAnimator animator = ObjectAnimator.ofFloat(this, "x", mHidden ? mXHidden : mXDisplayed).setDuration(500);
             animator.setInterpolator(mInterpolator);
             animator.start();
         }
@@ -152,6 +162,10 @@ public class FloatingActionButton extends View {
         if (null != listView) {
             listView.setOnScrollListener(new DirectionScrollListener(this));
         }
+    }
+
+    public void setHiddenPosX(float hidden_p_x) {
+        mXHidden = hidden_p_x;
     }
 
     public boolean getHidden() {
