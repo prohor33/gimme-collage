@@ -1,4 +1,4 @@
-package com.faizmalkani.floatingactionbutton;
+package crystal.games.gimmecollage.floating_action_btn;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -21,6 +21,8 @@ import android.widget.AbsListView;
 
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
+
+import crystal.games.gimmecollage.app.R;
 
 public class FloatingActionButton extends View {
 

@@ -19,9 +19,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:21.0.0'
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile 'com.squareup.picasso:picasso:2.3.4'
-    compile project(':FloatingActionButton')
+    compile 'com.nineoldandroids:library:2.4.0' // floating action button
 }

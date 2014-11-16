@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.faizmalkani.floatingactionbutton.FloatingActionButton;
+import crystal.games.gimmecollage.floating_action_btn.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;

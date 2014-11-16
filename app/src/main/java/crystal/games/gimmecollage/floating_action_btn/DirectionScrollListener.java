@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.faizmalkani.floatingactionbutton;
+package crystal.games.gimmecollage.floating_action_btn;
 
 import android.view.View;
 import android.widget.AbsListView;

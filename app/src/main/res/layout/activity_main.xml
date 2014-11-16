@@ -43,7 +43,7 @@
             android:layout_height="fill_parent"
             android:gravity="right">
 
-            <com.faizmalkani.floatingactionbutton.FloatingActionButton
+            <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton0"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
@@ -54,7 +54,7 @@
                 android:color="#ff5278b2"
                 android:visibility="invisible" />
 
-            <com.faizmalkani.floatingactionbutton.FloatingActionButton
+            <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton1"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
@@ -65,7 +65,7 @@
                 android:color="#ff5278b2"
                 android:visibility="invisible" />
 
-            <com.faizmalkani.floatingactionbutton.FloatingActionButton
+            <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
