@@ -1,7 +1,9 @@
 package crystal.games.gimmecollage.app;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -403,9 +406,11 @@ public class MainActivity extends ActionBarActivity {
                     ImageView iv = (ImageView)v;
 //                    int index = iv.getId() - m_iCollageImageViewsID;
 
-                    // Start LoginActivity activity
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
+//                    // Start LoginActivity activity
+//                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//                    startActivity(intent);
+
+                    ShowImageSourceDialog();
                 }
             });
 
@@ -460,5 +465,56 @@ public class MainActivity extends ActionBarActivity {
         mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
         mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
         mFab2.setParrentFAB(mFab0);
+    }
+
+    private void ShowImageSourceDialog() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(
+                MainActivity.this);
+        builderSingle.setIcon(R.drawable.ic_launcher);
+        builderSingle.setTitle("Select Image Source:");
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                MainActivity.this,
+                android.R.layout.select_dialog_singlechoice);
+        arrayAdapter.add("Instagram");
+        arrayAdapter.add("Gallery");
+        builderSingle.setNegativeButton("cancel",
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderSingle.setAdapter(arrayAdapter,
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String strName = arrayAdapter.getItem(which);
+
+                        if (strName == "Instagram") {
+                            Intent intent = new Intent(MainActivity.this, FriendPicker.class);
+                            startActivity(intent);
+                        } else {
+                            AlertDialog.Builder builderInner = new AlertDialog.Builder(
+                                    MainActivity.this);
+                            builderInner.setTitle("Sorry");
+                            builderInner.setMessage("Not implemented yet");
+                            builderInner.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener() {
+
+                                        @Override
+                                        public void onClick(
+                                                DialogInterface dialog,
+                                                int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            builderInner.show();
+                        }
+                    }
+                });
+        builderSingle.show();
     }
 }
