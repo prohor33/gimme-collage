@@ -11,15 +11,17 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsListView;
+import android.widget.LinearLayout;
 
+import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -34,14 +36,16 @@ public class FloatingActionButton extends View {
     private Bitmap mBitmap;
     private int mColor;
     private boolean mHidden = false;
+    private boolean mUnderTheParent = false;
     /**
-     * The FAB button's Y position when it is displayed.
+     * The FAB button's X position when it is displayed.
      */
     private float mXDisplayed = -1;
     /**
-     * The FAB button's Y position when it is hidden.
+     * The FAB button's X position when it is hidden.
      */
     private float mXHidden = -1;
+    private FloatingActionButton mParentFAB = null;
 
     public FloatingActionButton(Context context) {
         this(context, null);
@@ -81,7 +85,9 @@ public class FloatingActionButton extends View {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             display.getSize(size);
             mXHidden = size.x;
-        } else mXHidden = display.getWidth();
+        } else {
+            mXHidden = display.getWidth();
+        }
     }
 
     public static int darkenColor(int color) {
@@ -104,6 +110,8 @@ public class FloatingActionButton extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (mUnderTheParent)
+            return;
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, (float) (getWidth() / 2.6), mButtonPaint);
         if (null != mBitmap) {
             canvas.drawBitmap(mBitmap, (getWidth() - mBitmap.getWidth()) / 2,
@@ -116,10 +124,19 @@ public class FloatingActionButton extends View {
         // Perform the default behavior
         super.onLayout(changed, left, top, right, bottom);
 
-        // Store the FAB button's displayed Y position if we are not already aware of it
+        // Store the FAB button's displayed X position if we are not already aware of it
         if (mXDisplayed == -1) {
+            mXDisplayed = ViewHelper.getX(this);
+        }
+        if (mParentFAB != null) {
+            // TODO: do not use animation for this
+            mXHidden = mParentFAB.getLeft();
+            ObjectAnimator animator = ObjectAnimator.ofFloat(this, "x", mXHidden).setDuration(0);
+            animator.setInterpolator(mInterpolator);
+            animator.start();
 
-            mXDisplayed = ViewHelper.getY(this);
+            mHidden = true;
+            mUnderTheParent = true;
         }
     }
 
@@ -137,13 +154,6 @@ public class FloatingActionButton extends View {
     }
 
     public void hide(boolean hide) {
-        if (!mHidden) {
-            // save current pos
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                mXDisplayed = this.getX();
-            else
-                mXDisplayed = this.getLeft();
-        }
 
         // If the hidden state is being updated
         if (mHidden != hide) {
@@ -154,6 +164,24 @@ public class FloatingActionButton extends View {
             // Animate the FAB to it's new X position
             ObjectAnimator animator = ObjectAnimator.ofFloat(this, "x", mHidden ? mXHidden : mXDisplayed).setDuration(500);
             animator.setInterpolator(mInterpolator);
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    if (!mHidden)
+                        mUnderTheParent = false;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (mHidden)
+                        mUnderTheParent = true;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {}
+                @Override
+                public void onAnimationRepeat(Animator animation) {}
+            });
             animator.start();
         }
     }
@@ -164,8 +192,8 @@ public class FloatingActionButton extends View {
         }
     }
 
-    public void setHiddenPosX(float hidden_p_x) {
-        mXHidden = hidden_p_x;
+    public void setParrentFAB(FloatingActionButton parent_fab) {
+        mParentFAB = parent_fab;
     }
 
     public boolean getHidden() {

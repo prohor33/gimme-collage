@@ -445,23 +445,20 @@ public class MainActivity extends ActionBarActivity {
         mFab0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FloatingActionButton mFab0 = (FloatingActionButton) findViewById(R.id.fabbutton0);
-                mFab0.hide(!mFab0.getHidden());
-                FloatingActionButton mFab1 = (FloatingActionButton) findViewById(R.id.fabbutton1);
+                FloatingActionButton mFab1 = (FloatingActionButton) findViewById(R.id.fabbutton0);
                 mFab1.hide(!mFab1.getHidden());
+                FloatingActionButton mFab2 = (FloatingActionButton) findViewById(R.id.fabbutton1);
+                mFab2.hide(!mFab2.getHidden());
             }
         });
 
         FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton0);
         mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
         mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_social_add_person));
-        mFab1.hide(true);
-        mFab1.setHiddenPosX(mFab0.getLeft());
+        mFab1.setParrentFAB(mFab0);
         FloatingActionButton mFab2 = (FloatingActionButton)findViewById(R.id.fabbutton1);
         mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
         mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
-        mFab2.hide(true);
-        mFab2.setHiddenPosX(mFab0.getLeft());
-        Log.v(TAG, "mFab0.getLeft() = " + mFab0.getLeft());
+        mFab2.setParrentFAB(mFab0);
     }
 }
