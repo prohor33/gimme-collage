@@ -82,6 +82,7 @@ public class InstagramAPI {
 
     public static void resetAuthentication() {
         mSingleton.mStorage.resetAccessToken();
+        mSingleton.mStorage.selfFollows.clear();
     }
 
     // Methods for getting data.
@@ -95,6 +96,10 @@ public class InstagramAPI {
 
     public static ArrayList<Storage.ImageInfo> getImages() {
         return mSingleton.mStorage.imageInfos;
+    }
+
+    public static void updateFollows() {
+        mSingleton.updateFollowsImpl();
     }
 
     // Public methods.
@@ -136,7 +141,7 @@ public class InstagramAPI {
         }.start();
     }
 
-    public void updateFollows() {
+    public void updateFollowsImpl() {
         Log.d(TAG, "Updating self follows list ...");
         new Thread() {
             @Override
@@ -177,7 +182,7 @@ public class InstagramAPI {
         public void handleMessage(Message msg) {
             Listener listener = (Listener) msg.obj;
             if (msg.what == WHAT_ERROR) {
-                listener.onFail("Error (TODO: SPECIFY)");
+                listener.onFail("InstagramAPI error: " + msg.toString());
             } else {
                 listener.onSuccess();
             }

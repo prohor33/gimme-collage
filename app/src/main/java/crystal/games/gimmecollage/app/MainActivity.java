@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import crystal.games.gimmecollage.floating_action_btn.FloatingActionButton;
 import com.squareup.picasso.Picasso;
@@ -461,6 +462,16 @@ public class MainActivity extends ActionBarActivity {
         mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
         mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_social_add_person));
         mFab1.setParrentFAB(mFab0);
+        mFab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // for debug
+                InstagramAPI.resetAuthentication();
+                Toast.makeText(MainActivity.this, "Authentication has been reset",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+
         FloatingActionButton mFab2 = (FloatingActionButton)findViewById(R.id.fabbutton1);
         mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
         mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
@@ -471,7 +482,7 @@ public class MainActivity extends ActionBarActivity {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(
                 MainActivity.this);
         builderSingle.setIcon(R.drawable.ic_launcher);
-        builderSingle.setTitle("Select Image Source:");
+        builderSingle.setTitle("Select Image Source");
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 MainActivity.this,
                 android.R.layout.select_dialog_singlechoice);

@@ -1,5 +1,6 @@
 package crystal.games.gimmecollage.app;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import crystal.games.gimmecollage.instagram_api.InstagramAPI;
@@ -33,6 +35,10 @@ import com.squareup.picasso.Picasso;
 public class FriendPicker extends ActionBarActivity {
 
     private static final String DEBUG_TAG = "FriendPicker";
+    private static final int INSTAGRAM_AUTH_REQUEST = 1;
+
+    private FriendPickerAdapter friendPickerAdapter = null;
+    private ProgressDialog progressFollowsLoad = null;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,10 +50,16 @@ public class FriendPicker extends ActionBarActivity {
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
-        // getting self follows...
-        mUserInfos = InstagramAPI.getFollows();
+        Log.v(DEBUG_TAG, "isAuthenticated() = " + InstagramAPI.isAuthenticated());
+        if (InstagramAPI.isAuthenticated()) {
+            LoadSelfFollows();
+        } else {
+            Intent intent = new Intent(FriendPicker.this, AuthenticationActivity.class);
+            startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
+        }
 
-        friendGridView.setAdapter(new FriendPickerAdapter(this));
+        friendPickerAdapter = new FriendPickerAdapter(this);
+        friendGridView.setAdapter(friendPickerAdapter);
 
         friendGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -55,6 +67,18 @@ public class FriendPicker extends ActionBarActivity {
                 // Toast.makeText(FriendPicker.this, "" + position, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (data == null) {
+//            Log.v(DEBUG_TAG, "data == 0");
+//            return;
+//        }
+        if (InstagramAPI.isAuthenticated())
+            LoadSelfFollows();
+        else
+            Log.v(DEBUG_TAG, "error in onActivityResult(): no auth");
     }
 
     public class FriendPickerAdapter extends BaseAdapter {
@@ -100,7 +124,22 @@ public class FriendPicker extends ActionBarActivity {
 
     }
 
-    private List<Storage.UserInfo> mUserInfos;
+    private List<Storage.UserInfo> mUserInfos = new ArrayList<Storage.UserInfo>(0);
+
+    private  void LoadSelfFollows() {
+        mUserInfos = InstagramAPI.getFollows();
+        if (mUserInfos.size() != 0) {
+            Log.v(DEBUG_TAG, "Already have " + mUserInfos.size() + " follows");
+            return;
+        }
+
+        Log.v(DEBUG_TAG, "No follows, try to load...");
+        progressFollowsLoad = new ProgressDialog(this);
+        progressFollowsLoad.setTitle("Loading");
+        progressFollowsLoad.setMessage("Please, wait...");
+        progressFollowsLoad.show();
+        InstagramAPI.with(follows_load_listener).updateFollows();
+    }
 
     private void pickFriend(int pos) {
         if (pos < 0 || pos >= mUserInfos.size()) {
@@ -126,6 +165,24 @@ public class FriendPicker extends ActionBarActivity {
         @Override
         public void onFail(String error) {
             Log.v(DEBUG_TAG, "Failed to load friend media list");
+            Toast.makeText(FriendPicker.this, error, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    InstagramAPI.Listener follows_load_listener = new InstagramAPI.Listener() {
+
+        @Override
+        public void onSuccess() {
+            if (progressFollowsLoad != null)
+                progressFollowsLoad.dismiss();
+            if (friendPickerAdapter != null)
+                friendPickerAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onFail(String error) {
+            if (progressFollowsLoad != null)
+                progressFollowsLoad.dismiss();
             Toast.makeText(FriendPicker.this, error, Toast.LENGTH_SHORT).show();
         }
     };
