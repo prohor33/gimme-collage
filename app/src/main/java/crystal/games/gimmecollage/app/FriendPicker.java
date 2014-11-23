@@ -121,6 +121,7 @@ public class FriendPicker extends ActionBarActivity {
     }
 
     private List<Storage.UserInfo> mUserInfos = new ArrayList<Storage.UserInfo>(0);
+    private int mSelectedFriendID = -1;
 
     private  void loadSelfFollows() {
         mUserInfos = InstagramAPI.getFollows();
@@ -149,6 +150,7 @@ public class FriendPicker extends ActionBarActivity {
         loadingProgress.setMessage("Please, wait...");
         loadingProgress.show();
         InstagramAPI.with(images_list_load_listener).updateImages(mUserInfos.get(pos).id);
+        mSelectedFriendID = Integer.parseInt(mUserInfos.get(pos).id);
     }
 
     InstagramAPI.Listener images_list_load_listener = new InstagramAPI.Listener() {
@@ -159,6 +161,14 @@ public class FriendPicker extends ActionBarActivity {
                 loadingProgress.dismiss();
             Log.v(DEBUG_TAG, "Friend media list successfully loaded!");
             Log.v(DEBUG_TAG, "have images: " + InstagramAPI.getImages().size());
+
+            Intent data = new Intent();
+            data.putExtra("intSelectedFriendID", mSelectedFriendID);
+            if (getParent() == null) {
+                setResult(FriendPicker.RESULT_OK, data);
+            } else {
+                getParent().setResult(FriendPicker.RESULT_OK, data);
+            }
             FriendPicker.this.finish();
             Log.v(DEBUG_TAG, "finish activity");
         }

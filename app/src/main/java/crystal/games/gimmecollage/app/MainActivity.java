@@ -93,12 +93,18 @@ public class MainActivity extends ActionBarActivity {
         //LoadImagesAndUniteToOne();
     }
 
+    private int mInstagramSelctedFriendID = -1;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case INSTAGRAM_FRIEND_REQUEST:
-                SortImages();
-                ReloadCollageImages();
+                if (data != null) {
+                    int friendID = data.getIntExtra("intSelectedFriendID", 0);
+                    if (friendID != mInstagramSelctedFriendID) {
+                        SortImages();
+                        ReloadCollageImages();
+                    }
+                }
                 break;
             default:
         }
