@@ -10,10 +10,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import crystal.games.gimmecollage.app.MainActivity;
+import crystal.games.gimmecollage.app.R;
 
 /**
  * Created by prohor on 04/10/14.

@@ -48,8 +48,9 @@ import crystal.games.gimmecollage.instagram_api.Storage;
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int INSTAGRAM_FRIEND_REQUEST = 1;
 
-    private class ImageData {
+    public class ImageData {
         ImageData(String url, int like_count) {
             m_strUrl = url;
             m_iLikeCount = like_count;
@@ -70,10 +71,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialization of InstagramAPI...!
-        InstagramAPI.init(this, ApplicationData.CLIENT_ID, ApplicationData.CLIENT_SECRET,
-                ApplicationData.CALLBACK_URL);
-//        InstagramAPI.resetAuthentication();
+        if (!InstagramAPI.initialized()) {
+            InstagramAPI.init(this, ApplicationData.CLIENT_ID, ApplicationData.CLIENT_SECRET,
+                    ApplicationData.CALLBACK_URL);
+        }
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -82,22 +83,7 @@ public class MainActivity extends ActionBarActivity {
 
         AddCollageTypeSelectorLayout();
 
-        List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
-        m_lImages.clear();
-        for (int i = 0; i < imagesInfo.size(); i++) {
-            m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
-                    imagesInfo.get(i).likes_count));
-        }
-
-        class ImageComparator implements Comparator<ImageData> {
-            @Override
-            public int compare(ImageData o1, ImageData o2) {
-                return o2.m_iLikeCount - o1.m_iLikeCount;
-            }
-        }
-
-        // Let's sort images by likes count
-        Collections.sort(m_lImages, new ImageComparator());
+        SortImages();
 
         AddCollageLayout();
         CollageMaker.getInstance().InitImageViews();
@@ -107,6 +93,16 @@ public class MainActivity extends ActionBarActivity {
         //LoadImagesAndUniteToOne();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case INSTAGRAM_FRIEND_REQUEST:
+                SortImages();
+                ReloadCollageImages();
+                break;
+            default:
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -407,15 +403,24 @@ public class MainActivity extends ActionBarActivity {
                     ImageView iv = (ImageView)v;
 //                    int index = iv.getId() - m_iCollageImageViewsID;
 
-//                    // Start LoginActivity activity
-//                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//                    startActivity(intent);
-
                     ShowImageSourceDialog();
                 }
             });
 
             rlCollage.addView(ivImage);
+        }
+    }
+
+    private void ReloadCollageImages() {
+        Log.v(TAG, "ReloadCollageImages() m_lImages.size() = " + m_lImages.size());
+        final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
+        for (int i = 0; i < rlCollage.getChildCount(); i++) {
+            final ImageView iv = (ImageView) rlCollage.getChildAt(i);
+            if (i < m_lImages.size()) {
+                Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(iv);
+            } else {
+                iv.setImageResource(R.drawable.ic_plus_image);
+            }
         }
     }
 
@@ -486,8 +491,10 @@ public class MainActivity extends ActionBarActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 MainActivity.this,
                 android.R.layout.select_dialog_singlechoice);
-        arrayAdapter.add("Instagram");
-        arrayAdapter.add("Gallery");
+        final String strInstagram = "Instagram";
+        final String strGallery = "Gallery";
+        arrayAdapter.add(strInstagram);
+        arrayAdapter.add(strGallery);
         builderSingle.setNegativeButton("cancel",
                 new DialogInterface.OnClickListener() {
 
@@ -504,9 +511,9 @@ public class MainActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
 
-                        if (strName == "Instagram") {
+                        if (strName == strInstagram) {
                             Intent intent = new Intent(MainActivity.this, FriendPicker.class);
-                            startActivity(intent);
+                            startActivityForResult(intent, INSTAGRAM_FRIEND_REQUEST);
                         } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(
                                     MainActivity.this);
@@ -527,5 +534,25 @@ public class MainActivity extends ActionBarActivity {
                     }
                 });
         builderSingle.show();
+    }
+
+    private void SortImages() {
+        List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
+        Log.v(TAG, "have " + imagesInfo.size() + " images");
+        m_lImages.clear();
+        for (int i = 0; i < imagesInfo.size(); i++) {
+            m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
+                    imagesInfo.get(i).likes_count));
+        }
+
+        class ImageComparator implements Comparator<ImageData> {
+            @Override
+            public int compare(ImageData o1, ImageData o2) {
+                return o2.m_iLikeCount - o1.m_iLikeCount;
+            }
+        }
+
+        // Let's sort images by likes count
+        Collections.sort(m_lImages, new ImageComparator());
     }
 }
