@@ -18,16 +18,20 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import crystal.games.gimmecollage.floating_action_btn.FloatingActionButton;
+
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -392,11 +396,25 @@ public class MainActivity extends ActionBarActivity {
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
         CollageMaker.getInstance().putCollageLayout(rlCollage);
         for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
-            ImageView ivImage = new ImageView(MainActivity.this);
-            ivImage.setId(m_iCollageImageViewsID + i);
+            RelativeLayout rl = (RelativeLayout)getLayoutInflater().
+                    inflate(R.layout.layout_collage_image, rlCollage, false);
+            ImageView ivImage = (ImageView)rl.findViewById(R.id.imageView);
+            final ProgressBar progressBar = (ProgressBar)rl.findViewById(R.id.progressBar);
 
             if (i < m_lImages.size()) {
-                Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(ivImage);
+                Picasso.with(MainActivity.this)
+                       .load(m_lImages.get(i).m_strUrl)
+                       .into(ivImage, new Callback() {
+                           @Override
+                           public void onSuccess() {
+                               progressBar.setVisibility(View.GONE);
+                           }
+
+                           @Override
+                           public void onError() {
+                               progressBar.setVisibility(View.GONE);
+                           }
+                       });
             } else {
                 ivImage.setImageResource(R.drawable.ic_plus_image);
             }
@@ -413,7 +431,7 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
 
-            rlCollage.addView(ivImage);
+            rlCollage.addView(rl);
         }
     }
 
@@ -421,11 +439,27 @@ public class MainActivity extends ActionBarActivity {
         Log.v(TAG, "ReloadCollageImages() m_lImages.size() = " + m_lImages.size());
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
         for (int i = 0; i < rlCollage.getChildCount(); i++) {
-            final ImageView iv = (ImageView) rlCollage.getChildAt(i);
+            RelativeLayout rl = (RelativeLayout) rlCollage.getChildAt(i);
+            final ImageView iv = (ImageView) rl.getChildAt(0);
+            final View pb = rl.getChildAt(1);
             if (i < m_lImages.size()) {
-                Picasso.with(MainActivity.this).load(m_lImages.get(i).m_strUrl).into(iv);
+                pb.setVisibility(View.VISIBLE);
+                Picasso.with(MainActivity.this)
+                        .load(m_lImages.get(i).m_strUrl)
+                        .into(iv, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                pb.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onError() {
+                                pb.setVisibility(View.GONE);
+                            }
+                        });
             } else {
                 iv.setImageResource(R.drawable.ic_plus_image);
+                pb.setVisibility(View.GONE);
             }
         }
     }

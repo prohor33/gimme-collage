@@ -2,6 +2,7 @@ package crystal.games.gimmecollage.collagemaker;
 
 import android.graphics.Point;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
@@ -104,15 +105,15 @@ public class CollageMaker {
         Log.v(TAG, "getCollageConf().getPhotoCount() = " + getCollageConf().getPhotoCount());
         for (int i = 0; i < m_rlCollage.getChildCount() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            final ImageView iv = (ImageView) m_rlCollage.getChildAt(i);
+            final View v = m_rlCollage.getChildAt(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
             params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
             params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
             params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + m_pCollagePadding.x;
             params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_pCollagePadding.y;
-            iv.setLayoutParams(params);
+            v.setLayoutParams(params);
         }
     }
 
@@ -168,12 +169,12 @@ public class CollageMaker {
 
     private void PrepareImages() {
         for (int i = 0; i < m_rlCollage.getChildCount(); i++) {
-            ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
+            View iv = m_rlCollage.getChildAt(i);
 
             if (i < getCollageConf().getPhotoCount()) {
-                iv.setVisibility(ImageView.VISIBLE);
+                iv.setVisibility(View.VISIBLE);
             } else {
-                iv.setVisibility(ImageView.GONE);
+                iv.setVisibility(View.GONE);
             }
         }
     }
@@ -181,7 +182,7 @@ public class CollageMaker {
     private void RunAnimImageViews() {
         for (int i = 0; i < m_rlCollage.getChildCount() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            final ImageView iv = (ImageView)m_rlCollage.getChildAt(i);
+            final View iv = m_rlCollage.getChildAt(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)iv.getLayoutParams();
