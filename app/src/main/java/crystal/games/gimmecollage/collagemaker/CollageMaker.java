@@ -1,6 +1,9 @@
 package crystal.games.gimmecollage.collagemaker;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -146,6 +149,32 @@ public class CollageMaker {
         Test2,
         Test3
     };
+
+    public Bitmap GenerateCollageImage() {
+        Bitmap collageImage = Bitmap.createBitmap(m_iCollageSize,
+                m_iCollageSize, Bitmap.Config.RGB_565);
+        Canvas comboCanvas = new Canvas(collageImage);
+
+        for (int i = 0; i < m_rlCollage.getChildCount() &&
+                i < getCollageConf().getPhotoCount(); i++) {
+            RelativeLayout rl = (RelativeLayout)m_rlCollage.getChildAt(i);
+            ImageView iv = (ImageView)rl.getChildAt(0);
+            PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
+
+            BitmapDrawable bitmapDrawable = ((BitmapDrawable) iv.getDrawable());
+            if (bitmapDrawable == null)
+                continue;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            int size = (int)(m_iCollageSize * photoPos.getSize());
+            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, false),
+                    m_iCollageSize * photoPos.getX(),
+                    m_iCollageSize * photoPos.getY(), null);
+        }
+
+        Log.v(TAG, "Collage is successfully generated!");
+
+        return collageImage;
+    }
 
 
     private CollageType m_eType = CollageType.Grid;

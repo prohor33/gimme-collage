@@ -53,6 +53,7 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
     private static final int INSTAGRAM_FRIEND_REQUEST = 1;
+    private ProgressDialog m_dialogProgress = null;
 
     public class ImageData {
         ImageData(String url, int like_count) {
@@ -66,7 +67,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
-    private Bitmap m_imgCollage = null;
     private final int m_iTemplateImageViewsID = 100;
     private final int m_iCollageImageViewsID = 200;
 
@@ -83,8 +83,6 @@ public class MainActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        m_imgCollage = null;
-
         AddCollageTypeSelectorLayout();
 
         SortImages();
@@ -93,8 +91,6 @@ public class MainActivity extends ActionBarActivity {
         CollageMaker.getInstance().InitImageViews();
 
         AddFloatingActionButton();
-
-        //LoadImagesAndUniteToOne();
     }
 
     private int mInstagramSelctedFriendID = -1;
@@ -136,119 +132,24 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        int m_iImageIndex;
-
-        public DownloadImageTask(int image_index) {
-            this.m_iImageIndex = image_index;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.v(TAG, "Error: " + e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            Log.v(TAG, "Image number " + m_iImageIndex + " successfully loaded");
-            onImageLoad(m_iImageIndex, result);
-        }
-    }
-
-    private void onImageLoad(int index, Bitmap image) {
-        m_lImages.get(index).m_bmpImage = image;
-
-        // Check if all images are loaded
-        int images_loaded = 0;
-        for (ImageData img : m_lImages) {
-            images_loaded += img.m_bmpImage != null ? 1 : 0;
-        }
-        if (images_loaded == m_lImages.size()) {
-            Log.v(TAG, "All images are successfully loaded!");
-            UniteImagesToOne();
-        }
-    }
-
-    private void UniteImagesToOne() {
-        // for now support only standard resolution
-        // TODO: support multiple resolutions
-        int img_size_x = 612;
-        int img_size_y = 612;
-
-        int image_count_x = 0;
-        int image_count_y = 0;
-
-        // Pick collage size
-        int collage_images_count = m_lImages.size();
-        switch (collage_images_count) {
-            case 2:
-                image_count_x = 2;
-                image_count_y = 1;
-                break;
-            case 4:
-                image_count_x = 2;
-                image_count_y = 2;
-                break;
-            case 6:
-                image_count_x = 3;
-                image_count_y = 2;
-                break;
-            case 12:
-                image_count_x = 4;
-                image_count_y = 3;
-                break;
-            case 20:
-                image_count_x = 5;
-                image_count_y = 4;
-                break;
-            default:
-                Log.v(TAG, "Error: wrong collage images count: " + collage_images_count);
-                return;
-        }
-
-        Bitmap collageImage = Bitmap.createBitmap(image_count_x * img_size_x,
-                image_count_y * img_size_y, Bitmap.Config.RGB_565);
-        Canvas comboCanvas = new Canvas(collageImage);
-
-        for (int x = 0; x < image_count_x; x++) {
-            for (int y = 0; y < image_count_y; y++) {
-                comboCanvas.drawBitmap(m_lImages.get(x + y * image_count_x).m_bmpImage,
-                        img_size_x * x, img_size_y * y, null);
-            }
-        }
-
-        Log.v(TAG, "Collage is successfully generated!");
-
-//        ImageView ivCollage = (ImageView)findViewById(R.id.imageView);
-//        ivCollage.setImageBitmap(collageImage);
-        m_imgCollage = collageImage;
-    }
-
     private void ShareCollage() {
-        if (m_imgCollage == null) {
-            Log.v(TAG, "Error: collage isn't ready yet");
-        }
+        if (m_dialogProgress == null)
+            m_dialogProgress = new ProgressDialog(MainActivity.this);
+        m_dialogProgress.setTitle("Just a second");
+        m_dialogProgress.setMessage("Generating collage for you...");
+        m_dialogProgress.setCancelable(false);
+        m_dialogProgress.show();
+
+        Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
         // Save file on disk and open share dialog
-        new SaveFileTask().execute(m_imgCollage);
+        new SaveFileTask().execute(imgCollage);
     }
 
     private class SaveFileTask extends AsyncTask<Bitmap, Void, File> {
 
-        private ProgressDialog m_dialogProgress = new ProgressDialog(MainActivity.this);
-
         protected File doInBackground(Bitmap... bmpImages) {
             Bitmap bmpImage = bmpImages[0];
             Log.v(TAG, "Start to save a file");
-//            m_dialogProgress.setMessage("Saving file on disk...");
-//            m_dialogProgress.setCancelable(false);
-//            m_dialogProgress.show();
 
             String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
             OutputStream outStream = null;
@@ -272,9 +173,9 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(File fileResult) {
-//            if (m_dialogProgress.isShowing()) {
-//                m_dialogProgress.dismiss();
-//            }
+            if (m_dialogProgress != null && m_dialogProgress.isShowing()) {
+                m_dialogProgress.dismiss();
+            }
             if (fileResult == null) {
                 Log.v(TAG, "Error saving file");
             } else {
@@ -292,8 +193,9 @@ public class MainActivity extends ActionBarActivity {
 
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("image/png");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Text");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Little candy");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                "Look! I have nice photo collage here, special for you!\nVia GimmeCollage");
 
         sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileResult));
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
@@ -464,31 +366,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void LoadImagesAndUniteToOne() {
-        int image_count = m_lImages.size();
-        int collage_image_count = 0;
-        ArrayList<Integer> lCollageImageCount = new ArrayList<Integer>(Arrays.asList(2, 4, 6, 12, 20));
-        for (Integer good_image_count : lCollageImageCount) {
-            if (image_count >= good_image_count)
-                collage_image_count = good_image_count;
-        }
-
-        if (collage_image_count == 0) {
-            Log.v(TAG, "Too few images for collage: " + image_count);
-            return;
-        }
-
-        Log.v(TAG, "Pick " + collage_image_count + " images for collage.");
-
-        for (int i = 0; i < (image_count - collage_image_count); i++)
-            m_lImages.remove(m_lImages.size() - 1);
-
-        int index = 0;
-        for (ImageData image : m_lImages) {
-            new DownloadImageTask(index++).execute(image.m_strUrl);
-        }
-    }
-
     private void AddFloatingActionButton() {
         final FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton);
         mFab0.setColor(getResources().getColor(R.color.android_green));
@@ -521,6 +398,12 @@ public class MainActivity extends ActionBarActivity {
         mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
         mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
         mFab2.setParrentFAB(mFab0);
+        mFab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShareCollage();
+            }
+        });
     }
 
     private void ShowImageSourceDialog() {
