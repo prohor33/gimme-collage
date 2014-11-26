@@ -2,6 +2,7 @@ package crystal.games.gimmecollage.collagemaker;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
@@ -151,8 +152,9 @@ public class CollageMaker {
     };
 
     public Bitmap GenerateCollageImage() {
-        Bitmap collageImage = Bitmap.createBitmap(m_iCollageSize,
-                m_iCollageSize, Bitmap.Config.RGB_565);
+        final int target_size = 1024;
+        Bitmap collageImage = Bitmap.createBitmap(target_size,
+                target_size, Bitmap.Config.ARGB_8888);
         Canvas comboCanvas = new Canvas(collageImage);
 
         for (int i = 0; i < m_rlCollage.getChildCount() &&
@@ -165,10 +167,11 @@ public class CollageMaker {
             if (bitmapDrawable == null)
                 continue;
             Bitmap bitmap = bitmapDrawable.getBitmap();
-            int size = (int)(m_iCollageSize * photoPos.getSize());
-            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, false),
-                    m_iCollageSize * photoPos.getX(),
-                    m_iCollageSize * photoPos.getY(), null);
+            int size = (int)(target_size * photoPos.getSize());
+            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, true),
+                    target_size * photoPos.getX(),
+                    target_size * photoPos.getY(),
+                    new Paint(Paint.FILTER_BITMAP_FLAG));
         }
 
         Log.v(TAG, "Collage is successfully generated!");
