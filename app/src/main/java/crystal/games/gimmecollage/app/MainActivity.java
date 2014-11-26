@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -18,7 +17,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,10 +34,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -132,6 +128,21 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public interface FileSaveCallback {
+        void onSuccess(File file_result);
+
+        void onError();
+
+        public static class EmptyFileSaveCallback implements FileSaveCallback {
+
+            @Override public void onSuccess(File file_result) {
+            }
+
+            @Override public void onError() {
+            }
+        }
+    }
+
     private void ShareCollage() {
         if (m_dialogProgress == null)
             m_dialogProgress = new ProgressDialog(MainActivity.this);
@@ -142,10 +153,27 @@ public class MainActivity extends ActionBarActivity {
 
         Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
         // Save file on disk and open share dialog
-        new SaveFileTask().execute(imgCollage);
+        new SaveFileTask().with(new FileSaveCallback() {
+            @Override
+            public void onSuccess(File file_result) {
+                OpenShareDialog(file_result);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        }).execute(imgCollage);
     }
 
     private class SaveFileTask extends AsyncTask<Bitmap, Void, File> {
+
+        FileSaveCallback callback = null;
+
+        public SaveFileTask with(FileSaveCallback cb) {
+            callback = cb;
+            return this;
+        }
 
         protected File doInBackground(Bitmap... bmpImages) {
             Bitmap bmpImage = bmpImages[0];
@@ -178,14 +206,17 @@ public class MainActivity extends ActionBarActivity {
             }
             if (fileResult == null) {
                 Log.v(TAG, "Error saving file");
+                if (callback != null)
+                    callback.onError();
             } else {
                 Log.v(TAG, "File successfully saved");
-                onCollageFileSave(fileResult);
+                if (callback != null)
+                    callback.onSuccess(fileResult);
             }
         }
     }
 
-    private void onCollageFileSave(File fileResult) {
+    private void OpenShareDialog(File fileResult) {
         if (fileResult == null) {
             Log.v(TAG, "Null file pointer");
             return;
@@ -382,15 +413,16 @@ public class MainActivity extends ActionBarActivity {
 
         FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton0);
         mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
-        mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_social_add_person));
+        mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_action_content_save));
         mFab1.setParrentFAB(mFab0);
         mFab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // for debug
-                InstagramAPI.resetAuthentication();
-                Toast.makeText(MainActivity.this, "Authentication has been reset",
-                        Toast.LENGTH_LONG).show();
+//                InstagramAPI.resetAuthentication();
+//                Toast.makeText(MainActivity.this, "Authentication has been reset",
+//                        Toast.LENGTH_LONG).show();
+                SaveOnDiskCollage();
             }
         });
 
@@ -477,5 +509,31 @@ public class MainActivity extends ActionBarActivity {
 
         // Let's sort images by likes count
         Collections.sort(m_lImages, new ImageComparator());
+    }
+
+    private void SaveOnDiskCollage() {
+        if (m_dialogProgress == null)
+            m_dialogProgress = new ProgressDialog(MainActivity.this);
+        m_dialogProgress.setTitle("Just a second");
+        m_dialogProgress.setMessage("Saving collage...");
+        m_dialogProgress.setCancelable(false);
+        m_dialogProgress.show();
+
+        Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
+        // Save file on disk and open share dialog
+        new SaveFileTask().with(new FileSaveCallback() {
+            @Override
+            public void onSuccess(File file_result) {
+                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                extStorageDirectory += "/" + file_result.getName();
+                Toast.makeText(MainActivity.this, "Collage saved to " + extStorageDirectory,
+                        Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        }).execute(imgCollage);
     }
 }
