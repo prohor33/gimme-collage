@@ -137,12 +137,14 @@ public class FloatingActionButton extends View {
             animator.start();
 
             mHidden = true;
-            mUnderTheParent = true;
+            setUnderParent(true);
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!isClickable())
+            return false;
         int color;
         if (event.getAction() == MotionEvent.ACTION_UP) {
             color = mColor;
@@ -169,16 +171,14 @@ public class FloatingActionButton extends View {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     if (!mHidden) {
-                        mUnderTheParent = false;
-                        invalidate();
+                        setUnderParent(false);
                     }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     if (mHidden) {
-                        mUnderTheParent = true;
-                        invalidate();
+                        setUnderParent(true);
                     }
                 }
 
@@ -197,11 +197,17 @@ public class FloatingActionButton extends View {
         }
     }
 
-    public void setParrentFAB(FloatingActionButton parent_fab) {
+    public void setParentFAB(FloatingActionButton parent_fab) {
         mParentFAB = parent_fab;
     }
 
     public boolean getHidden() {
         return mHidden;
+    }
+
+    private void setUnderParent(boolean under_parent) {
+        mUnderTheParent = under_parent;
+        setClickable(!under_parent);
+        invalidate();
     }
 }

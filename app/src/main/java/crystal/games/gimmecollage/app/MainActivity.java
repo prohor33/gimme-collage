@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -235,7 +234,8 @@ public class MainActivity extends ActionBarActivity {
     private void AddCollageTypeSelectorLayout() {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         for (int i = 0; i < CollageMaker.CollageType.values().length; i++) {
-            final int selector_size = 90;
+            final int selector_size = Utils.getScrSizeInPxls(MainActivity.this).y / 8;
+            Log.d("selector_size", "selector_size = " + selector_size);
             CollageTypeSelectorImageView ivSelector =
                     new CollageTypeSelectorImageView(MainActivity.this, null, selector_size, i);
             ivSelector.setId(m_iTemplateImageViewsID + i);
@@ -321,7 +321,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void AddCollageLayout() {
         final int collage_padding = 45;
-        int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
+        int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
         CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, collage_padding / 2));
         Log.v(TAG, "init()");
@@ -414,7 +414,7 @@ public class MainActivity extends ActionBarActivity {
         FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton0);
         mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
         mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_action_content_save));
-        mFab1.setParrentFAB(mFab0);
+        mFab1.setParentFAB(mFab0);
         mFab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -429,7 +429,7 @@ public class MainActivity extends ActionBarActivity {
         FloatingActionButton mFab2 = (FloatingActionButton)findViewById(R.id.fabbutton1);
         mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
         mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
-        mFab2.setParrentFAB(mFab0);
+        mFab2.setParentFAB(mFab0);
         mFab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
