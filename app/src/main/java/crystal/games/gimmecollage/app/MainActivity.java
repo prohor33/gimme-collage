@@ -235,7 +235,6 @@ public class MainActivity extends ActionBarActivity {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         for (int i = 0; i < CollageMaker.CollageType.values().length; i++) {
             final int selector_size = Utils.getScrSizeInPxls(MainActivity.this).y / 8;
-            Log.d("selector_size", "selector_size = " + selector_size);
             CollageTypeSelectorImageView ivSelector =
                     new CollageTypeSelectorImageView(MainActivity.this, null, selector_size, i);
             ivSelector.setId(m_iTemplateImageViewsID + i);
@@ -289,7 +288,7 @@ public class MainActivity extends ActionBarActivity {
             currentPaint.setStyle(Paint.Style.STROKE);
             currentPaint.setStrokeJoin(Paint.Join.ROUND);
             currentPaint.setStrokeCap(Paint.Cap.ROUND);
-            currentPaint.setStrokeWidth(3);
+            currentPaint.setStrokeWidth(Utils.dipToPixels(MainActivity.this, 2.0f));
 
             selectorSize = selector_size;
             selectorIndex = index;
@@ -323,7 +322,7 @@ public class MainActivity extends ActionBarActivity {
         final int collage_padding = 45;
         int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
-        CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, collage_padding / 2));
+        CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, 0));
         Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
