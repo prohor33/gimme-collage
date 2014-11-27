@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +29,10 @@ public class AuthenticationActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-        CookieSyncManager.createInstance(this);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        //CookieSyncManager.createInstance(this);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookie();
 
@@ -37,6 +41,7 @@ public class AuthenticationActivity extends ActionBarActivity {
             @Override
             public void onSuccess() {
                 Toast.makeText(AuthenticationActivity.this, "Success", Toast.LENGTH_LONG).show();
+                AuthenticationActivity.this.setResult(RESULT_OK);
                 AuthenticationActivity.this.finish();
             }
 

@@ -76,8 +76,8 @@ public class MainActivity extends ActionBarActivity {
                     ApplicationData.CALLBACK_URL);
         }
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.setDisplayHomeAsUpEnabled(true);
 
         AddCollageTypeSelectorLayout();
 

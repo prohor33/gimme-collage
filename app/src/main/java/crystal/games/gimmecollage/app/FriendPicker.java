@@ -46,7 +46,6 @@ public class FriendPicker extends ActionBarActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
@@ -71,10 +70,18 @@ public class FriendPicker extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (InstagramAPI.isAuthenticated())
-            loadSelfFollows();
-        else
-            Log.v(DEBUG_TAG, "error in onActivityResult(): no auth");
+        if(requestCode == INSTAGRAM_AUTH_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                if (InstagramAPI.isAuthenticated())
+                    loadSelfFollows();
+                else
+                    Log.v(DEBUG_TAG, "error in onActivityResult(): no auth");
+            } else {
+                // Errors during AuthActivity or Canceled...
+                Log.d(DEBUG_TAG, "AuthActivityResult = " + resultCode);
+                FriendPicker.this.finish();
+            }
+        }
     }
 
     public class FriendPickerAdapter extends BaseAdapter {
@@ -123,7 +130,7 @@ public class FriendPicker extends ActionBarActivity {
     private List<Storage.UserInfo> mUserInfos = new ArrayList<Storage.UserInfo>(0);
     private int mSelectedFriendID = -1;
 
-    private  void loadSelfFollows() {
+    private void loadSelfFollows() {
         mUserInfos = InstagramAPI.getFollows();
         if (mUserInfos.size() != 0) {
             Log.v(DEBUG_TAG, "Already have " + mUserInfos.size() + " follows");
@@ -136,6 +143,11 @@ public class FriendPicker extends ActionBarActivity {
         loadingProgress.setMessage("Please, wait...");
         loadingProgress.show();
         InstagramAPI.with(follows_load_listener).updateFollows();
+    }
+
+    private void clearSelfFollows() {
+        mUserInfos.clear();
+        friendPickerAdapter.notifyDataSetChanged();
     }
 
     private void pickFriend(int pos) {
@@ -207,5 +219,24 @@ public class FriendPicker extends ActionBarActivity {
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         // Configure the search info and add any event listeners
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            // ClearActivityData
+            clearSelfFollows();
+            // Reset Auth infos.
+            InstagramAPI.resetAuthentication();
+            // Change activity to Auth Activity due to prevent from using FriendPickerData
+            Intent intent = new Intent(FriendPicker.this, AuthenticationActivity.class);
+            startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

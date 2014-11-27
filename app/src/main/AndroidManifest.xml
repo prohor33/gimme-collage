@@ -32,7 +32,7 @@
         <activity
             android:name=".FriendPicker"
             android:label="@string/title_activity_friend_picker"
-            android:parentActivityName=".LoginActivity" >
+            android:parentActivityName=".MainActivity" >
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
@@ -42,10 +42,10 @@
         <activity
             android:name=".AuthenticationActivity"
             android:label="@string/title_activity_authentication"
-            android:parentActivityName=".LoginActivity" >
+            android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="crystal.games.gimmecollage.app.LoginActivity" />
+                android:value="crystal.games.gimmecollage.app.MainActivity" />
         </activity>
     </application>
 
