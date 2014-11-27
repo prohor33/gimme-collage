@@ -348,7 +348,7 @@ public class MainActivity extends ActionBarActivity {
                            }
                        });
             } else {
-                ivImage.setImageResource(R.drawable.ic_plus_image);
+                ivImage.setImageResource(R.drawable.ic_add_file_action);
             }
 
             ivImage.setBackgroundResource(R.drawable.collage_image_back);
@@ -390,7 +390,7 @@ public class MainActivity extends ActionBarActivity {
                             }
                         });
             } else {
-                iv.setImageResource(R.drawable.ic_plus_image);
+                iv.setImageResource(R.drawable.ic_add_file_action);
                 pb.setVisibility(View.GONE);
             }
         }

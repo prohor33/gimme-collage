@@ -51,7 +51,6 @@
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="16dp"
                 android:layout_marginRight="16dp"
-                android:drawable="@drawable/ic_no_photo"
                 android:color="#ff5278b2"
                 android:visibility="visible" />
 
@@ -62,7 +61,6 @@
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="16dp"
                 android:layout_marginRight="16dp"
-                android:drawable="@drawable/ic_no_photo"
                 android:color="#ff5278b2"
                 android:visibility="visible" />
 
@@ -73,7 +71,6 @@
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="16dp"
                 android:layout_marginRight="16dp"
-                android:drawable="@drawable/ic_no_photo"
                 android:color="#ff5278b2"
                 />
         </LinearLayout>
