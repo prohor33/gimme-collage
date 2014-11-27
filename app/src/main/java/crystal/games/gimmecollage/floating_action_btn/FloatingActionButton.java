@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -167,14 +168,18 @@ public class FloatingActionButton extends View {
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    if (!mHidden)
+                    if (!mHidden) {
                         mUnderTheParent = false;
+                        invalidate();
+                    }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (mHidden)
+                    if (mHidden) {
                         mUnderTheParent = true;
+                        invalidate();
+                    }
                 }
 
                 @Override

@@ -52,7 +52,7 @@
                 android:layout_marginRight="16dp"
                 android:drawable="@drawable/ic_no_photo"
                 android:color="#ff5278b2"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton1"
@@ -63,7 +63,7 @@
                 android:layout_marginRight="16dp"
                 android:drawable="@drawable/ic_no_photo"
                 android:color="#ff5278b2"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton"
