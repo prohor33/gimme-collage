@@ -5,6 +5,7 @@
     tools:context="crystal.games.gimmecollage.app.MainActivity"
     android:id="@+id/layoutMain"
     android:orientation="vertical"
+    android:background="@drawable/ic_main_background"
     android:baselineAligned="false">
 
     <RelativeLayout
