@@ -108,7 +108,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.image_processor, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -119,9 +119,13 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_share:
+                ShareCollage();
+                break;
+            case R.id.action_save:
+                SaveCollageOnDisk();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -421,7 +425,7 @@ public class MainActivity extends ActionBarActivity {
 //                InstagramAPI.resetAuthentication();
 //                Toast.makeText(MainActivity.this, "Authentication has been reset",
 //                        Toast.LENGTH_LONG).show();
-                SaveOnDiskCollage();
+                SaveCollageOnDisk();
             }
         });
 
@@ -510,7 +514,7 @@ public class MainActivity extends ActionBarActivity {
         Collections.sort(m_lImages, new ImageComparator());
     }
 
-    private void SaveOnDiskCollage() {
+    private void SaveCollageOnDisk() {
         if (m_dialogProgress == null)
             m_dialogProgress = new ProgressDialog(MainActivity.this);
         m_dialogProgress.setTitle("Just a second");

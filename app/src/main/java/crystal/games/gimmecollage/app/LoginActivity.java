@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,14 +18,9 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import crystal.games.gimmecollage.instagram_api.InstagramAPI;
-import crystal.games.gimmecollage.instagram_api.Storage;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -65,7 +59,7 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
 
