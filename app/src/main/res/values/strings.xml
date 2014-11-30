@@ -23,5 +23,9 @@
     <string name="source_instagram_hint_logged">Logged as</string>
     <string name="source_instagram_hint_not_logged">Please sign in with your Instagram account.</string>
 
+    <!--AdMob id-->
+    <string name="admob_banner_id">ca-app-pub-4891843703958167/2424931530</string>
+    <string name="admob_interstitial_video_id">ca-app-pub-4891843703958167/8353713939</string>
+    <string name="admob_interstitial_graphic_id">ca-app-pub-4891843703958167/6876980737</string>
 
 </resources>
