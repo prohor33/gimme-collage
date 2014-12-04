@@ -62,7 +62,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
-    private final int m_iTemplateImageViewsID = 100;
+    private final int m_iTemplateImageViewsID = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
