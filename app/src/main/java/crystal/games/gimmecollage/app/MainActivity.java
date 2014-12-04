@@ -49,6 +49,7 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
     private static final int INSTAGRAM_FRIEND_REQUEST = 1;
+    private static final int GALLERY_REQUEST = 2;
     private ProgressDialog m_dialogProgress = null;
 
     public class ImageData {
@@ -100,6 +101,12 @@ public class MainActivity extends ActionBarActivity {
                         SortImages();
                         ReloadCollageImages();
                     }
+                }
+                break;
+            case GALLERY_REQUEST:
+                if(resultCode == RESULT_OK && data != null) {
+                    String[] galleryImagesPaths = data.getStringArrayExtra("selected");
+                    // TODO: do smth with them.
                 }
                 break;
             default:
@@ -470,6 +477,9 @@ public class MainActivity extends ActionBarActivity {
                             Intent intent = new Intent(MainActivity.this, FriendPicker.class);
                             startActivityForResult(intent, INSTAGRAM_FRIEND_REQUEST);
                         } else {
+                            Intent intent = new Intent(MainActivity.this, GalleryPicker.class);
+                            startActivityForResult(intent, GALLERY_REQUEST);
+                            /*
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(
                                     MainActivity.this);
                             builderInner.setTitle("Sorry");
@@ -485,6 +495,7 @@ public class MainActivity extends ActionBarActivity {
                                         }
                                     });
                             builderInner.show();
+                            */
                         }
                     }
                 });

@@ -12,16 +12,17 @@
         android:label="@string/app_name"
         android:theme="@style/GimmeCollageTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="crystal.games.gimmecollage.app.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="crystal.games.gimmecollage.app.LoginActivity"
             android:label="@string/app_name" >
             android:parentActivityName="crystal.games.gimmecollage.app.MainActivity">
             <!-- Parent activity meta-data to support API level 7+ -->
@@ -30,9 +31,9 @@
                 android:value="crystal.games.gimmecollage.app.MainActivity" />
         </activity>
         <activity
-            android:name=".FriendPicker"
+            android:name="crystal.games.gimmecollage.app.FriendPicker"
             android:label="@string/title_activity_friend_picker"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="crystal.games.gimmecollage.app.MainActivity" >
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
@@ -40,9 +41,17 @@
                 android:value="crystal.games.gimmecollage.app.MainActivity" />
         </activity>
         <activity
-            android:name=".AuthenticationActivity"
+            android:name="crystal.games.gimmecollage.app.AuthenticationActivity"
             android:label="@string/title_activity_authentication"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="crystal.games.gimmecollage.app.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="crystal.games.gimmecollage.app.MainActivity" />
+        </activity>
+        <activity
+            android:name="crystal.games.gimmecollage.app.GalleryPicker"
+            android:label="@string/title_activity_gallery_picker"
+            android:parentActivityName="crystal.games.gimmecollage.app.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="crystal.games.gimmecollage.app.MainActivity" />
