@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -65,7 +64,6 @@ public class MainActivity extends ActionBarActivity {
 
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
     private final int m_iTemplateImageViewsID = 100;
-    private final int m_iCollageImageViewsID = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +114,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.image_processor, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -127,9 +125,13 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_share:
+                ShareCollage();
+                break;
+            case R.id.action_save:
+                SaveCollageOnDisk();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -242,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
     private void AddCollageTypeSelectorLayout() {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         for (int i = 0; i < CollageMaker.CollageType.values().length; i++) {
-            final int selector_size = 90;
+            final int selector_size = Utils.getScrSizeInPxls(MainActivity.this).y / 8;
             CollageTypeSelectorImageView ivSelector =
                     new CollageTypeSelectorImageView(MainActivity.this, null, selector_size, i);
             ivSelector.setId(m_iTemplateImageViewsID + i);
@@ -296,7 +298,7 @@ public class MainActivity extends ActionBarActivity {
             currentPaint.setStyle(Paint.Style.STROKE);
             currentPaint.setStrokeJoin(Paint.Join.ROUND);
             currentPaint.setStrokeCap(Paint.Cap.ROUND);
-            currentPaint.setStrokeWidth(3);
+            currentPaint.setStrokeWidth(Utils.dipToPixels(MainActivity.this, 2.0f));
 
             selectorSize = selector_size;
             selectorIndex = index;
@@ -328,9 +330,9 @@ public class MainActivity extends ActionBarActivity {
 
     private void AddCollageLayout() {
         final int collage_padding = 45;
-        int collage_size_x = Utils.getScreenSizeInPixels(this).x - collage_padding * 2;
+        int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
-        CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, collage_padding / 2));
+        CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, 0));
         Log.v(TAG, "init()");
 
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
@@ -356,7 +358,7 @@ public class MainActivity extends ActionBarActivity {
                            }
                        });
             } else {
-                ivImage.setImageResource(R.drawable.ic_plus_image);
+                ivImage.setImageResource(R.drawable.ic_add_file_action);
             }
 
             ivImage.setBackgroundResource(R.drawable.collage_image_back);
@@ -398,7 +400,7 @@ public class MainActivity extends ActionBarActivity {
                             }
                         });
             } else {
-                iv.setImageResource(R.drawable.ic_plus_image);
+                iv.setImageResource(R.drawable.ic_add_file_action);
                 pb.setVisibility(View.GONE);
             }
         }
@@ -421,7 +423,7 @@ public class MainActivity extends ActionBarActivity {
         FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton0);
         mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
         mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_action_content_save));
-        mFab1.setParrentFAB(mFab0);
+        mFab1.setParentFAB(mFab0);
         mFab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -429,14 +431,14 @@ public class MainActivity extends ActionBarActivity {
 //                InstagramAPI.resetAuthentication();
 //                Toast.makeText(MainActivity.this, "Authentication has been reset",
 //                        Toast.LENGTH_LONG).show();
-                SaveOnDiskCollage();
+                SaveCollageOnDisk();
             }
         });
 
         FloatingActionButton mFab2 = (FloatingActionButton)findViewById(R.id.fabbutton1);
         mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
         mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
-        mFab2.setParrentFAB(mFab0);
+        mFab2.setParentFAB(mFab0);
         mFab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -522,7 +524,7 @@ public class MainActivity extends ActionBarActivity {
         Collections.sort(m_lImages, new ImageComparator());
     }
 
-    private void SaveOnDiskCollage() {
+    private void SaveCollageOnDisk() {
         if (m_dialogProgress == null)
             m_dialogProgress = new ProgressDialog(MainActivity.this);
         m_dialogProgress.setTitle("Just a second");
