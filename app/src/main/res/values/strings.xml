@@ -24,6 +24,7 @@
     <string name="source_instagram_hint_not_logged">Please sign in with your Instagram account.</string>
 
     <!-- Gallery Picker Activity -->
+    <string name="title_activity_gallery_picker">GalleryPicker</string>
     <string name="gp_confirm">Confirm</string>
     <string name="gp_confirm_dialog">Are you sure?</string>
     <string name="gp_confirm_dialog_yes">Yes</string>
