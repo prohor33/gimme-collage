@@ -140,7 +140,7 @@ public class GalleryPicker extends ActionBarActivity {
                                     mActionMode.finish();
 
                                     Intent intent = new Intent();
-                                    intent.putExtra("selected", mResultArray);
+                                    intent.putExtra("strArraySelectedImages", mResultArray);
                                     GalleryPicker.this.setResult(RESULT_OK, intent);
                                     GalleryPicker.this.finish();
                                 }

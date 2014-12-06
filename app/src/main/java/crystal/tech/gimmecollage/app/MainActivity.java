@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity {
                 break;
             case GALLERY_REQUEST:
                 if(resultCode == RESULT_OK && data != null) {
-                    String[] galleryImagesPaths = data.getStringArrayExtra("selected");
+                    String[] galleryImagesPaths = data.getStringArrayExtra("strArraySelectedImages");
                     // TODO: do smth with them.
                 }
                 break;
