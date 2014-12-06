@@ -51,15 +51,32 @@ public class MainActivity extends ActionBarActivity {
     private static final int GALLERY_REQUEST = 2;
     private ProgressDialog m_dialogProgress = null;
 
+    private enum ImageSourceType {Instagram, Gallery, None};
+
     public class ImageData {
         ImageData(String url, int like_count) {
             m_strUrl = url;
             m_iLikeCount = like_count;
-            m_bmpImage = null;
+            m_eSrc = ImageSourceType.Instagram;
         }
-        public String m_strUrl;
-        public int m_iLikeCount;
-        public Bitmap m_bmpImage;
+        ImageData(String path) {
+            m_strImagePath = path;
+            m_eSrc = ImageSourceType.Gallery;
+        }
+
+        public String getUrl() { return m_strUrl; }
+        public int getLikes() { return m_iLikeCount; }
+        public String getImagePath() { return m_strImagePath; }
+        public ImageSourceType getSrc() { return m_eSrc; };
+
+
+        private ImageSourceType m_eSrc = ImageSourceType.None;
+
+        // instagram data
+        private String m_strUrl = "";
+        private int m_iLikeCount = -1;
+        // gallery data
+        private String m_strImagePath = "";
     }
 
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
@@ -78,14 +95,14 @@ public class MainActivity extends ActionBarActivity {
         //ActionBar actionBar = getSupportActionBar();
         //actionBar.setDisplayHomeAsUpEnabled(true);
 
-        AddCollageTypeSelectorLayout();
+        addCollageTypeSelectorLayout();
 
-        SortImages();
+        sortImages();
 
-        AddCollageLayout();
+        addCollageLayout();
         CollageMaker.getInstance().InitImageViews();
 
-        AddFloatingActionButton();
+        addFloatingActionButton();
     }
 
     private int mInstagramSelctedFriendID = -1;
@@ -96,15 +113,19 @@ public class MainActivity extends ActionBarActivity {
                 if (data != null) {
                     int friendID = data.getIntExtra("intSelectedFriendID", 0);
                     if (friendID != mInstagramSelctedFriendID) {
-                        SortImages();
-                        ReloadCollageImages();
+                        sortImages();
+                        reloadCollageImages();
                     }
                 }
                 break;
             case GALLERY_REQUEST:
                 if(resultCode == RESULT_OK && data != null) {
                     String[] galleryImagesPaths = data.getStringArrayExtra("strArraySelectedImages");
-                    // TODO: do smth with them.
+                    m_lImages.clear();
+                    for (String str : galleryImagesPaths) {
+                        m_lImages.add(new ImageData(str));
+                    }
+                    reloadCollageImages();
                 }
                 break;
             default:
@@ -127,10 +148,10 @@ public class MainActivity extends ActionBarActivity {
 
         switch (id) {
             case R.id.action_share:
-                ShareCollage();
+                shareCollage();
                 break;
             case R.id.action_save:
-                SaveCollageOnDisk();
+                saveCollageOnDisk();
                 break;
         }
 
@@ -152,7 +173,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void ShareCollage() {
+    private void shareCollage() {
         if (m_dialogProgress == null)
             m_dialogProgress = new ProgressDialog(MainActivity.this);
         m_dialogProgress.setTitle("Just a second");
@@ -165,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
         new SaveFileTask().with(new FileSaveCallback() {
             @Override
             public void onSuccess(File file_result) {
-                OpenShareDialog(file_result);
+                openShareDialog(file_result);
             }
 
             @Override
@@ -225,7 +246,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void OpenShareDialog(File fileResult) {
+    private void openShareDialog(File fileResult) {
         if (fileResult == null) {
             Log.v(TAG, "Null file pointer");
             return;
@@ -241,7 +262,7 @@ public class MainActivity extends ActionBarActivity {
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
 
-    private void AddCollageTypeSelectorLayout() {
+    private void addCollageTypeSelectorLayout() {
         final LinearLayout llTemplates = (LinearLayout) findViewById(R.id.layoutTemplates);
         for (int i = 0; i < CollageMaker.CollageType.values().length; i++) {
             final int selector_size = Utils.getScrSizeInPxls(MainActivity.this).y / 8;
@@ -328,7 +349,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void AddCollageLayout() {
+    private void addCollageLayout() {
         final int collage_padding = 45;
         int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
@@ -345,7 +366,7 @@ public class MainActivity extends ActionBarActivity {
 
             if (i < m_lImages.size()) {
                 Picasso.with(MainActivity.this)
-                       .load(m_lImages.get(i).m_strUrl)
+                       .load(m_lImages.get(i).getUrl())
                        .into(ivImage, new Callback() {
                            @Override
                            public void onSuccess() {
@@ -369,7 +390,7 @@ public class MainActivity extends ActionBarActivity {
                     ImageView iv = (ImageView)v;
 //                    int index = iv.getId() - m_iCollageImageViewsID;
 
-                    ShowImageSourceDialog();
+                    showImageSourceDialog();
                 }
             });
 
@@ -377,28 +398,48 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void ReloadCollageImages() {
-        Log.v(TAG, "ReloadCollageImages() m_lImages.size() = " + m_lImages.size());
+    private void updateImageView(ImageView iv, final View pb, ImageData img_data) {
+        pb.setVisibility(View.VISIBLE);
+        Picasso.with(MainActivity.this);
+
+        Callback on_load = new Callback() {
+            @Override
+            public void onSuccess() {
+                if (pb != null)
+                    pb.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError() {
+                if (pb != null)
+                    pb.setVisibility(View.GONE);
+            }
+        };
+
+        switch (img_data.getSrc()) {
+            case Instagram: {
+                Picasso.with(MainActivity.this)
+                        .load(img_data.getUrl())
+                        .into(iv, on_load);
+                break;
+            }
+            case Gallery: {
+                Picasso.with(MainActivity.this)
+                        .load(new File(img_data.getImagePath()))
+                        .into(iv, on_load);
+            }
+        }
+    }
+
+    private void reloadCollageImages() {
+//        Log.v(TAG, "reloadCollageImages() m_lImages.size() = " + m_lImages.size());
         final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
         for (int i = 0; i < rlCollage.getChildCount(); i++) {
             RelativeLayout rl = (RelativeLayout) rlCollage.getChildAt(i);
             final ImageView iv = (ImageView) rl.getChildAt(0);
             final View pb = rl.getChildAt(1);
             if (i < m_lImages.size()) {
-                pb.setVisibility(View.VISIBLE);
-                Picasso.with(MainActivity.this)
-                        .load(m_lImages.get(i).m_strUrl)
-                        .into(iv, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                pb.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onError() {
-                                pb.setVisibility(View.GONE);
-                            }
-                        });
+                updateImageView(iv, pb, m_lImages.get(i));
             } else {
                 iv.setImageResource(R.drawable.ic_add_file_action);
                 pb.setVisibility(View.GONE);
@@ -406,7 +447,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void AddFloatingActionButton() {
+    private void addFloatingActionButton() {
         final FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton);
         mFab0.setColor(getResources().getColor(R.color.android_green));
         mFab0.setDrawable(getResources().getDrawable(R.drawable.ic_navigation_accept));
@@ -427,11 +468,7 @@ public class MainActivity extends ActionBarActivity {
         mFab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // for debug
-//                InstagramAPI.resetAuthentication();
-//                Toast.makeText(MainActivity.this, "Authentication has been reset",
-//                        Toast.LENGTH_LONG).show();
-                SaveCollageOnDisk();
+                saveCollageOnDisk();
             }
         });
 
@@ -442,12 +479,12 @@ public class MainActivity extends ActionBarActivity {
         mFab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ShareCollage();
+                shareCollage();
             }
         });
     }
 
-    private void ShowImageSourceDialog() {
+    private void showImageSourceDialog() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(
                 MainActivity.this);
         builderSingle.setIcon(R.drawable.ic_launcher);
@@ -481,30 +518,13 @@ public class MainActivity extends ActionBarActivity {
                         } else {
                             Intent intent = new Intent(MainActivity.this, GalleryPicker.class);
                             startActivityForResult(intent, GALLERY_REQUEST);
-                            /*
-                            AlertDialog.Builder builderInner = new AlertDialog.Builder(
-                                    MainActivity.this);
-                            builderInner.setTitle("Sorry");
-                            builderInner.setMessage("Not implemented yet");
-                            builderInner.setPositiveButton("Ok",
-                                    new DialogInterface.OnClickListener() {
-
-                                        @Override
-                                        public void onClick(
-                                                DialogInterface dialog,
-                                                int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            builderInner.show();
-                            */
                         }
                     }
                 });
         builderSingle.show();
     }
 
-    private void SortImages() {
+    private void sortImages() {
         List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
         Log.v(TAG, "have " + imagesInfo.size() + " images");
         m_lImages.clear();
@@ -524,7 +544,7 @@ public class MainActivity extends ActionBarActivity {
         Collections.sort(m_lImages, new ImageComparator());
     }
 
-    private void SaveCollageOnDisk() {
+    private void saveCollageOnDisk() {
         if (m_dialogProgress == null)
             m_dialogProgress = new ProgressDialog(MainActivity.this);
         m_dialogProgress.setTitle("Just a second");
