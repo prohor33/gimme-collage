@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/linearLayout"
-    tools:context="crystal.games.gimmecollage.app.GalleryPicker">
+    tools:context="crystal.tech.gimmecollage.app.GalleryPicker">
 
     <GridView
         android:layout_width="match_parent"

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="crystal.games.gimmecollage.app.MainActivity"
+    tools:context="crystal.tech.gimmecollage.app.MainActivity"
     android:id="@+id/layoutMain"
     android:orientation="vertical"
     android:background="@drawable/ic_main_background"
@@ -45,7 +45,7 @@
             android:layout_height="fill_parent"
             android:gravity="right">
 
-            <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
+            <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton0"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
@@ -55,7 +55,7 @@
                 android:color="#ff5278b2"
                 android:visibility="visible" />
 
-            <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
+            <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton1"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
@@ -65,7 +65,7 @@
                 android:color="#ff5278b2"
                 android:visibility="visible" />
 
-            <crystal.games.gimmecollage.floating_action_btn.FloatingActionButton
+            <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
                 android:id="@+id/fabbutton"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
