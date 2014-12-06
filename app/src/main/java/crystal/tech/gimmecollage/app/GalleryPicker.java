@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -231,6 +233,19 @@ public class GalleryPicker extends ActionBarActivity {
                 showImageSelection(view);
             } else {
                 hideImageSelection(view);
+            }
+
+            View forgroundView = (View) view.getTag(R.id.imageSelectBackground);
+            float alpha = 0.5f;
+
+            // Modify Image Background Alpha
+            if (Build.VERSION.SDK_INT < 11) {
+                final AlphaAnimation animation = new AlphaAnimation(alpha, alpha);
+                animation.setDuration(0);
+                animation.setFillAfter(true);
+                forgroundView.startAnimation(animation);
+            } else {
+                forgroundView.setAlpha(alpha);
             }
 
             ImageView imageView = (ImageView) view.getTag(R.id.picture);
