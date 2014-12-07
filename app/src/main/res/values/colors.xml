@@ -2,6 +2,11 @@
 
 <resources>
 
+    <!-- Main activity colors -->
+    <color name="collage_type_selector_back">#1a76c1</color>
+    <color name="collage_type_selector">#ffe9ebe9</color>
+    <color name="collage_type_selector_pushed">#ff0a0c0a</color>
+
     <!-- Action button color -->
     <color name="action_btn_clr">#ff4081</color>
 

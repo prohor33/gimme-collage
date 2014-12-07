@@ -315,7 +315,6 @@ public class MainActivity extends ActionBarActivity {
 
             currentPaint = new Paint();
             currentPaint.setDither(true);
-            currentPaint.setColor(0xFFCCCCCC);  // alpha.r.g.b
             currentPaint.setStyle(Paint.Style.STROKE);
             currentPaint.setStrokeJoin(Paint.Join.ROUND);
             currentPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -333,14 +332,13 @@ public class MainActivity extends ActionBarActivity {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
             currentPaint.setStyle(Paint.Style.FILL);
-//            currentPaint.setColor(0xfffb8c00);  // orange
-            currentPaint.setColor(0xfffba941);  // orange
+            currentPaint.setColor(getResources().getColor(R.color.collage_type_selector_back));
             canvas.drawRect(0, 0, selectorSize, selectorSize, currentPaint);
 
             if (selectorIndex == CollageMaker.getInstance().getCollageTypeIndex()) {
-                currentPaint.setColor(0xffffffff);  // white
+                currentPaint.setColor(getResources().getColor(R.color.collage_type_selector_pushed));
             } else {
-                currentPaint.setColor(0xFF918e8b);  // gray
+                currentPaint.setColor(getResources().getColor(R.color.collage_type_selector));
             }
             currentPaint.setStyle(Paint.Style.STROKE);
             for (Line l : lines) {
