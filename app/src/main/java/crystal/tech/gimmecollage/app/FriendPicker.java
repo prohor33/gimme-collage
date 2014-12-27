@@ -57,6 +57,7 @@ public class FriendPicker extends ActionBarActivity {
             startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
         }
 
+        mUserInfosMatchesSearch.addAll(mUserInfos);
         friendPickerAdapter = new FriendPickerAdapter(this);
         friendGridView.setAdapter(friendPickerAdapter);
 
@@ -90,7 +91,7 @@ public class FriendPicker extends ActionBarActivity {
         public FriendPickerAdapter(Context context) { mContext = context; }
 
         public int getCount() {
-            return mUserInfos.size();
+            return mUserInfosMatchesSearch.size();
         }
 
         public Object getItem(int position) {
@@ -116,11 +117,13 @@ public class FriendPicker extends ActionBarActivity {
             imageView = (ImageView) view.getTag(R.id.picture);
             textView = (TextView) view.getTag(R.id.text);
 
-            Storage.UserInfo userInfo = mUserInfos.get(position);
-            Picasso.with(mContext).load(userInfo.profile_picture).into(imageView);
-            String name = userInfo.full_name.isEmpty() ? userInfo.username : userInfo.full_name;
-            textView.setText(name);
-            //Log.d(DEBUG_TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
+            if (position < mUserInfosMatchesSearch.size()) {
+                Storage.UserInfo userInfo = mUserInfosMatchesSearch.get(position);
+                Picasso.with(mContext).load(userInfo.profile_picture).into(imageView);
+                String name = userInfo.full_name.isEmpty() ? userInfo.username : userInfo.full_name;
+                textView.setText(name);
+                //Log.d(DEBUG_TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
+            }
 
             return view;
         }
@@ -128,10 +131,14 @@ public class FriendPicker extends ActionBarActivity {
     }
 
     private List<Storage.UserInfo> mUserInfos = new ArrayList<Storage.UserInfo>(0);
+    private List<Storage.UserInfo> mUserInfosMatchesSearch = new ArrayList<Storage.UserInfo>(0);
     private int mSelectedFriendID = -1;
 
     private void loadSelfFollows() {
         mUserInfos = InstagramAPI.getFollows();
+        mUserInfosMatchesSearch.clear();
+        mUserInfosMatchesSearch.addAll(mUserInfos);
+
         if (mUserInfos.size() != 0) {
             Log.v(DEBUG_TAG, "Already have " + mUserInfos.size() + " follows");
             return;
@@ -151,18 +158,18 @@ public class FriendPicker extends ActionBarActivity {
     }
 
     private void pickFriend(int pos) {
-        if (pos < 0 || pos >= mUserInfos.size()) {
+        if (pos < 0 || pos >= mUserInfosMatchesSearch.size()) {
             Log.v(DEBUG_TAG, "Error pickFriend(): index is out of range");
             return;
         }
-        Log.v(DEBUG_TAG, "pick friend:" + mUserInfos.get(pos).username);
+        Log.v(DEBUG_TAG, "pick friend:" + mUserInfosMatchesSearch.get(pos).username);
 
         loadingProgress = new ProgressDialog(this);
         loadingProgress.setTitle("Loading");
         loadingProgress.setMessage("Please, wait...");
         loadingProgress.show();
-        InstagramAPI.with(images_list_load_listener).updateImages(mUserInfos.get(pos).id);
-        mSelectedFriendID = Integer.parseInt(mUserInfos.get(pos).id);
+        InstagramAPI.with(images_list_load_listener).updateImages(mUserInfosMatchesSearch.get(pos).id);
+        mSelectedFriendID = Integer.parseInt(mUserInfosMatchesSearch.get(pos).id);
     }
 
     InstagramAPI.Listener images_list_load_listener = new InstagramAPI.Listener() {
@@ -198,6 +205,8 @@ public class FriendPicker extends ActionBarActivity {
 
         @Override
         public void onSuccess() {
+            mUserInfosMatchesSearch.clear();
+            mUserInfosMatchesSearch.addAll(mUserInfos);
             if (loadingProgress != null)
                 loadingProgress.dismiss();
             if (friendPickerAdapter != null)
@@ -217,6 +226,30 @@ public class FriendPicker extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.friend_picker, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                s.toLowerCase();
+                mUserInfosMatchesSearch.clear();
+                for (Storage.UserInfo user_info : mUserInfos) {
+                    if (user_info.full_name.toLowerCase().contains(s) ||
+                        user_info.username.toLowerCase().contains(s) ||
+                        user_info.bio.toLowerCase().contains(s)) {
+
+                        mUserInfosMatchesSearch.add(user_info);
+                    }
+                }
+
+                friendPickerAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
         // Configure the search info and add any event listeners
         return super.onCreateOptionsMenu(menu);
     }
