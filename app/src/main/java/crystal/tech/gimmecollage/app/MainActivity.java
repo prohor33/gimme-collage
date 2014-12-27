@@ -382,9 +382,8 @@ public class MainActivity extends ActionBarActivity {
             } else {
                 ivImage.setImageResource(R.drawable.ic_add_file_action);
             }
-
-//            ivImage.setBackgroundResource(R.drawable.collage_image_back);
             ivImage.setPadding(0, 0, 0, 0);
+            ivImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             ivImage.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -429,6 +428,7 @@ public class MainActivity extends ActionBarActivity {
                 Picasso.with(MainActivity.this)
                         .load(new File(img_data.getImagePath()))
                         .into(iv, on_load);
+                break;
             }
         }
     }

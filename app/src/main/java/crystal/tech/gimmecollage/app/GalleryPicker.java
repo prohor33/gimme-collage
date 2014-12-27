@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
@@ -72,6 +73,9 @@ public class GalleryPicker extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_picker);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         mResultArray = null;
 
