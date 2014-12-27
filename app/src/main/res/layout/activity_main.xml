@@ -8,21 +8,27 @@
     android:background="@drawable/main_activity_background"
     android:baselineAligned="false">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/layoutCollage"
-        android:layout_weight="1"
-        android:gravity="center_vertical">
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
 
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutCollage"
+            android:layout_weight="0"
+            android:layout_gravity="center">
+
+        </RelativeLayout>
+    </FrameLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
         android:layout_weight="0"
-        android:layout_gravity="top">
+        android:layout_gravity="center">
 
         <LinearLayout
             android:id="@+id/layoutTemplates"

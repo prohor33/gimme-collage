@@ -130,32 +130,16 @@ public class GalleryPicker extends ActionBarActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_confirm:
-                    // Show alert dialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(GalleryPicker.this);
-                    builder.setMessage(R.string.gp_confirm_dialog)
-                            .setPositiveButton(R.string.gp_confirm_dialog_yes,
-                                    new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // Send all selected images to MainActivity!
-                                    constructResultArray();
+                    // Send all selected images to MainActivity!
+                    constructResultArray();
 
-                                    mActionMode.finish();
+                    mActionMode.finish();
 
-                                    Intent intent = new Intent();
-                                    intent.putExtra("strArraySelectedImages", mResultArray);
-                                    GalleryPicker.this.setResult(RESULT_OK, intent);
-                                    GalleryPicker.this.finish();
-                                }
-                            })
-                            .setNegativeButton(R.string.gp_confirm_dialog_no,
-                                    new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // User cancelled the dialog
-                                }
-                            });
-                    // Create the AlertDialog object and show it
-                    builder.show();
-                    //mode.finish(); // Action picked, so close the CAB
+                    Intent intent = new Intent();
+                    intent.putExtra("strArraySelectedImages", mResultArray);
+                    GalleryPicker.this.setResult(RESULT_OK, intent);
+                    GalleryPicker.this.finish();
+
                     return true;
                 default:
                     return false;

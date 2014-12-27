@@ -2,6 +2,11 @@
 
 <resources>
 
+    <!--Lenka design colors-->
+    <color name="design_yellow">#fff74a</color>
+    <color name="design_red">#fe2321</color>
+    <color name="design_blue">#0466ff</color>
+
     <!-- Main activity colors -->
     <color name="collage_type_selector_back">#1a76c1</color>
     <color name="collage_type_selector">#ffe9ebe9</color>

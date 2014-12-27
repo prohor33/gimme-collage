@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -348,8 +349,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void addCollageLayout() {
-        final int collage_padding = 45;
-        int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
+//        final int collage_padding = 45;
+        final int collage_padding = 0;
+//        int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
+        int collage_size_x = Utils.getScrSizeInPxls(this).x - 45 * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
         CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, 0));
         Log.v(TAG, "init()");
@@ -380,7 +383,7 @@ public class MainActivity extends ActionBarActivity {
                 ivImage.setImageResource(R.drawable.ic_add_file_action);
             }
 
-            ivImage.setBackgroundResource(R.drawable.collage_image_back);
+//            ivImage.setBackgroundResource(R.drawable.collage_image_back);
             ivImage.setPadding(0, 0, 0, 0);
 
             ivImage.setOnClickListener(new View.OnClickListener() {
@@ -394,6 +397,7 @@ public class MainActivity extends ActionBarActivity {
 
             rlCollage.addView(rl);
         }
+        rlCollage.setBackgroundResource(R.drawable.collage_image_back);
     }
 
     private void updateImageView(ImageView iv, final View pb, ImageData img_data) {
@@ -446,10 +450,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void addFloatingActionButton() {
-        final FloatingActionButton mFab0 = (FloatingActionButton)findViewById(R.id.fabbutton);
-        mFab0.setColor(getResources().getColor(R.color.android_green));
-        mFab0.setDrawable(getResources().getDrawable(R.drawable.ic_navigation_accept));
-        mFab0.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton ok_fab = (FloatingActionButton)findViewById(R.id.fabbutton);
+        ok_fab.setColor(getResources().getColor(R.color.design_blue));
+        ok_fab.setDrawable(getResources().getDrawable(R.drawable.ic_navigation_accept));
+        ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FloatingActionButton mFab1 = (FloatingActionButton) findViewById(R.id.fabbutton0);
@@ -459,22 +463,22 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        FloatingActionButton mFab1 = (FloatingActionButton)findViewById(R.id.fabbutton0);
-        mFab1.setColor(getResources().getColor(R.color.purple));    // maroon
-        mFab1.setDrawable(getResources().getDrawable(R.drawable.ic_action_content_save));
-        mFab1.setParentFAB(mFab0);
-        mFab1.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton save_fab = (FloatingActionButton)findViewById(R.id.fabbutton0);
+        save_fab.setColor(getResources().getColor(R.color.design_yellow));    // maroon
+        save_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_content_save));
+        save_fab.setParentFAB(ok_fab);
+        save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveCollageOnDisk();
             }
         });
 
-        FloatingActionButton mFab2 = (FloatingActionButton)findViewById(R.id.fabbutton1);
-        mFab2.setColor(getResources().getColor(R.color.action_btn_clr));
-        mFab2.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
-        mFab2.setParentFAB(mFab0);
-        mFab2.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton share_fab = (FloatingActionButton)findViewById(R.id.fabbutton1);
+        share_fab.setColor(getResources().getColor(R.color.design_red));
+        share_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
+        share_fab.setParentFAB(ok_fab);
+        share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 shareCollage();
