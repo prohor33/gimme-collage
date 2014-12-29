@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.analytics.TagManagerUtils;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
 
@@ -34,11 +37,13 @@ import com.squareup.picasso.Picasso;
 
 public class FriendPicker extends ActionBarActivity {
 
-    private static final String DEBUG_TAG = "FriendPicker";
+    private static final String TAG = "FriendPicker";
     private static final int INSTAGRAM_AUTH_REQUEST = 1;
 
     private FriendPickerAdapter friendPickerAdapter = null;
     private ProgressDialog loadingProgress = null;
+
+    private static boolean sendSearchEventToGA = false; // Google Analytic
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +54,7 @@ public class FriendPicker extends ActionBarActivity {
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
-        Log.v(DEBUG_TAG, "isAuthenticated() = " + InstagramAPI.isAuthenticated());
+        Log.v(TAG, "isAuthenticated() = " + InstagramAPI.isAuthenticated());
         if (InstagramAPI.isAuthenticated()) {
             loadSelfFollows();
         } else {
@@ -67,6 +72,8 @@ public class FriendPicker extends ActionBarActivity {
                 // Toast.makeText(FriendPicker.this, "" + position, Toast.LENGTH_SHORT).show();
             }
         });
+
+        TagManagerUtils.pushOpenScreenEvent(this, "FriendPicker");
     }
 
     @Override
@@ -76,10 +83,10 @@ public class FriendPicker extends ActionBarActivity {
                 if (InstagramAPI.isAuthenticated())
                     loadSelfFollows();
                 else
-                    Log.v(DEBUG_TAG, "error in onActivityResult(): no auth");
+                    Log.v(TAG, "error in onActivityResult(): no auth");
             } else {
                 // Errors during AuthActivity or Canceled...
-                Log.d(DEBUG_TAG, "AuthActivityResult = " + resultCode);
+                Log.d(TAG, "AuthActivityResult = " + resultCode);
                 FriendPicker.this.finish();
             }
         }
@@ -122,7 +129,7 @@ public class FriendPicker extends ActionBarActivity {
                 Picasso.with(mContext).load(userInfo.profile_picture).into(imageView);
                 String name = userInfo.full_name.isEmpty() ? userInfo.username : userInfo.full_name;
                 textView.setText(name);
-                //Log.d(DEBUG_TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
+                //Log.d(TAG, "For user - " + name + " loaded " + userInfo.profile_picture);
             }
 
             return view;
@@ -140,11 +147,11 @@ public class FriendPicker extends ActionBarActivity {
         mUserInfosMatchesSearch.addAll(mUserInfos);
 
         if (mUserInfos.size() != 0) {
-            Log.v(DEBUG_TAG, "Already have " + mUserInfos.size() + " follows");
+            Log.v(TAG, "Already have " + mUserInfos.size() + " follows");
             return;
         }
 
-        Log.v(DEBUG_TAG, "No follows, try to load...");
+        Log.v(TAG, "No follows, try to load...");
         loadingProgress = new ProgressDialog(this);
         loadingProgress.setTitle("Loading");
         loadingProgress.setMessage("Please, wait...");
@@ -159,10 +166,10 @@ public class FriendPicker extends ActionBarActivity {
 
     private void pickFriend(int pos) {
         if (pos < 0 || pos >= mUserInfosMatchesSearch.size()) {
-            Log.v(DEBUG_TAG, "Error pickFriend(): index is out of range");
+            Log.v(TAG, "Error pickFriend(): index is out of range");
             return;
         }
-        Log.v(DEBUG_TAG, "pick friend:" + mUserInfosMatchesSearch.get(pos).username);
+        Log.v(TAG, "pick friend:" + mUserInfosMatchesSearch.get(pos).username);
 
         loadingProgress = new ProgressDialog(this);
         loadingProgress.setTitle("Loading");
@@ -178,8 +185,8 @@ public class FriendPicker extends ActionBarActivity {
         public void onSuccess() {
             if (loadingProgress != null)
                 loadingProgress.dismiss();
-            Log.v(DEBUG_TAG, "Friend media list successfully loaded!");
-            Log.v(DEBUG_TAG, "have images: " + InstagramAPI.getImages().size());
+            Log.v(TAG, "Friend media list successfully loaded!");
+            Log.v(TAG, "have images: " + InstagramAPI.getImages().size());
 
             Intent data = new Intent();
             data.putExtra("intSelectedFriendID", mSelectedFriendID);
@@ -189,14 +196,14 @@ public class FriendPicker extends ActionBarActivity {
                 getParent().setResult(FriendPicker.RESULT_OK, data);
             }
             FriendPicker.this.finish();
-            Log.v(DEBUG_TAG, "finish activity");
+            Log.v(TAG, "finish activity");
         }
 
         @Override
         public void onFail(String error) {
             if (loadingProgress != null)
                 loadingProgress.dismiss();
-            Log.v(DEBUG_TAG, "Failed to load friend media list");
+            Log.v(TAG, "Failed to load friend media list");
             Toast.makeText(FriendPicker.this, error, Toast.LENGTH_SHORT).show();
         }
     };
@@ -245,7 +252,23 @@ public class FriendPicker extends ActionBarActivity {
                     }
                 }
 
+                if (mUserInfosMatchesSearch.isEmpty()) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "No Friends Matched", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
+                    toast.show();
+                }
+
                 friendPickerAdapter.notifyDataSetChanged();
+
+                if (!sendSearchEventToGA) {
+                    GoogleAnalyticsUtils.SendEvent(FriendPicker.this,
+                            R.string.ga_event_category_use_search_in_friend_picker,
+                            R.string.ga_event_action_use_search_in_friend_picker,
+                            R.string.ga_event_label_use_search_in_friend_picker);
+                    sendSearchEventToGA = true;
+                }
+
                 return false;
             }
         });

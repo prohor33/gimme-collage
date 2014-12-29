@@ -28,6 +28,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+
 public class GalleryPicker extends ActionBarActivity {
 
     private static final String DEBUG_TAG = "GalleryPicker";
@@ -138,6 +140,11 @@ public class GalleryPicker extends ActionBarActivity {
                     constructResultArray();
 
                     mActionMode.finish();
+
+                    GoogleAnalyticsUtils.SendEvent(GalleryPicker.this,
+                            R.string.ga_event_category_apply_gallery_images,
+                            R.string.ga_event_action_apply_gallery_images,
+                            R.string.ga_event_label_apply_gallery_images);
 
                     Intent intent = new Intent();
                     intent.putExtra("strArraySelectedImages", mResultArray);

@@ -36,4 +36,54 @@
     <string name="admob_interstitial_video_id">ca-app-pub-4891843703958167/8353713939</string>
     <string name="admob_interstitial_graphic_id">ca-app-pub-4891843703958167/6876980737</string>
 
+    <!--Google Tag Manager-->
+    <string name="tag_manager_tracker_id">GTM-NKM9JC</string>
+
+    <!--Google Analytic Events-->
+    <!--Add images event-->
+    <string name="ga_event_category_add_image">Main GUI</string>
+    <string name="ga_event_action_add_image">Touch Collage</string>
+    <string name="ga_event_label_add_image">Open Image Source Dialog</string>
+
+    <!--Select image source event-->
+    <!-- value = 0 - Instagram -->
+    <!-- value = 1 - Gallery -->
+    <string name="ga_event_category_select_img_src">Main GUI</string>
+    <string name="ga_event_action_select_img_src">Select List Item</string>
+    <string name="ga_event_label_select_img_src">Select Image Source</string>
+
+    <!-- Share via fab event -->
+    <string name="ga_event_category_share_via_fab">Main GUI</string>
+    <string name="ga_event_action_share_via_fab">Share</string>
+    <string name="ga_event_label_share_via_fab">Share The Results Via FAB</string>
+
+    <!-- Share via action bar event -->
+    <string name="ga_event_category_share_via_action_bar">Main GUI</string>
+    <string name="ga_event_action_share_via_action_bar">Share</string>
+    <string name="ga_event_label_share_via_action_bar">Share The Results Via Action Bar</string>
+
+    <!-- Save via fab event -->
+    <string name="ga_event_category_save_via_fab">Main GUI</string>
+    <string name="ga_event_action_save_via_fab">Save</string>
+    <string name="ga_event_label_save_via_fab">Save The Results Via FAB</string>
+
+    <!-- Share via action bar event -->
+    <string name="ga_event_category_save_via_action_bar">Main GUI</string>
+    <string name="ga_event_action_save_via_action_bar">Save</string>
+    <string name="ga_event_label_save_via_action_bar">Save The Results Via Action Bar</string>
+
+    <!-- Use search in FriendPicker activity event -->
+    <string name="ga_event_category_use_search_in_friend_picker">Additional GUI</string>
+    <string name="ga_event_action_use_search_in_friend_picker">Use Search</string>
+    <string name="ga_event_label_use_search_in_friend_picker">Use Search In Friend Picker Activity</string>
+
+    <!-- See Interstitial when back to Main Activity-->
+    <string name="ga_event_category_see_interstitial_back_to_main_activity">Show Ads</string>
+    <string name="ga_event_action_see_interstitial_back_to_main_activity">Interstitial</string>
+    <string name="ga_event_label_see_interstitial_back_to_main_activity">Show Interstitial When Back To Main Activity</string>
+
+    <!-- Apply gallery images -->
+    <string name="ga_event_category_apply_gallery_images">Main GUI</string>
+    <string name="ga_event_action_apply_gallery_images">Apply Gallery Images</string>
+    <string name="ga_event_label_apply_gallery_images">Apply Gallery Images In Action Bar</string>
 </resources>

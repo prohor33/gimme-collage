@@ -17,6 +17,8 @@ import crystal.tech.gimmecollage.app.R;
  */
 public class Ads {
 
+    private static InterstitialAd mInterstitial = null;
+
     public static void showBanner(Activity activity) {
 
         AdView mAdView = new AdView(activity);
@@ -30,17 +32,25 @@ public class Ads {
         mAdView.loadAd(new AdRequest.Builder().build());
     }
 
-    public static void showInterstitial(Activity activity) {
-        final InterstitialAd mInterstitial = new InterstitialAd(activity);
+    public static void LoadInterstitial(Activity activity) {
+        mInterstitial = new InterstitialAd(activity);
 //        mInterstitial.setAdUnitId(activity.getResources().getString(R.string.admob_interstitial_graphic_id));
         mInterstitial.setAdUnitId(activity.getResources().getString(R.string.admob_interstitial_video_id));
         mInterstitial.loadAd(new AdRequest.Builder().build());
-        mInterstitial.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                mInterstitial.show();
-            }
-        });
+//        mInterstitial.setAdListener(new AdListener() {
+//            @Override
+//            public void onAdLoaded() {
+//                super.onAdLoaded();
+//                mInterstitial.show();
+//            }
+//        });
+    }
+
+    public static boolean ShowInterstitial() {
+        if (mInterstitial != null && mInterstitial.isLoaded()) {
+            mInterstitial.show();
+            return true;
+        }
+        return false;
     }
 }

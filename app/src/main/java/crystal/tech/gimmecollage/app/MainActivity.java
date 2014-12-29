@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,8 +26,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import crystal.tech.gimmecollage.ads.Ads;
+import crystal.tech.gimmecollage.analytics.LocalStatistics;
+import crystal.tech.gimmecollage.analytics.ContainerHolderSingleton;
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.analytics.GoogleTagManager;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -104,11 +109,42 @@ public class MainActivity extends ActionBarActivity {
         CollageMaker.getInstance().InitImageViews();
 
         addFloatingActionButton();
+
+        // Load and update LocalStatistic
+        LocalStatistics.getInstance(MainActivity.this).IncrementAppUsagesNumber();
+        if (LocalStatistics.getInstance(MainActivity.this).getAppUsagesNumber() > 2) {
+            Ads.LoadInterstitial(MainActivity.this);
+        }
+;
+        // TODO: use Google Tag Manager
+        {
+//        GoogleTagManager.LoadContainer(this);
+
+//        if (ContainerHolderSingleton.getContainerHolder() != null)
+//            ContainerHolderSingleton.getContainerHolder().refresh();
+
+//        DataLayer dataLayer = TagManager.getInstance(this).getDataLayer();
+//        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(MainActivity.this).getAppUsagesNumber());
+
+        // Disabling analytic tracking when debugging
+        // Comment this in release version!!!
+        // When dry run is set, hits will not be dispatched, but will still be logged as
+        // though they were dispatched.
+        GoogleAnalytics.getInstance(this).setDryRun(true);
+        }
     }
 
     private int mInstagramSelctedFriendID = -1;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (Ads.ShowInterstitial()) {
+            GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                    R.string.ga_event_category_see_interstitial_back_to_main_activity,
+                    R.string.ga_event_action_see_interstitial_back_to_main_activity,
+                    R.string.ga_event_label_see_interstitial_back_to_main_activity);
+        }
+
         switch (requestCode) {
             case INSTAGRAM_FRIEND_REQUEST:
                 if (data != null) {
@@ -149,9 +185,21 @@ public class MainActivity extends ActionBarActivity {
 
         switch (id) {
             case R.id.action_share:
+
+                GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                        R.string.ga_event_category_share_via_action_bar,
+                        R.string.ga_event_action_share_via_action_bar,
+                        R.string.ga_event_label_share_via_action_bar);
+
                 shareCollage();
                 break;
             case R.id.action_save:
+
+                GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                        R.string.ga_event_category_save_via_action_bar,
+                        R.string.ga_event_action_save_via_action_bar,
+                        R.string.ga_event_label_save_via_action_bar);
+
                 saveCollageOnDisk();
                 break;
         }
@@ -390,6 +438,11 @@ public class MainActivity extends ActionBarActivity {
                     ImageView iv = (ImageView)v;
 //                    int index = iv.getId() - m_iCollageImageViewsID;
 
+                    GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                            R.string.ga_event_category_add_image,
+                            R.string.ga_event_action_add_image,
+                            R.string.ga_event_label_add_image);
+
                     showImageSourceDialog();
                 }
             });
@@ -470,6 +523,11 @@ public class MainActivity extends ActionBarActivity {
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                        R.string.ga_event_category_save_via_fab,
+                        R.string.ga_event_action_save_via_fab,
+                        R.string.ga_event_label_save_via_fab);
+
                 saveCollageOnDisk();
             }
         });
@@ -481,6 +539,12 @@ public class MainActivity extends ActionBarActivity {
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                        R.string.ga_event_category_share_via_fab,
+                        R.string.ga_event_action_share_via_fab,
+                        R.string.ga_event_label_share_via_fab);
+
                 shareCollage();
             }
         });
@@ -514,7 +578,14 @@ public class MainActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
 
-                        if (strName == strInstagram) {
+                        boolean src_instagram = strName == strInstagram;
+
+                        GoogleAnalyticsUtils.SendEventWithValue(MainActivity.this,
+                                R.string.ga_event_category_select_img_src,
+                                R.string.ga_event_action_select_img_src,
+                                R.string.ga_event_label_select_img_src, src_instagram ? 0 : 1);
+
+                        if (src_instagram) {
                             Intent intent = new Intent(MainActivity.this, FriendPicker.class);
                             startActivityForResult(intent, INSTAGRAM_FRIEND_REQUEST);
                         } else {

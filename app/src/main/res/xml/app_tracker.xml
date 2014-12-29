@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="ga_sessionTimeout">300</integer>
+
+    <!-- Enable automatic Activity measurement -->
+    <bool name="ga_autoActivityTracking">true</bool>
+
+    <!-- The screen names that will appear in reports -->
+    <screenName name="crystal.tech.gimmecollage.app.MainActivity">
+        GC MainActivity
+    </screenName>
+    <screenName name="crystal.tech.gimmecollage.app.FriendPicker">
+        GC FriendPickerActivity
+    </screenName>
+    <screenName name="crystal.tech.gimmecollage.app.GalleryPicker">
+        GC GalleryPickerActivity
+    </screenName>
+    <screenName name="crystal.tech.gimmecollage.app.LoginActivity">
+        GC LoginActivity
+    </screenName>
+    <screenName name="crystal.tech.gimmecollage.app.AuthenticationActivity">
+        GC AuthenticationActivity
+    </screenName>
+
+    <!--  The following value should be replaced with correct property id. -->
+    <string name="ga_trackingId">UA-58047549-1</string>
+</resources>
