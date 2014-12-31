@@ -110,39 +110,20 @@ public class MainActivity extends ActionBarActivity {
 
         addFloatingActionButton();
 
-        // Load and update LocalStatistic
-        LocalStatistics.getInstance(MainActivity.this).IncrementAppUsagesNumber();
-        if (LocalStatistics.getInstance(MainActivity.this).getAppUsagesNumber() > 2) {
-            Ads.LoadInterstitial(MainActivity.this);
-        }
-;
-        // TODO: use Google Tag Manager
-        {
-//        GoogleTagManager.LoadContainer(this);
-
-//        if (ContainerHolderSingleton.getContainerHolder() != null)
-//            ContainerHolderSingleton.getContainerHolder().refresh();
-
-//        DataLayer dataLayer = TagManager.getInstance(this).getDataLayer();
-//        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(MainActivity.this).getAppUsagesNumber());
-
-        // Disabling analytic tracking when debugging
-        // Comment this in release version!!!
-        // When dry run is set, hits will not be dispatched, but will still be logged as
-        // though they were dispatched.
-        GoogleAnalytics.getInstance(this).setDryRun(true);
-        }
+        startApp();
     }
 
     private int mInstagramSelctedFriendID = -1;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (Ads.ShowInterstitial()) {
-            GoogleAnalyticsUtils.SendEvent(MainActivity.this,
-                    R.string.ga_event_category_see_interstitial_back_to_main_activity,
-                    R.string.ga_event_action_see_interstitial_back_to_main_activity,
-                    R.string.ga_event_label_see_interstitial_back_to_main_activity);
+        if (Settings.showAds) {
+            if (Ads.ShowInterstitial()) {
+                GoogleAnalyticsUtils.SendEvent(MainActivity.this,
+                        R.string.ga_event_category_see_interstitial_back_to_main_activity,
+                        R.string.ga_event_action_see_interstitial_back_to_main_activity,
+                        R.string.ga_event_label_see_interstitial_back_to_main_activity);
+            }
         }
 
         switch (requestCode) {
@@ -641,5 +622,34 @@ public class MainActivity extends ActionBarActivity {
 
             }
         }).execute(imgCollage);
+    }
+
+    private void startApp() {
+        // Load and update LocalStatistic
+        LocalStatistics localStatistics = LocalStatistics.getInstance(MainActivity.this);
+        localStatistics.IncrementAppUsagesNumber();
+
+        if (Settings.showAds) {
+            if (localStatistics.getAppUsagesNumber() > 2) {
+                Ads.LoadInterstitial(MainActivity.this);
+            }
+        }
+
+        // TODO: use Google Tag Manager
+        {
+//        GoogleTagManager.LoadContainer(this);
+
+//        if (ContainerHolderSingleton.getContainerHolder() != null)
+//            ContainerHolderSingleton.getContainerHolder().refresh();
+
+//        DataLayer dataLayer = TagManager.getInstance(this).getDataLayer();
+//        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(MainActivity.this).getAppUsagesNumber());
+        }
+
+        if (!Settings.collectStatystics) {
+            // When dry run is set, hits will not be dispatched, but will still be logged as
+            // though they were dispatched.
+            GoogleAnalytics.getInstance(this).setDryRun(true);
+        }
     }
 }
