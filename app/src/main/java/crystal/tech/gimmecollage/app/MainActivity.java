@@ -28,9 +28,7 @@ import android.widget.Toast;
 
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
-import crystal.tech.gimmecollage.analytics.ContainerHolderSingleton;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
-import crystal.tech.gimmecollage.analytics.GoogleTagManager;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -646,7 +644,7 @@ public class MainActivity extends ActionBarActivity {
 //        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(MainActivity.this).getAppUsagesNumber());
         }
 
-        if (!Settings.collectStatystics) {
+        if (!Settings.collectStatistics) {
             // When dry run is set, hits will not be dispatched, but will still be logged as
             // though they were dispatched.
             GoogleAnalytics.getInstance(this).setDryRun(true);

@@ -6,5 +6,5 @@ package crystal.tech.gimmecollage.app;
 public class Settings {
     static boolean isReleaseVersion = false;
     static boolean showAds = isReleaseVersion;
-    static boolean collectStatystics = isReleaseVersion;
+    static boolean collectStatistics = isReleaseVersion;
 }
