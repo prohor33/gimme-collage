@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ThumbnailUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -167,6 +168,8 @@ public class CollageMaker {
             if (bitmapDrawable == null)
                 continue;
             Bitmap bitmap = bitmapDrawable.getBitmap();
+            final int square_size = Math.min(bitmap.getHeight(), bitmap.getWidth());
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, square_size, square_size);
             int size = (int)(target_size * photoPos.getSize());
             comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, true),
                     target_size * photoPos.getX(),

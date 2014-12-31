@@ -51,10 +51,10 @@ public class AuthenticationActivity extends ActionBarActivity {
             }
         };
 
-        if (checkInternetConnection()) {
+        if (Utils.checkInternetConnection(this)) {
             InstagramAPI.with(authListener).startAuthentication(webView);
         } else {
-            ShowAlertNoConnection();
+            Utils.showAlertNoConnection(this);
         }
     }
 
@@ -76,36 +76,5 @@ public class AuthenticationActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private boolean checkInternetConnection() {
-        ConnectivityManager conMgr = (ConnectivityManager) AuthenticationActivity.this.
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo i = conMgr.getActiveNetworkInfo();
-        if (i == null)
-            return false;
-        if (!i.isConnected())
-            return false;
-        if (!i.isAvailable())
-            return false;
-        return true;
-    }
-
-    private void ShowAlertNoConnection() {
-        AlertDialog.Builder builderInner = new AlertDialog.Builder(
-                AuthenticationActivity.this);
-        builderInner.setTitle("No connection");
-        builderInner.setMessage("Please check your internet connection");
-        builderInner.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(
-                            DialogInterface dialog,
-                            int which) {
-                        dialog.dismiss();
-                    }
-                });
-        builderInner.show();
     }
 }
