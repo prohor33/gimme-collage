@@ -16,14 +16,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.squareup.picasso.Picasso;
-
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.app.MainActivity;
-import crystal.tech.gimmecollage.app.R;
 
 /**
  * Created by prohor on 04/10/14.
@@ -81,6 +78,13 @@ public class CollageMaker {
         this.m_pCollagePadding = collage_padding;
     }
 
+    public int getImageCount() {
+        return m_vImageRLViews.size();
+    }
+    public RelativeLayout getImageRL(int index) {
+        return (RelativeLayout)m_vImageRLViews.get(index);
+    }
+
     public int getMaxImageCount() {
         int max_count = -1;
         for (CollageType type : CollageType.values()) {
@@ -104,13 +108,18 @@ public class CollageMaker {
     }
 
     public void InitImageViews() {
-        PrepareImages();
         Log.v(TAG, "InitImageViews()");
         Log.v(TAG, "m_rlCollage.getChildCount() = " + m_rlCollage.getChildCount());
         Log.v(TAG, "getCollageConf().getPhotoCount() = " + getCollageConf().getPhotoCount());
-        for (int i = 0; i < m_rlCollage.getChildCount() &&
+
+        m_vImageRLViews.clear();
+        for (int i = 0; i < m_rlCollage.getChildCount(); i++) {
+            m_vImageRLViews.add(m_rlCollage.getChildAt(i));
+        }
+
+        for (int i = 0; i < m_vImageRLViews.size() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            final View v = m_rlCollage.getChildAt(i);
+            final View v = m_vImageRLViews.get(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
@@ -120,6 +129,8 @@ public class CollageMaker {
             params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_pCollagePadding.y;
             v.setLayoutParams(params);
         }
+
+        PrepareImages();
     }
 
     public void DrawCollageTypeSelector(MainActivity.CollageTypeSelectorImageView ivSelector,
@@ -158,9 +169,9 @@ public class CollageMaker {
                 target_size, Bitmap.Config.ARGB_8888);
         Canvas comboCanvas = new Canvas(collageImage);
 
-        for (int i = 0; i < m_rlCollage.getChildCount() &&
+        for (int i = 0; i < m_vImageRLViews.size() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            RelativeLayout rl = (RelativeLayout)m_rlCollage.getChildAt(i);
+            RelativeLayout rl = (RelativeLayout)m_vImageRLViews.get(i);
             ImageView iv = (ImageView)rl.getChildAt(0);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 
@@ -169,6 +180,7 @@ public class CollageMaker {
                 continue;
             Bitmap bitmap = bitmapDrawable.getBitmap();
             final int square_size = Math.min(bitmap.getHeight(), bitmap.getWidth());
+            // crop square in center
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, square_size, square_size);
             int size = (int)(target_size * photoPos.getSize());
             comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, true),
@@ -187,7 +199,11 @@ public class CollageMaker {
     private Map<CollageType, CollageConfig> m_mCollages;
     private RelativeLayout m_rlCollage = null;
     private int m_iCollageSize;
-    private Point m_pCollagePadding = new Point(10, 10);
+    private Point m_pCollagePadding = new Point(0, 0);
+
+    // big_frame -> big_rl -> rl -> image_view + progress
+    // this is rls
+    private ArrayList<View> m_vImageRLViews = new ArrayList<View>();
 
     private static CollageMaker m_pInstance;
     private CollageMaker() {
@@ -203,8 +219,8 @@ public class CollageMaker {
 
 
     private void PrepareImages() {
-        for (int i = 0; i < m_rlCollage.getChildCount(); i++) {
-            View iv = m_rlCollage.getChildAt(i);
+        for (int i = 0; i < m_vImageRLViews.size(); i++) {
+            View iv = m_vImageRLViews.get(i);
 
             if (i < getCollageConf().getPhotoCount()) {
                 iv.setVisibility(View.VISIBLE);
@@ -215,9 +231,9 @@ public class CollageMaker {
     }
 
     private void RunAnimImageViews() {
-        for (int i = 0; i < m_rlCollage.getChildCount() &&
+        for (int i = 0; i < m_vImageRLViews.size() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            final View iv = m_rlCollage.getChildAt(i);
+            final View iv = m_vImageRLViews.get(i);
 
             PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)iv.getLayoutParams();

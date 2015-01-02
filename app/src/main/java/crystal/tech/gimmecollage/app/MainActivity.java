@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.app.view.DragDropView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -104,7 +106,6 @@ public class MainActivity extends ActionBarActivity {
         sortImages();
 
         addCollageLayout();
-        CollageMaker.getInstance().InitImageViews();
 
         addFloatingActionButton();
 
@@ -376,19 +377,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void addCollageLayout() {
-//        final int collage_padding = 45;
-        final int collage_padding = 0;
-//        int collage_size_x = Utils.getScrSizeInPxls(this).x - collage_padding * 2;
         int collage_size_x = Utils.getScrSizeInPxls(this).x - 45 * 2;
         CollageMaker.getInstance().putCollageSize(collage_size_x);
-        CollageMaker.getInstance().putCollagePadding(new Point(collage_padding, 0));
         Log.v(TAG, "init()");
 
-        final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
+        final DragDropView rlCollage = (DragDropView)findViewById(R.id.layoutCollage);
         CollageMaker.getInstance().putCollageLayout(rlCollage);
         for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
             RelativeLayout rl = (RelativeLayout)getLayoutInflater().
                     inflate(R.layout.layout_collage_image, rlCollage, false);
+            rl.setBackgroundResource(R.drawable.collage_image_back2);
             ImageView ivImage = (ImageView)rl.findViewById(R.id.imageView);
             final ProgressBar progressBar = (ProgressBar)rl.findViewById(R.id.progressBar);
 
@@ -407,7 +405,8 @@ public class MainActivity extends ActionBarActivity {
                            }
                        });
             } else {
-                ivImage.setImageResource(R.drawable.ic_add_file_action);
+//                ivImage.setImageResource(R.drawable.ic_add_file_action);
+                ivImage.setImageResource(R.drawable.ic_launcher);
             }
             ivImage.setPadding(0, 0, 0, 0);
             ivImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -425,10 +424,12 @@ public class MainActivity extends ActionBarActivity {
                     showImageSourceDialog();
                 }
             });
-
+            ivImage.setOnTouchListener(rlCollage.OnTouchToDrag);
             rlCollage.addView(rl);
         }
         rlCollage.setBackgroundResource(R.drawable.collage_image_back);
+
+        CollageMaker.getInstance().InitImageViews();
     }
 
     private void updateImageView(ImageView iv, final View pb, ImageData img_data) {
@@ -466,16 +467,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void reloadCollageImages() {
-//        Log.v(TAG, "reloadCollageImages() m_lImages.size() = " + m_lImages.size());
-        final RelativeLayout rlCollage = (RelativeLayout)findViewById(R.id.layoutCollage);
-        for (int i = 0; i < rlCollage.getChildCount(); i++) {
-            RelativeLayout rl = (RelativeLayout) rlCollage.getChildAt(i);
+        CollageMaker collageMaker = CollageMaker.getInstance();
+        for (int i = 0; i < collageMaker.getImageCount(); i++) {
+            RelativeLayout rl = collageMaker.getImageRL(i);
             final ImageView iv = (ImageView) rl.getChildAt(0);
             final View pb = rl.getChildAt(1);
             if (i < m_lImages.size()) {
                 updateImageView(iv, pb, m_lImages.get(i));
             } else {
-                iv.setImageResource(R.drawable.ic_add_file_action);
+//                iv.setImageResource(R.drawable.ic_add_file_action);
+                iv.setImageResource(R.drawable.ic_launcher);
                 pb.setVisibility(View.GONE);
             }
         }

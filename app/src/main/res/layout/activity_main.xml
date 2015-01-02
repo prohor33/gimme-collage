@@ -11,16 +11,17 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:id="@+id/layoutFrameCollage"
         android:layout_weight="1">
 
-        <RelativeLayout
+        <crystal.tech.gimmecollage.app.view.DragDropView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/layoutCollage"
             android:layout_weight="0"
             android:layout_gravity="center">
 
-        </RelativeLayout>
+        </crystal.tech.gimmecollage.app.view.DragDropView>
     </FrameLayout>
 
     <HorizontalScrollView
