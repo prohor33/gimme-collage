@@ -8,5 +8,4 @@ Why Gimme Collage? Because it's simple, free, and we always think about what our
 Please, keep in mind, that it's only alfa version and many features are not implemented yet.
 Thank you!
 
-===========
 You can check it out on the [GooglePlay](https://play.google.com/store/apps/details?id=crystal.tech.gimmecollage&hl=ru).
