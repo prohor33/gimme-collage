@@ -626,7 +626,7 @@ public class MainActivity extends ActionBarActivity {
         localStatistics.IncrementAppUsagesNumber();
 
         if (Settings.showAds) {
-            if (localStatistics.getAppUsagesNumber() > 2) {
+            if (localStatistics.getAppUsagesNumber() > 2 && Math.random() < 0.5) {
                 Ads.LoadInterstitial(MainActivity.this);
             }
         }
