@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -386,7 +384,6 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < CollageMaker.getInstance().getMaxImageCount(); i++) {
             RelativeLayout rl = (RelativeLayout)getLayoutInflater().
                     inflate(R.layout.layout_collage_image, rlCollage, false);
-            rl.setBackgroundResource(R.drawable.collage_image_back2);
             ImageView ivImage = (ImageView)rl.findViewById(R.id.imageView);
             final ProgressBar progressBar = (ProgressBar)rl.findViewById(R.id.progressBar);
 
@@ -405,8 +402,7 @@ public class MainActivity extends ActionBarActivity {
                            }
                        });
             } else {
-//                ivImage.setImageResource(R.drawable.ic_add_file_action);
-                ivImage.setImageResource(R.drawable.ic_launcher);
+                ivImage.setImageResource(R.drawable.ic_add_file_action);
             }
             ivImage.setPadding(0, 0, 0, 0);
             ivImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -428,9 +424,9 @@ public class MainActivity extends ActionBarActivity {
             ivImage.setOnLongClickListener(rlCollage.OnLongClick);
             rlCollage.addView(rl);
         }
-        rlCollage.setBackgroundResource(R.drawable.collage_image_back);
+        rlCollage.setBackgroundResource(R.drawable.collage_rl_back);
 
-        CollageMaker.getInstance().InitImageViews();
+        CollageMaker.getInstance().InitImageViews(MainActivity.this);
     }
 
     private void updateImageView(ImageView iv, final View pb, ImageData img_data) {

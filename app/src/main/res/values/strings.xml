@@ -77,13 +77,18 @@
     <string name="ga_event_action_use_search_in_friend_picker">Use Search</string>
     <string name="ga_event_label_use_search_in_friend_picker">Use Search In Friend Picker Activity</string>
 
-    <!-- See Interstitial when back to Main Activity-->
+    <!-- See Interstitial when back to Main Activity event -->
     <string name="ga_event_category_see_interstitial_back_to_main_activity">Show Ads</string>
     <string name="ga_event_action_see_interstitial_back_to_main_activity">Interstitial</string>
     <string name="ga_event_label_see_interstitial_back_to_main_activity">Show Interstitial When Back To Main Activity</string>
 
-    <!-- Apply gallery images -->
+    <!-- Apply gallery images event -->
     <string name="ga_event_category_apply_gallery_images">Main GUI</string>
     <string name="ga_event_action_apply_gallery_images">Apply Gallery Images</string>
     <string name="ga_event_label_apply_gallery_images">Apply Gallery Images In Action Bar</string>
+
+    <!-- Swap images event -->
+    <string name="ga_event_category_swap_images">Additional GUI</string>
+    <string name="ga_event_action_swap_images">Collage Image Control</string>
+    <string name="ga_event_label_swap_images">Swap Images</string>
 </resources>

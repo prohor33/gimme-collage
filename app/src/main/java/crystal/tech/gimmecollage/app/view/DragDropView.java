@@ -2,13 +2,12 @@ package crystal.tech.gimmecollage.app.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
 /**
@@ -21,6 +20,7 @@ public class DragDropView extends RelativeLayout {
     private int _xDelta;
     private int _yDelta;
     private boolean isMoving = false;
+    private View activeTargetView = null;
 
     /**
      * Default Constructor
@@ -126,13 +126,29 @@ public class DragDropView extends RelativeLayout {
                     lParams.leftMargin = X - _xDelta;
                     lParams.topMargin = Y - _yDelta;
                     view.setLayoutParams(lParams);
+
+                    View target_view = findViewUnderPos(X, Y, view);
+                    if (target_view != activeTargetView) {
+                        if (activeTargetView != null) {
+                            activeTargetView.setBackgroundResource(R.drawable.collage_img_back_unsel);
+                            activeTargetView = null;
+                        }
+                        if (target_view != null) {
+                            activeTargetView = target_view;
+                            activeTargetView.setBackgroundResource(R.drawable.collage_img_back_sel);
+                        }
+                    }
                     break;
                 }
                 case MotionEvent.ACTION_UP:
                 {
                     if (isMoving) {
                         isMoving = false;
-                        View target_view = findViewUnderPos(X, Y);
+                        if (activeTargetView != null) {
+                            activeTargetView.setBackgroundResource(R.drawable.collage_img_back_unsel);
+                            activeTargetView = null;
+                        }
+                        View target_view = findViewUnderPos(X, Y, view);
                         if (target_view != null) {
                             CollageMaker.getInstance().swapViews(target_view, view);
                         } else {
@@ -158,10 +174,10 @@ public class DragDropView extends RelativeLayout {
     };
 
 
-    View findViewUnderPos(int x, int y) {
+    View findViewUnderPos(int x, int y, View except) {
         for (int i = 0; i < getChildCount(); i++) {
             View v = getChildAt(i);
-            if (v.getVisibility() != View.VISIBLE)
+            if (v == except || v.getVisibility() != View.VISIBLE)
                 continue;
             int[] xy = new int[2];
             v.getLocationOnScreen(xy);

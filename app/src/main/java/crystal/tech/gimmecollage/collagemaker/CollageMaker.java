@@ -1,5 +1,7 @@
 package crystal.tech.gimmecollage.collagemaker;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -8,10 +10,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,7 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.MainActivity;
+import crystal.tech.gimmecollage.app.R;
 
 /**
  * Created by prohor on 04/10/14.
@@ -28,6 +34,19 @@ import crystal.tech.gimmecollage.app.MainActivity;
 public class CollageMaker {
 
     private static final String TAG = "CollageMaker";
+
+    private CollageType m_eType = CollageType.Grid;
+    private Map<CollageType, CollageConfig> m_mCollages;
+    private RelativeLayout m_rlCollage = null;
+    private int m_iCollageSize;
+    private Point m_pCollagePadding = new Point(0, 0);
+    private Activity m_pActivity;
+
+    // big_frame -> big_rl -> rl -> image_view + progress
+    // this is rls
+    private ArrayList<View> m_vImageRLViews = new ArrayList<View>();
+
+    private static CollageMaker m_pInstance;
 
     public static synchronized CollageMaker getInstance() {
         if (m_pInstance == null) {
@@ -107,7 +126,8 @@ public class CollageMaker {
         RunAnimImageViews();
     }
 
-    public void InitImageViews() {
+    public void InitImageViews(Activity activity) {
+        m_pActivity = activity;
         Log.v(TAG, "InitImageViews()");
         Log.v(TAG, "m_rlCollage.getChildCount() = " + m_rlCollage.getChildCount());
         Log.v(TAG, "getCollageConf().getPhotoCount() = " + getCollageConf().getPhotoCount());
@@ -123,6 +143,15 @@ public class CollageMaker {
         }
 
         PrepareImages();
+        InitCollageLayoutSize();
+    }
+
+    private void InitCollageLayoutSize() {
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) m_rlCollage.getLayoutParams();
+        layoutParams.width = m_iCollageSize;
+        layoutParams.height = m_iCollageSize;
+        m_rlCollage.setLayoutParams(layoutParams);
+        m_rlCollage.setClipChildren(false);
     }
 
     public void DrawCollageTypeSelector(MainActivity.CollageTypeSelectorImageView ivSelector,
@@ -186,18 +215,6 @@ public class CollageMaker {
         return collageImage;
     }
 
-
-    private CollageType m_eType = CollageType.Grid;
-    private Map<CollageType, CollageConfig> m_mCollages;
-    private RelativeLayout m_rlCollage = null;
-    private int m_iCollageSize;
-    private Point m_pCollagePadding = new Point(0, 0);
-
-    // big_frame -> big_rl -> rl -> image_view + progress
-    // this is rls
-    private ArrayList<View> m_vImageRLViews = new ArrayList<View>();
-
-    private static CollageMaker m_pInstance;
     private CollageMaker() {
         m_eType = CollageType.Grid; // by default
         m_mCollages = new HashMap<CollageType, CollageConfig>();
@@ -293,6 +310,10 @@ public class CollageMaker {
         m_vImageRLViews.set(i2, view1);
         updateViewPosition(i1);
         updateViewPosition(i2);
+        GoogleAnalyticsUtils.SendEvent(m_pActivity,
+                R.string.ga_event_category_swap_images,
+                R.string.ga_event_action_swap_images,
+                R.string.ga_event_label_swap_images);
     }
 
     public void updateViewPosition(int i) {
