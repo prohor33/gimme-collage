@@ -425,6 +425,7 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
             ivImage.setOnTouchListener(rlCollage.OnTouchToDrag);
+            ivImage.setOnLongClickListener(rlCollage.OnLongClick);
             rlCollage.addView(rl);
         }
         rlCollage.setBackgroundResource(R.drawable.collage_image_back);

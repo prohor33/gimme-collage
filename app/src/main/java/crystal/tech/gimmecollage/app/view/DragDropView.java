@@ -81,7 +81,25 @@ public class DragDropView extends RelativeLayout {
 
     }
 
-    private final double delta_size = 0.25;
+    private final double delta_size = 0.1;
+
+    public View.OnLongClickListener OnLongClick = new View.OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View img_view) {
+            isMoving = true;
+            View view = (View)img_view.getParent();
+            RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            // starting moving
+            lParams.leftMargin -= lParams.width * delta_size / 2.0;
+            lParams.topMargin -= lParams.height * delta_size / 2.0;
+            lParams.width *= 1.0 + delta_size;
+            lParams.height *= 1.0 + delta_size;
+            view.setLayoutParams(lParams);
+            view.bringToFront();
+            return true;
+        }
+    };
 
     /**
      * Draggable object ontouch listener
@@ -100,22 +118,12 @@ public class DragDropView extends RelativeLayout {
             {
                 case MotionEvent.ACTION_MOVE:
                 {
+                    if (!isMoving)
+                        return false;
                     RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
                     lParams.leftMargin = X - _xDelta;
                     lParams.topMargin = Y - _yDelta;
-//                    layoutParams.rightMargin = -250;
-//                    layoutParams.bottomMargin = -250;
                     view.setLayoutParams(lParams);
-                    if (!isMoving) {
-                        // starting moving
-                        lParams.leftMargin -= lParams.width * delta_size / 2.0;
-                        lParams.topMargin -= lParams.height * delta_size / 2.0;
-                        lParams.width *= 1.0 + delta_size;
-                        lParams.height *= 1.0 + delta_size;
-                        view.setLayoutParams(lParams);
-                        view.bringToFront();
-                    }
-                    isMoving = true;
                     break;
                 }
                 case MotionEvent.ACTION_UP:
@@ -138,7 +146,7 @@ public class DragDropView extends RelativeLayout {
                     RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
                     _xDelta = X - lParams.leftMargin;
                     _yDelta = Y - lParams.topMargin;
-                    return  false;  // should handle clicking
+                    return  false;  // should not handle clicking
                 }
             }
             invalidate();
