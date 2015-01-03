@@ -119,15 +119,7 @@ public class CollageMaker {
 
         for (int i = 0; i < m_vImageRLViews.size() &&
                 i < getCollageConf().getPhotoCount(); i++) {
-            final View v = m_vImageRLViews.get(i);
-
-            PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
-            params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
-            params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
-            params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + m_pCollagePadding.x;
-            params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_pCollagePadding.y;
-            v.setLayoutParams(params);
+            updateViewPosition(i);
         }
 
         PrepareImages();
@@ -294,6 +286,33 @@ public class CollageMaker {
         }
     }
 
+    public void swapViews(View view1, View view2) {
+        int i1 = m_vImageRLViews.indexOf(view1);
+        int i2 = m_vImageRLViews.indexOf(view2);
+        m_vImageRLViews.set(i1, view2);
+        m_vImageRLViews.set(i2, view1);
+        updateViewPosition(i1);
+        updateViewPosition(i2);
+    }
 
+    public void updateViewPosition(int i) {
+        if (i >= m_vImageRLViews.size()) {
+            Log.v(TAG, "Error: updateViewPosition: i = " + i + "size = " + m_vImageRLViews.size());
+            return;
+        }
+        final View v = m_vImageRLViews.get(i);
+
+        PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+        params.height = (int) (m_iCollageSize * pPhotoPos.getSize());
+        params.width = (int) (m_iCollageSize * pPhotoPos.getSize());
+        params.leftMargin = (int) (m_iCollageSize * pPhotoPos.getX()) + m_pCollagePadding.x;
+        params.topMargin = (int) (m_iCollageSize * pPhotoPos.getY()) + m_pCollagePadding.y;
+        v.setLayoutParams(params);
+    }
+
+    public void updateViewPosition(View v) {
+        updateViewPosition(m_vImageRLViews.indexOf(v));
+    }
 }
 

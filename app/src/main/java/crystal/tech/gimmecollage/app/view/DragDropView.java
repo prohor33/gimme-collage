@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+
 /**
  * Created by prohor on 02/01/15.
  */
@@ -130,12 +132,12 @@ public class DragDropView extends RelativeLayout {
                 {
                     if (isMoving) {
                         isMoving = false;
-                        RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                        lParams.leftMargin += lParams.width * delta_size / 2.0;
-                        lParams.topMargin += lParams.height * delta_size / 2.0;
-                        lParams.width /= 1.0 + delta_size;
-                        lParams.height /= 1.0 + delta_size;
-                        view.setLayoutParams(lParams);
+                        View target_view = findViewUnderPos(X, Y);
+                        if (target_view != null) {
+                            CollageMaker.getInstance().swapViews(target_view, view);
+                        } else {
+                            CollageMaker.getInstance().updateViewPosition(view);
+                        }
                     } else {
                         return false;
                     }
@@ -155,4 +157,21 @@ public class DragDropView extends RelativeLayout {
 
     };
 
+
+    View findViewUnderPos(int x, int y) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View v = getChildAt(i);
+            if (v.getVisibility() != View.VISIBLE)
+                continue;
+            int[] xy = new int[2];
+            v.getLocationOnScreen(xy);
+            RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams)v.getLayoutParams();
+            if (x < xy[0] || x > xy[0] + lParams.width ||
+                    y < xy[1] || y > xy[1] + lParams.height) {
+                continue;
+            }
+            return v;
+        }
+        return null;
+    }
 }
