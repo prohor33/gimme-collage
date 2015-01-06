@@ -1,88 +1,21 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="crystal.tech.gimmecollage.app.MainActivity"
-    android:id="@+id/layoutMain"
-    android:orientation="vertical"
-    android:background="@drawable/main_activity_background"
-    android:baselineAligned="false">
-
+    android:layout_height="match_parent">
+    <!-- The main content view -->
     <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/layoutFrameCollage"
-        android:layout_weight="1">
-
-        <crystal.tech.gimmecollage.app.view.DragDropView
-            android:layout_width="10px"
-            android:layout_height="10px"
-            android:id="@+id/layoutCollage"
-            android:layout_weight="0"
-            android:layout_gravity="center">
-
-        </crystal.tech.gimmecollage.app.view.DragDropView>
-    </FrameLayout>
-
-    <HorizontalScrollView
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView"
-        android:layout_weight="0"
-        android:layout_gravity="center">
-
-        <LinearLayout
-            android:id="@+id/layoutTemplates"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:weightSum="1">
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="98dp"
-        android:layout_gravity="bottom">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="right">
-
-            <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-                android:id="@+id/fabbutton0"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="16dp"
-                android:layout_marginRight="16dp"
-                android:color="#ff5278b2"
-                android:visibility="visible" />
-
-            <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-                android:id="@+id/fabbutton1"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="16dp"
-                android:layout_marginRight="16dp"
-                android:color="#ff5278b2"
-                android:visibility="visible" />
-
-            <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-                android:id="@+id/fabbutton"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="16dp"
-                android:layout_marginRight="16dp"
-                android:color="#ff5278b2"
-                />
-        </LinearLayout>
-
-    </FrameLayout>
-
-</LinearLayout>
+        android:layout_height="match_parent" />
+    <!-- The navigation drawer -->
+    <ListView android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#ff3185ca"/>
+</android.support.v4.widget.DrawerLayout>

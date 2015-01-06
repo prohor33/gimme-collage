@@ -12,7 +12,7 @@
     <string name="desc">description</string>
     <string name="title_activity_authentication">AuthenticationActivity</string>
 
-    <!--MainActivity strings-->
+    <!--CollageActivity strings-->
     <string name="action_main_share">Share</string>
     <string name="action_main_save">Save</string>
     
@@ -91,4 +91,9 @@
     <string name="ga_event_category_swap_images">Additional GUI</string>
     <string name="ga_event_action_swap_images">Collage Image Control</string>
     <string name="ga_event_label_swap_images">Swap Images</string>
+
+    <string-array name="tabs_array">
+        <item>News</item>
+        <item>Grid Collage</item>
+    </string-array>
 </resources>

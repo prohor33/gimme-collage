@@ -136,7 +136,7 @@ public class GalleryPicker extends ActionBarActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_confirm:
-                    // Send all selected images to MainActivity!
+                    // Send all selected images to CollageActivity!
                     constructResultArray();
 
                     mActionMode.finish();

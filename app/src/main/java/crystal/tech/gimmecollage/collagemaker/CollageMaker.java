@@ -1,7 +1,6 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -10,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
@@ -25,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
-import crystal.tech.gimmecollage.app.MainActivity;
+import crystal.tech.gimmecollage.app.CollageActivity;
 import crystal.tech.gimmecollage.app.R;
 
 /**
@@ -154,7 +152,7 @@ public class CollageMaker {
         m_rlCollage.setClipChildren(false);
     }
 
-    public void DrawCollageTypeSelector(MainActivity.CollageTypeSelectorImageView ivSelector,
+    public void DrawCollageTypeSelector(CollageActivity.CollageTypeSelectorImageView ivSelector,
                                         int index, int size) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
         ivSelector.setLayoutParams(layoutParams);
@@ -169,10 +167,10 @@ public class CollageMaker {
             int s_y = (int)(size * photo_pos.getY()) + selector_padding;
             int e_x = s_x + (int)(size * photo_pos.getSize());
             int e_y = s_y + (int)(size * photo_pos.getSize());
-            ivSelector.AddLine(new MainActivity.Line(s_x, s_y, e_x, s_y));
-            ivSelector.AddLine(new MainActivity.Line(e_x, s_y, e_x, e_y));
-            ivSelector.AddLine(new MainActivity.Line(e_x, e_y, s_x, e_y));
-            ivSelector.AddLine(new MainActivity.Line(s_x, e_y, s_x, s_y));
+            ivSelector.AddLine(new CollageActivity.Line(s_x, s_y, e_x, s_y));
+            ivSelector.AddLine(new CollageActivity.Line(e_x, s_y, e_x, e_y));
+            ivSelector.AddLine(new CollageActivity.Line(e_x, e_y, s_x, e_y));
+            ivSelector.AddLine(new CollageActivity.Line(s_x, e_y, s_x, s_y));
         }
     }
 
