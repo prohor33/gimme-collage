@@ -29,6 +29,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
 public class GalleryPicker extends ActionBarActivity {
 
@@ -147,7 +148,7 @@ public class GalleryPicker extends ActionBarActivity {
                             R.string.ga_event_label_apply_gallery_images);
 
                     Intent intent = new Intent();
-                    intent.putExtra("strArraySelectedImages", mResultArray);
+                    CollageMaker.getInstance().setImagesFromGallery(mResultArray);
                     GalleryPicker.this.setResult(RESULT_OK, intent);
                     GalleryPicker.this.finish();
 

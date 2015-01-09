@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "crystal.tech.gimmecollage"
-        minSdkVersion 10
+        minSdkVersion 11
         targetSdkVersion 21
         versionCode 3
         versionName "1.02"

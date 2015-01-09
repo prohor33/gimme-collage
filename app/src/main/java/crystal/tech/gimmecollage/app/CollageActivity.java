@@ -59,35 +59,33 @@ public class CollageActivity extends Fragment {
     private static final int GALLERY_REQUEST = 2;
     private ProgressDialog m_dialogProgress = null;
 
-    private enum ImageSourceType {Instagram, Gallery, None};
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
-    public class ImageData {
-        ImageData(String url, int like_count) {
-            m_strUrl = url;
-            m_iLikeCount = like_count;
-            m_eSrc = ImageSourceType.Instagram;
-        }
-        ImageData(String path) {
-            m_strImagePath = path;
-            m_eSrc = ImageSourceType.Gallery;
-        }
-
-        public String getUrl() { return m_strUrl; }
-        public int getLikes() { return m_iLikeCount; }
-        public String getImagePath() { return m_strImagePath; }
-        public ImageSourceType getSrc() { return m_eSrc; };
-
-
-        private ImageSourceType m_eSrc = ImageSourceType.None;
-
-        // instagram data
-        private String m_strUrl = "";
-        private int m_iLikeCount = -1;
-        // gallery data
-        private String m_strImagePath = "";
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment NewsFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static CollageActivity newInstance(String param1, String param2) {
+        CollageActivity fragment = new CollageActivity();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
     }
 
-    private List<ImageData> m_lImages = new ArrayList<ImageData>();
+    public CollageActivity() {
+        // Required empty public constructor
+    }
+
     private final int m_iTemplateImageViewsID = 100;
 
     @Override
@@ -105,24 +103,13 @@ public class CollageActivity extends Fragment {
 
         addCollageTypeSelectorLayout(rootView);
 
-        sortImages();
-
         addCollageLayout(rootView);
+        reloadCollageImages();
 
         addFloatingActionButton(rootView);
 
-        startApp();
-
         return rootView;
     }
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//
-//    }
 
     private int mInstagramSelctedFriendID = -1;
     @Override
@@ -141,21 +128,13 @@ public class CollageActivity extends Fragment {
             case INSTAGRAM_FRIEND_REQUEST:
                 if (data != null) {
                     int friendID = data.getIntExtra("intSelectedFriendID", 0);
-                    if (friendID != mInstagramSelctedFriendID) {
-                        sortImages();
+                    if (friendID != mInstagramSelctedFriendID)
                         reloadCollageImages();
-                    }
                 }
                 break;
             case GALLERY_REQUEST:
-                if(resultCode == Activity.RESULT_OK && data != null) {
-                    String[] galleryImagesPaths = data.getStringArrayExtra("strArraySelectedImages");
-                    m_lImages.clear();
-                    for (String str : galleryImagesPaths) {
-                        m_lImages.add(new ImageData(str));
-                    }
+                if(resultCode == Activity.RESULT_OK)
                     reloadCollageImages();
-                }
                 break;
             default:
         }
@@ -390,7 +369,8 @@ public class CollageActivity extends Fragment {
 
     private void addCollageLayout(View rootView) {
         int collage_size_x = Utils.getScrSizeInPxls(getActivity()).x - 45 * 2;
-        CollageMaker.getInstance().putCollageSize(collage_size_x);
+        CollageMaker collageMaker = CollageMaker.getInstance();
+        collageMaker.putCollageSize(collage_size_x);
         Log.v(TAG, "init()");
 
         final DragDropView rlCollage = (DragDropView)rootView.findViewById(R.id.layoutCollage);
@@ -401,23 +381,9 @@ public class CollageActivity extends Fragment {
             ImageView ivImage = (ImageView)rl.findViewById(R.id.imageView);
             final ProgressBar progressBar = (ProgressBar)rl.findViewById(R.id.progressBar);
 
-            if (i < m_lImages.size()) {
-                Picasso.with(getActivity())
-                       .load(m_lImages.get(i).getUrl())
-                       .into(ivImage, new Callback() {
-                           @Override
-                           public void onSuccess() {
-                               progressBar.setVisibility(View.GONE);
-                           }
 
-                           @Override
-                           public void onError() {
-                               progressBar.setVisibility(View.GONE);
-                           }
-                       });
-            } else {
-                ivImage.setImageResource(R.drawable.ic_add_file_action);
-            }
+            ivImage.setImageResource(R.drawable.ic_add_file_action);
+
             ivImage.setPadding(0, 0, 0, 0);
             ivImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
@@ -443,7 +409,7 @@ public class CollageActivity extends Fragment {
         CollageMaker.getInstance().InitImageViews(getActivity());
     }
 
-    private void updateImageView(ImageView iv, final View pb, ImageData img_data) {
+    private void updateImageView(ImageView iv, final View pb, CollageMaker.ImageData img_data) {
         pb.setVisibility(View.VISIBLE);
         Picasso.with(getActivity());
 
@@ -483,11 +449,10 @@ public class CollageActivity extends Fragment {
             RelativeLayout rl = collageMaker.getImageRL(i);
             final ImageView iv = (ImageView) rl.getChildAt(0);
             final View pb = rl.getChildAt(1);
-            if (i < m_lImages.size()) {
-                updateImageView(iv, pb, m_lImages.get(i));
+            if (i < collageMaker.getImagesDataSize()) {
+                updateImageView(iv, pb, collageMaker.getImageData(i));
             } else {
-//                iv.setImageResource(R.drawable.ic_add_file_action);
-                iv.setImageResource(R.drawable.ic_launcher);
+                iv.setImageResource(R.drawable.ic_add_file_action);
                 pb.setVisibility(View.GONE);
             }
         }
@@ -588,26 +553,6 @@ public class CollageActivity extends Fragment {
         builderSingle.show();
     }
 
-    private void sortImages() {
-        List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
-        Log.v(TAG, "have " + imagesInfo.size() + " images");
-        m_lImages.clear();
-        for (int i = 0; i < imagesInfo.size(); i++) {
-            m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
-                    imagesInfo.get(i).likes_count));
-        }
-
-        class ImageComparator implements Comparator<ImageData> {
-            @Override
-            public int compare(ImageData o1, ImageData o2) {
-                return o2.m_iLikeCount - o1.m_iLikeCount;
-            }
-        }
-
-        // Let's sort images by likes count
-        Collections.sort(m_lImages, new ImageComparator());
-    }
-
     private void saveCollageOnDisk() {
         if (m_dialogProgress == null)
             m_dialogProgress = new ProgressDialog(getActivity());
@@ -632,34 +577,5 @@ public class CollageActivity extends Fragment {
 
             }
         }).execute(imgCollage);
-    }
-
-    private void startApp() {
-        // Load and update LocalStatistic
-        LocalStatistics localStatistics = LocalStatistics.getInstance(getActivity());
-        localStatistics.IncrementAppUsagesNumber();
-
-        if (Settings.showAds) {
-            if (localStatistics.getAppUsagesNumber() > 2 && Math.random() < 0.5) {
-                Ads.LoadInterstitial(getActivity());
-            }
-        }
-
-        // TODO: use Google Tag Manager
-        {
-//        GoogleTagManager.LoadContainer(this);
-
-//        if (ContainerHolderSingleton.getContainerHolder() != null)
-//            ContainerHolderSingleton.getContainerHolder().refresh();
-
-//        DataLayer dataLayer = TagManager.getInstance(this).getDataLayer();
-//        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(CollageActivity.this).getAppUsagesNumber());
-        }
-
-        if (!Settings.collectStatistics) {
-            // When dry run is set, hits will not be dispatched, but will still be logged as
-            // though they were dispatched.
-            GoogleAnalytics.getInstance(getActivity()).setDryRun(true);
-        }
     }
 }

@@ -16,6 +16,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -126,20 +127,29 @@ public class FloatingActionButton extends View {
         super.onLayout(changed, left, top, right, bottom);
 
         // Store the FAB button's displayed X position if we are not already aware of it
-        if (mXDisplayed == -1) {
+        if (mXDisplayed == -1)
             mXDisplayed = ViewHelper.getX(this);
-        }
-        if (mParentFAB != null) {
-            // TODO: do not use animation for this
-            mXHidden = mParentFAB.getLeft();
-            ObjectAnimator animator = ObjectAnimator.ofFloat(this, "x", mXHidden).setDuration(0);
-            animator.setInterpolator(mInterpolator);
-            animator.start();
 
+        if (mParentFAB != null) {
             mHidden = true;
             setUnderParent(true);
+
+            ViewTreeObserver observer = FloatingActionButton.this.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    //in here, place the code that requires you to know the dimensions.
+                    // TODO: do not use animation for this
+                    mXHidden = mParentFAB.getLeft();
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(FloatingActionButton.this, "x", mXHidden).setDuration(0);
+                    animator.setInterpolator(mInterpolator);
+                    animator.start();
+                }
+            });
         }
     }
+
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

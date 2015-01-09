@@ -26,6 +26,7 @@ import java.util.List;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.analytics.TagManagerUtils;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
 
@@ -80,10 +81,11 @@ public class FriendPicker extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == INSTAGRAM_AUTH_REQUEST) {
             if(resultCode == RESULT_OK) {
-                if (InstagramAPI.isAuthenticated())
+                if (InstagramAPI.isAuthenticated()) {
                     loadSelfFollows();
-                else
+                } else {
                     Log.v(TAG, "error in onActivityResult(): no auth");
+                }
             } else {
                 // Errors during AuthActivity or Canceled...
                 Log.d(TAG, "AuthActivityResult = " + resultCode);
@@ -187,6 +189,7 @@ public class FriendPicker extends ActionBarActivity {
                 loadingProgress.dismiss();
             Log.v(TAG, "Friend media list successfully loaded!");
             Log.v(TAG, "have images: " + InstagramAPI.getImages().size());
+            CollageMaker.getInstance().getImagesFromInstagram();
 
             Intent data = new Intent();
             data.putExtra("intSelectedFriendID", mSelectedFriendID);

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,6 +15,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+
+import crystal.tech.gimmecollage.ads.Ads;
+import crystal.tech.gimmecollage.analytics.LocalStatistics;
 
 /**
  * This example illustrates a common usage of the DrawerLayout widget
@@ -41,7 +48,11 @@ import android.widget.ListView;
  * An action should be an operation performed on the current contents of the window,
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+implements NewsFragment.OnFragmentInteractionListener {
+
+    private static final String TAG = "MainActivity";
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 //    private ActionBarDrawerToggle mDrawerToggle;
@@ -95,6 +106,8 @@ public class MainActivity extends Activity {
         if (savedInstanceState == null) {
             selectItem(0);
         }
+
+        startApp();
     }
 
     @Override
@@ -138,7 +151,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    /* The click listner for ListView in the navigation drawer */
+    /* The click listener for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -148,7 +161,19 @@ public class MainActivity extends Activity {
 
     private void selectItem(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = new CollageActivity();
+
+        Fragment fragment;
+        switch (position) {
+            case 0:
+                fragment = new NewsFragment().newInstance("", "");
+                break;
+            case 1:
+                fragment = new CollageActivity().newInstance("", "");
+                break;
+            default:
+                throw new RuntimeException("no on click handler");
+        }
+
 //        Bundle args = new Bundle();
 //        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
 //        fragment.setArguments(args);
@@ -185,6 +210,39 @@ public class MainActivity extends Activity {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
 //        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    private void startApp() {
+        // Load and update LocalStatistic
+        LocalStatistics localStatistics = LocalStatistics.getInstance(MainActivity.this);
+        localStatistics.IncrementAppUsagesNumber();
+
+        if (Settings.showAds) {
+            if (localStatistics.getAppUsagesNumber() > 2 && Math.random() < 0.5) {
+                Ads.LoadInterstitial(MainActivity.this);
+            }
+        }
+
+        // TODO: use Google Tag Manager
+        {
+//        GoogleTagManager.LoadContainer(this);
+
+//        if (ContainerHolderSingleton.getContainerHolder() != null)
+//            ContainerHolderSingleton.getContainerHolder().refresh();
+
+//        DataLayer dataLayer = TagManager.getInstance(this).getDataLayer();
+//        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(CollageActivity.this).getAppUsagesNumber());
+        }
+
+        if (!Settings.collectStatistics) {
+            // When dry run is set, hits will not be dispatched, but will still be logged as
+            // though they were dispatched.
+            GoogleAnalytics.getInstance(MainActivity.this).setDryRun(true);
+        }
     }
 
 }

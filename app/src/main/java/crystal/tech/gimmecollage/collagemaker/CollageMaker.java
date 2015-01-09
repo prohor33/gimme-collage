@@ -19,12 +19,17 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.CollageActivity;
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
+import crystal.tech.gimmecollage.instagram_api.Storage;
 
 /**
  * Created by prohor on 04/10/14.
@@ -43,6 +48,36 @@ public class CollageMaker {
     // big_frame -> big_rl -> rl -> image_view + progress
     // this is rls
     private ArrayList<View> m_vImageRLViews = new ArrayList<View>();
+
+    public enum ImageSourceType {Instagram, Gallery, None};
+
+    public class ImageData {
+        ImageData(String url, int like_count) {
+            m_strUrl = url;
+            m_iLikeCount = like_count;
+            m_eSrc = ImageSourceType.Instagram;
+        }
+        ImageData(String path) {
+            m_strImagePath = path;
+            m_eSrc = ImageSourceType.Gallery;
+        }
+
+        public String getUrl() { return m_strUrl; }
+        public int getLikes() { return m_iLikeCount; }
+        public String getImagePath() { return m_strImagePath; }
+        public ImageSourceType getSrc() { return m_eSrc; };
+
+
+        private ImageSourceType m_eSrc = ImageSourceType.None;
+
+        // instagram data
+        private String m_strUrl = "";
+        private int m_iLikeCount = -1;
+        // gallery data
+        private String m_strImagePath = "";
+    }
+
+    private List<ImageData> m_lImages = new ArrayList<ImageData>();
 
     private static CollageMaker m_pInstance;
 
@@ -332,6 +367,43 @@ public class CollageMaker {
 
     public void updateViewPosition(View v) {
         updateViewPosition(m_vImageRLViews.indexOf(v));
+    }
+
+    public void setImagesFromGallery(String[] image_paths) {
+        m_lImages.clear();
+        for (String str : image_paths) {
+            m_lImages.add(new ImageData(str));
+        }
+    }
+
+    public void getImagesFromInstagram() {
+        List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
+        Log.v(TAG, "have " + imagesInfo.size() + " images");
+        m_lImages.clear();
+        for (int i = 0; i < imagesInfo.size(); i++) {
+            m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
+                    imagesInfo.get(i).likes_count));
+        }
+
+        class ImageComparator implements Comparator<ImageData> {
+            @Override
+            public int compare(ImageData o1, ImageData o2) {
+                return o2.m_iLikeCount - o1.m_iLikeCount;
+            }
+        }
+
+        // Let's sort images by likes count
+        Collections.sort(m_lImages, new ImageComparator());
+    }
+
+    public int getImagesDataSize() {
+        return m_lImages.size();
+    }
+
+    public ImageData getImageData(int i) {
+        if (i < 0 || i >= m_lImages.size())
+            throw new RuntimeException("wrong index");
+        return m_lImages.get(i);
     }
 }
 
