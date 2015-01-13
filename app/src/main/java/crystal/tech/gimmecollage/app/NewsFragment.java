@@ -7,8 +7,14 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import crystal.tech.gimmecollage.app.R;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import crystal.tech.gimmecollage.lenta_api.LentaAPI;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,13 +65,54 @@ public class NewsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        if (!LentaAPI.initialized()) {
+            LentaAPI.init(getActivity());
+        }
+
+        LentaAPI.with(new LentaAPI.Listener() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getActivity(), "Posts successfully loaded!",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail(String error) {
+                Toast.makeText(getActivity(), "Error: Can't load posts.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).updatePosts();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_news, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_news, container, false);
+//        LinearLayout llMain = (LinearLayout)rootView.findViewById(R.id.linearLayout);
+//
+//        LinearLayout ll = (LinearLayout) getResources().getLayout(R.layout.layout_lenta_post);
+//        ImageView iv = (ImageView)ll.findViewById(R.id.imageView);
+//        iv.setPadding(0, 0, 0, 0);
+//        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//        Picasso.with(getActivity())
+//                .load("https://pbs.twimg.com/media/B6hGQhiCAAAtmj9.png:large")  // TODO: hack!
+//                .into(iv, new Callback() {
+//                    @Override
+//                    public void onSuccess() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError() {
+//
+//                    }
+//                });
+//
+//        llMain.addView(ll);
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
