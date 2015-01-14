@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * Created by prohor on 14/01/15.
  */
@@ -70,6 +72,10 @@ public class LentaAPI {
                 mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, mListener));
             }
         }.start();
+    }
+
+    public static ArrayList<Storage.PostInfo> getPosts() {
+        return mSingleton.mStorage.postsInfo;
     }
 
 
