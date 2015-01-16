@@ -12,11 +12,20 @@ public class Storage {
 
     private static final String TAG = "LentaStorage";
 
+    public static class ImageInfo {
+        public String url;
+        public int width;
+        public int height;
+    }
     public static class PostInfo {
+        PostInfo() {
+            image = new ImageInfo();
+            image_preview = new ImageInfo();
+        }
         public String id;
         public String nickname;
-        public String image;
-        public String image_preview;
+        public ImageInfo image;
+        public ImageInfo image_preview;
         public String text;
     }
 

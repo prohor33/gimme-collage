@@ -127,8 +127,8 @@ public class NewsFragment extends Fragment {
             }
         };
 
-        String path = !postInfo.image_preview.isEmpty() ?
-                postInfo.image_preview : postInfo.image;
+        String path = !postInfo.image_preview.url.isEmpty() ?
+                postInfo.image_preview.url : postInfo.image.url;
         if (!path.isEmpty()) {
             Picasso.with(getActivity())
                     .load(path)
