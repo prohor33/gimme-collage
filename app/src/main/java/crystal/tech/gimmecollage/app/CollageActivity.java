@@ -30,12 +30,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import crystal.tech.gimmecollage.ads.Ads;
-import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.view.DragDropView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -43,13 +41,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
-import crystal.tech.gimmecollage.instagram_api.Storage;
 
 
 public class CollageActivity extends Fragment {
@@ -91,7 +85,7 @@ public class CollageActivity extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_collage, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_collage, container, false);
 
         if (!InstagramAPI.initialized()) {
             InstagramAPI.init(getActivity(), ApplicationData.CLIENT_ID, ApplicationData.CLIENT_SECRET,

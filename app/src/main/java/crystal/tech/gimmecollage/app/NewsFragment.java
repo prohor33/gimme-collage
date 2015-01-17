@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,7 +107,7 @@ public class NewsFragment extends Fragment {
         return rootView;
     }
 
-    private void updateImageView(ImageView iv, final View pb, Storage.PostInfo postInfo) {
+    private void updateImageView(ImageView iv, final View pb, Storage.ImageInfo imageInfo) {
         if (pb != null)
             pb.setVisibility(View.VISIBLE);
         Picasso.with(getActivity());
@@ -127,34 +128,55 @@ public class NewsFragment extends Fragment {
             }
         };
 
-        String path = !postInfo.image_preview.url.isEmpty() ?
-                postInfo.image_preview.url : postInfo.image.url;
-        if (!path.isEmpty()) {
-            Picasso.with(getActivity())
-                    .load(path)
-                    .into(iv, on_load);
-        }
+        Picasso.with(getActivity())
+                .load(imageInfo.url)
+                .into(iv, on_load);
     }
 
     private void reloadPosts(View rootView) {
         ArrayList<Storage.PostInfo> posts = LentaAPI.getPosts();
         LinearLayout llMain = (LinearLayout)rootView.findViewById(R.id.linearLayout);
+
         for (int i = 0; i < posts.size(); i++) {
+            Storage.ImageInfo imageInfo = posts.get(i).image_preview.url.isEmpty() ?
+                    posts.get(i).image_preview : posts.get(i).image;
+
             if (i > llMain.getChildCount() - 1) {
                 LinearLayout ll = (LinearLayout) getActivity().getLayoutInflater().inflate(
                         R.layout.layout_lenta_post, null);
                 ImageView iv = (ImageView) ll.findViewById(R.id.imageView);
                 iv.setPadding(0, 0, 0, 0);
                 iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                llMain.addView(ll);
+
+                RelativeLayout imageRL = (RelativeLayout)ll.findViewById(R.id.imageRelativeLayout);
+                LinearLayout.LayoutParams layoutParams =
+                        (LinearLayout.LayoutParams) imageRL.getLayoutParams();
+                layoutParams.width = imageInfo.width;
+                layoutParams.height = imageInfo.height;
+                imageRL.setLayoutParams(layoutParams);
+                imageRL.setPadding(0, 0, 0, 0);
+
+                LinearLayout.LayoutParams llLayoutParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                llLayoutParams.setMargins(24, 24, 24, 24);
+                llMain.addView(ll, llLayoutParams);
             }
+
             LinearLayout ll = (LinearLayout) llMain.getChildAt(i);
             ImageView iv = (ImageView) ll.findViewById(R.id.imageView);
-            updateImageView(iv, null, posts.get(i));
-            TextView txNickname = (TextView) ll.findViewById(R.id.nicknameTextView);
-            txNickname.setText(posts.get(i).nickname);
-            TextView txPost = (TextView) ll.findViewById(R.id.postTextView);
-            txPost.setText(posts.get(i).text);
+            ProgressBar pb = (ProgressBar) ll.findViewById(R.id.progressBar);
+            if (!imageInfo.url.isEmpty())
+                updateImageView(iv, pb, imageInfo);
+
+            RelativeLayout imageRL = (RelativeLayout)ll.findViewById(R.id.imageRelativeLayout);
+            imageRL.setVisibility(imageInfo.url.isEmpty() ? View.GONE : View.VISIBLE);
+
+            TextView txtNickname = (TextView) ll.findViewById(R.id.nicknameTextView);
+            txtNickname.setText("#" + posts.get(i).nickname);
+            txtNickname.setTextColor(getResources().getColor(R.color.design_blue));
+
+            TextView txtPost = (TextView) ll.findViewById(R.id.postTextView);
+            txtPost.setText(posts.get(i).text);
         }
     }
 

@@ -13,6 +13,10 @@ public class Storage {
     private static final String TAG = "LentaStorage";
 
     public static class ImageInfo {
+        ImageInfo() {
+            width = 0;
+            height = 0;
+        }
         public String url;
         public int width;
         public int height;

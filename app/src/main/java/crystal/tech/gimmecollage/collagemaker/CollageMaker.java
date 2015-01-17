@@ -351,7 +351,7 @@ public class CollageMaker {
 
     public void updateViewPosition(int i) {
         if (i >= m_vImageRLViews.size()) {
-            Log.v(TAG, "Error: updateViewPosition: i = " + i + "size = " + m_vImageRLViews.size());
+            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + m_vImageRLViews.size());
             return;
         }
         final View v = m_vImageRLViews.get(i);
