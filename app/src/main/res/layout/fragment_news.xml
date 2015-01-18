@@ -5,18 +5,34 @@
     android:background="@drawable/main_activity_background"
     tools:context="crystal.tech.gimmecollage.app.NewsFragment">
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
+    <LinearLayout
+        android:id="@+id/linlaHeaderProgress"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:padding="10dp"
-            android:dividerPadding="10dp"></LinearLayout>
-    </ScrollView>
+        <ProgressBar
+            android:id="@+id/pbHeaderProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Spinner">
+        </ProgressBar>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="#00000000"
+        android:dividerHeight="15dp"
+        android:fadingEdge="none"
+        android:persistentDrawingCache="scrolling"
+        android:smoothScrollbar="false"
+        android:layout_margin="15dp">
+    </ListView>
 
 </FrameLayout>

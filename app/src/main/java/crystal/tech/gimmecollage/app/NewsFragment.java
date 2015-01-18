@@ -1,16 +1,22 @@
 package crystal.tech.gimmecollage.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -89,18 +95,29 @@ public class NewsFragment extends Fragment {
             LentaAPI.init(getActivity());
         }
 
+        final ListView newsFeed = (ListView) rootView.findViewById(R.id.listView);
+
+        final LinearLayout linlaHeaderProgress = (LinearLayout) rootView.findViewById(R.id.linlaHeaderProgress);
+        // SHOW THE SPINNER WHILE LOADING FEEDS
+        linlaHeaderProgress.setVisibility(View.VISIBLE);
+
         LentaAPI.with(new LentaAPI.Listener() {
             @Override
             public void onSuccess() {
                 Toast.makeText(getActivity(), "Posts successfully loaded!",
                         Toast.LENGTH_SHORT).show();
-                reloadPosts(rootView);
+//                reloadPosts(rootView);
+                newsFeed.setAdapter(new NewsfeedAdapter(getActivity()));
+
+                linlaHeaderProgress.setVisibility(View.GONE);
             }
 
             @Override
             public void onFail(String error) {
                 Toast.makeText(getActivity(), "Error: Can't load posts.",
                         Toast.LENGTH_SHORT).show();
+
+                linlaHeaderProgress.setVisibility(View.GONE);
             }
         }).updatePosts();
 
@@ -178,6 +195,83 @@ public class NewsFragment extends Fragment {
             TextView txtPost = (TextView) ll.findViewById(R.id.postTextView);
             txtPost.setText(posts.get(i).text);
         }
+    }
+
+    public class NewsfeedAdapter extends BaseAdapter {
+        private Context mContext;
+
+        public NewsfeedAdapter(Context context) { mContext = context; }
+
+        public int getCount() {
+            return LentaAPI.getPosts().size();
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            ArrayList<Storage.PostInfo> posts = LentaAPI.getPosts();
+            Storage.ImageInfo imageInfo = posts.get(position).image_preview.url.isEmpty() ?
+                    posts.get(position).image_preview : posts.get(position).image;
+
+            if (view == null) {  // if it's not recycled, initialize some attributes
+                view = getActivity().getLayoutInflater().inflate(R.layout.layout_lenta_post,
+                        parent, false);
+
+                view.setTag(R.id.imageView, view.findViewById(R.id.imageView));
+                view.setTag(R.id.imageRelativeLayout,
+                        view.findViewById(R.id.imageRelativeLayout));
+                view.setTag(R.id.progressBar, view.findViewById(R.id.progressBar));
+                view.setTag(R.id.nicknameTextView, view.findViewById(R.id.nicknameTextView));
+                view.setTag(R.id.postTextView, view.findViewById(R.id.postTextView));
+
+                ImageView iv = (ImageView) view.getTag(R.id.imageView);
+                iv.setPadding(0, 0, 0, 0);
+                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                RelativeLayout imageRL = (RelativeLayout)view.getTag(R.id.imageRelativeLayout);
+                LinearLayout.LayoutParams layoutParams =
+                        (LinearLayout.LayoutParams) imageRL.getLayoutParams();
+                layoutParams.width = imageInfo.width;
+                layoutParams.height = imageInfo.height;
+                imageRL.setLayoutParams(layoutParams);
+                imageRL.setPadding(0, 0, 0, 0);
+
+                LinearLayout.LayoutParams llLayoutParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                llLayoutParams.setMargins(24, 24, 24, 24);
+
+                //Log.d(DEBUG_TAG, "View constructed, " + position);
+            }
+
+
+            ImageView iv = (ImageView) view.getTag(R.id.imageView);
+            ProgressBar pb = (ProgressBar) view.getTag(R.id.progressBar);
+            if (!imageInfo.url.isEmpty())
+                updateImageView(iv, pb, imageInfo);
+
+            RelativeLayout imageRL = (RelativeLayout)view.getTag(R.id.imageRelativeLayout);
+            imageRL.setVisibility(imageInfo.url.isEmpty() ? View.GONE : View.VISIBLE);
+
+            TextView txtNickname = (TextView) view.getTag(R.id.nicknameTextView);
+            txtNickname.setText("#" + posts.get(position).nickname);
+            txtNickname.setTextColor(getResources().getColor(R.color.design_blue));
+
+            TextView txtPost = (TextView) view.getTag(R.id.postTextView);
+            txtPost.setText(posts.get(position).text);
+
+            //Log.d(DEBUG_TAG, "View updated, " + position);
+
+            return view;
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

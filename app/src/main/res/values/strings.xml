@@ -91,7 +91,7 @@
     <string name="ga_event_label_swap_images">Swap Images</string>
 
     <string-array name="tabs_array">
-        <item>News</item>
+        <item>Newsfeed</item>
         <item>Grid Collage</item>
     </string-array>
 
