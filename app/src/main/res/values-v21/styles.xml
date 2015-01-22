@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- the theme applied to the application or activity -->
-    <style name="GimmeCollageTheme"
-        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+
+    <!-- your theme inherits from the material theme -->
+    <style name="AppTheme" parent="android:Theme.Material">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBar</item>
@@ -20,4 +19,5 @@
         <!-- Support library compatibility -->
         <item name="background">@drawable/actionbar_background</item>
     </style>
+    
 </resources>

@@ -187,27 +187,6 @@ public class CollageMaker {
         m_rlCollage.setClipChildren(false);
     }
 
-    public void DrawCollageTypeSelector(CollageActivity.CollageTypeSelectorImageView ivSelector,
-                                        int index, int size) {
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
-        ivSelector.setLayoutParams(layoutParams);
-        if (index < 0 || index >= m_mCollages.size())
-            return;
-        final int selector_padding = size / 20;
-        size -= selector_padding * 2;
-        CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
-        for (int i = 0; i < config.getPhotoCount(); i++) {
-            PhotoPosition photo_pos = config.getPhotoPos(i);
-            int s_x = (int)(size * photo_pos.getX()) + selector_padding;
-            int s_y = (int)(size * photo_pos.getY()) + selector_padding;
-            int e_x = s_x + (int)(size * photo_pos.getSize());
-            int e_y = s_y + (int)(size * photo_pos.getSize());
-            ivSelector.AddLine(new CollageActivity.Line(s_x, s_y, e_x, s_y));
-            ivSelector.AddLine(new CollageActivity.Line(e_x, s_y, e_x, e_y));
-            ivSelector.AddLine(new CollageActivity.Line(e_x, e_y, s_x, e_y));
-            ivSelector.AddLine(new CollageActivity.Line(s_x, e_y, s_x, s_y));
-        }
-    }
 
     public enum CollageType {
         Grid,

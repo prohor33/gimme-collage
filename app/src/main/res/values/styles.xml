@@ -1,12 +1,22 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- <item name="android:buttonStyle">@style/MyButton</item> -->
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/MyActionBar</item>
+
+        <item name="android:actionModeStyle">@style/MyActionBar</item>
+        <!-- Support library compatibility -->
+        <item name="actionModeStyle">@style/MyActionBar</item>
     </style>
 
-    <style name="MyButton" parent="android:Widget.Button">
-        <item name="android:background">#ff5278b2</item>
-        <item name="android:textColor">#ffffff</item>
+    <!-- ActionBar styles -->
+    <style name="MyActionBar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/actionbar_background</item>
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/actionbar_background</item>
     </style>
     
 </resources>

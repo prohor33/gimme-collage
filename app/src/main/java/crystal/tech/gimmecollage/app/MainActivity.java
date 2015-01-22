@@ -104,7 +104,7 @@ implements NewsFragment.OnFragmentInteractionListener {
 //        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-            selectItem(0);
+            selectItem(1);
         }
 
         startApp();
