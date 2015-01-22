@@ -1,5 +1,6 @@
 package crystal.tech.gimmecollage.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -85,8 +87,16 @@ public class CollageActivity extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_collage, container, false);
+        LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_collage,
+                container, false);
+        RelativeLayout rlCollage = (RelativeLayout) rootView.findViewById(R.id.rlCollage);
 
+
+        FrameLayout flImage = (FrameLayout) getActivity().getLayoutInflater().inflate(
+                R.layout.layout_collage_image, null);
+        RelativeLayout.LayoutParams lpImage = new RelativeLayout.LayoutParams(400, 400);
+        flImage.setLayoutParams(lpImage);
+        rlCollage.addView(flImage);
 
         return rootView;
     }

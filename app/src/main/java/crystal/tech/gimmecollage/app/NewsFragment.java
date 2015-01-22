@@ -150,53 +150,6 @@ public class NewsFragment extends Fragment {
                 .into(iv, on_load);
     }
 
-    private void reloadPosts(View rootView) {
-        ArrayList<Storage.PostInfo> posts = LentaAPI.getPosts();
-        LinearLayout llMain = (LinearLayout)rootView.findViewById(R.id.linearLayout);
-
-        for (int i = 0; i < posts.size(); i++) {
-            Storage.ImageInfo imageInfo = posts.get(i).image_preview.url.isEmpty() ?
-                    posts.get(i).image_preview : posts.get(i).image;
-
-            if (i > llMain.getChildCount() - 1) {
-                LinearLayout ll = (LinearLayout) getActivity().getLayoutInflater().inflate(
-                        R.layout.layout_lenta_post, null);
-                ImageView iv = (ImageView) ll.findViewById(R.id.imageView);
-                iv.setPadding(0, 0, 0, 0);
-                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-                RelativeLayout imageRL = (RelativeLayout)ll.findViewById(R.id.imageRelativeLayout);
-                LinearLayout.LayoutParams layoutParams =
-                        (LinearLayout.LayoutParams) imageRL.getLayoutParams();
-                layoutParams.width = imageInfo.width;
-                layoutParams.height = imageInfo.height;
-                imageRL.setLayoutParams(layoutParams);
-                imageRL.setPadding(0, 0, 0, 0);
-
-                LinearLayout.LayoutParams llLayoutParams = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                llLayoutParams.setMargins(24, 24, 24, 24);
-                llMain.addView(ll, llLayoutParams);
-            }
-
-            LinearLayout ll = (LinearLayout) llMain.getChildAt(i);
-            ImageView iv = (ImageView) ll.findViewById(R.id.imageView);
-            ProgressBar pb = (ProgressBar) ll.findViewById(R.id.progressBar);
-            if (!imageInfo.url.isEmpty())
-                updateImageView(iv, pb, imageInfo);
-
-            RelativeLayout imageRL = (RelativeLayout)ll.findViewById(R.id.imageRelativeLayout);
-            imageRL.setVisibility(imageInfo.url.isEmpty() ? View.GONE : View.VISIBLE);
-
-            TextView txtNickname = (TextView) ll.findViewById(R.id.nicknameTextView);
-            txtNickname.setText("#" + posts.get(i).nickname);
-            txtNickname.setTextColor(getResources().getColor(R.color.design_blue));
-
-            TextView txtPost = (TextView) ll.findViewById(R.id.postTextView);
-            txtPost.setText(posts.get(i).text);
-        }
-    }
-
     public class NewsfeedAdapter extends BaseAdapter {
         private Context mContext;
 
