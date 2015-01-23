@@ -12,6 +12,17 @@
     <color name="collage_type_selector">#ffe9ebe9</color>
     <color name="collage_type_selector_pushed">#ff0a0c0a</color>
 
+    <!-- Main Colors for navdrawer ... -> cross with upper colors!!! -->
+    <color name="myPrimaryColor">#3F51B5</color>
+    <color name="myPrimaryDarkColor">#3F51B5</color>
+    <color name="myAccentColor">#3F51B5</color>
+    <color name="myDrawerBackground">#F2F2F2</color>
+    <color name="myWindowBackground">#DEDEDE</color>
+    <color name="myTextPrimaryColor">#FFFFFF</color>
+    <color name="myNavigationColor">#000000</color>
+
+    <color name="selected_gray">#ffdbdbdb</color>
+
     <!-- Action button color -->
     <color name="action_btn_clr">#ff4081</color>
 
