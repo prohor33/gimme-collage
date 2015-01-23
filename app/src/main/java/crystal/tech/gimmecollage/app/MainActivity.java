@@ -83,6 +83,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
             case 0:
                 fragment = new CollageActivity().newInstance("", "");
                 break;
+            case 1:
+                fragment = new NewsFragment().newInstance("","");
+                break;
             default:
                 Log.e(TAG, "Wrong position of navigation drawer!");
                 break;
