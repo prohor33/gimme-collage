@@ -41,7 +41,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         mNavigationDrawerFragment.setup(R.id.fragment_drawer,
                 (DrawerLayout) findViewById(R.id.drawer), mToolbar);
 
-        startApp();
+        //startApp();
     }
 
     @Override
