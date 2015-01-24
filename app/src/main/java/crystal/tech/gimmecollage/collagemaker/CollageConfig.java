@@ -18,10 +18,12 @@ public class CollageConfig {
             case Grid: {
                 int grid_size_x = 4;
                 int grid_size_y = 4;
-                float size = 1.0f / grid_size_x;
+                float padding = 0.03f;
+                float size = (1.0f - (grid_size_x + 1) * padding) / (float)grid_size_x;
                 for (int x = 0; x < grid_size_x; x++) {
                     for (int y = 0; y < grid_size_y; y++) {
-                        m_vPhotoPos.add(new PhotoPosition(size * x, size * y, size));
+                        m_vPhotoPos.add(new PhotoPosition(size * x + padding * (x + 1),
+                                size * y + padding * (y + 1), size));
                     }
                 }
                 break;

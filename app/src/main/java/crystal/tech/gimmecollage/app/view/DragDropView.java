@@ -130,12 +130,12 @@ public class DragDropView extends RelativeLayout {
                     View target_view = findViewUnderPos(X, Y, view);
                     if (target_view != activeTargetView) {
                         if (activeTargetView != null) {
-                            activeTargetView.setBackgroundResource(R.drawable.collage_img_back_unsel);
+                            activeTargetView.setBackgroundResource(R.drawable.collage_image_back);
                             activeTargetView = null;
                         }
                         if (target_view != null) {
                             activeTargetView = target_view;
-                            activeTargetView.setBackgroundResource(R.drawable.collage_img_back_sel);
+                            activeTargetView.setBackgroundResource(R.drawable.collage_rl_back);
                         }
                     }
                     break;
@@ -145,7 +145,7 @@ public class DragDropView extends RelativeLayout {
                     if (isMoving) {
                         isMoving = false;
                         if (activeTargetView != null) {
-                            activeTargetView.setBackgroundResource(R.drawable.collage_img_back_unsel);
+                            activeTargetView.setBackgroundResource(R.drawable.collage_image_back);
                             activeTargetView = null;
                         }
                         View target_view = findViewUnderPos(X, Y, view);

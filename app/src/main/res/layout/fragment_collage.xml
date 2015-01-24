@@ -12,5 +12,7 @@
     <RelativeLayout
         android:id="@+id/rlCollage"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"></RelativeLayout>
+        android:layout_height="fill_parent"
+        android:background="@drawable/collage_rl_back"
+        android:layout_margin="15dp"></RelativeLayout>
 </LinearLayout>

@@ -89,14 +89,8 @@ public class CollageActivity extends Fragment {
                              Bundle savedInstanceState) {
         LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_collage,
                 container, false);
-        RelativeLayout rlCollage = (RelativeLayout) rootView.findViewById(R.id.rlCollage);
 
-
-        FrameLayout flImage = (FrameLayout) getActivity().getLayoutInflater().inflate(
-                R.layout.layout_collage_image, null);
-        RelativeLayout.LayoutParams lpImage = new RelativeLayout.LayoutParams(400, 400);
-        flImage.setLayoutParams(lpImage);
-        rlCollage.addView(flImage);
+        CollageMaker.initImageViews(getActivity(), rootView);
 
         return rootView;
     }
