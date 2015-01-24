@@ -3,6 +3,7 @@ package crystal.tech.gimmecollage.collagemaker;
 import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -39,6 +40,8 @@ public class CollageMaker {
     private ArrayList<View> m_vImageFLViews = new ArrayList<View>();
 
     public enum ImageSourceType {Instagram, Gallery, None};
+
+    private CollageAnimation collageAnimation =  new CollageAnimation();
 
     public class ImageData {
         ImageData(String url, int like_count) {
@@ -121,10 +124,19 @@ public class CollageMaker {
     private void initImageViewsImpl(final Activity activity, View rootView) {
         parentActivity = activity;
         rlCollage = (RelativeLayout) rootView.findViewById(R.id.rlCollage);
+        collageAnimation.init(activity, rlCollage);
 
         for (int i = 0; i < getMaxImageCount(); i++) {
             FrameLayout flImage = (FrameLayout) activity.getLayoutInflater().inflate(
-                    R.layout.layout_collage_image, null);
+                    R.layout.layout_collage_image, null, false);
+
+            flImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onImageClick(view);
+                }
+            });
+
             rlCollage.addView(flImage);
         }
 
@@ -282,6 +294,10 @@ public class CollageMaker {
         if (i < 0 || i >= m_lImages.size())
             throw new RuntimeException("wrong index");
         return m_lImages.get(i);
+    }
+
+    private void onImageClick(View view) {
+        collageAnimation.animateOnImageClick(view);
     }
 }
 
