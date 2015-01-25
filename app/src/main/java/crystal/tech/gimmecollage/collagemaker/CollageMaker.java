@@ -31,7 +31,7 @@ public class CollageMaker {
 
     private CollageType eType = CollageType.Grid;
     private Map<CollageType, CollageConfig> mCollages;
-    private RelativeLayout rlCollage = null;
+    private GestureRelativeLayout rlCollage = null;
     private int collageWidth;   // relative layout width
     private Activity parentActivity;
 
@@ -123,7 +123,7 @@ public class CollageMaker {
 
     private void initImageViewsImpl(final Activity activity, View rootView) {
         parentActivity = activity;
-        rlCollage = (RelativeLayout) rootView.findViewById(R.id.rlCollage);
+        rlCollage = (GestureRelativeLayout) rootView.findViewById(R.id.rlCollage);
         collageAnimation.init(activity, rlCollage);
 
         for (int i = 0; i < getMaxImageCount(); i++) {
@@ -139,6 +139,21 @@ public class CollageMaker {
 
             rlCollage.addView(flImage);
         }
+
+        OnSwipeTouchListener onSwipeTouchListener = new OnSwipeTouchListener(activity) {
+            @Override
+            public void onSwipeLeft() {
+                changeCollageType(eType.ordinal() + 1);
+            }
+
+            @Override
+            public void onSwipeRight() {
+                changeCollageType(eType.ordinal() - 1);
+            }
+        };
+
+        rlCollage.setGestureDetector(onSwipeTouchListener.getGestureDetector());
+        rlCollage.setOnTouchListener(onSwipeTouchListener);
 
         m_vImageFLViews.clear();
         for (int i = 0; i < rlCollage.getChildCount(); i++) {
