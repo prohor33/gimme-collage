@@ -1,51 +1,24 @@
 package crystal.tech.gimmecollage.app;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
-import crystal.tech.gimmecollage.app.view.DragDropView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
-import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 
 
 public class CollageActivity extends Fragment {
@@ -82,8 +55,6 @@ public class CollageActivity extends Fragment {
         // Required empty public constructor
     }
 
-    private final int m_iTemplateImageViewsID = 100;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -91,11 +62,11 @@ public class CollageActivity extends Fragment {
                 container, false);
 
         CollageMaker.initImageViews(getActivity(), rootView);
+        addFloatingActionButtons(rootView);
 
         return rootView;
     }
 
-    private int mInstagramSelctedFriendID = -1;
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -166,6 +137,43 @@ public class CollageActivity extends Fragment {
             @Override public void onError() {
             }
         }
+    }
+
+    private void addFloatingActionButtons(final View rootView) {
+        final FloatingActionButton ok_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton0);
+        ok_fab.setColor(getResources().getColor(R.color.design_blue));
+        ok_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_accept));
+        ok_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FloatingActionButton mFab1 = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
+                mFab1.hide(!mFab1.getHidden());
+                FloatingActionButton mFab2 = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
+                mFab2.hide(!mFab2.getHidden());
+            }
+        });
+
+        FloatingActionButton save_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
+        save_fab.setColor(getResources().getColor(R.color.design_yellow));    // maroon
+        save_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_save));
+        save_fab.setParentFAB(ok_fab);
+        save_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CollageMaker.saveCollageOnDisk();
+            }
+        });
+
+        FloatingActionButton share_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
+        share_fab.setColor(getResources().getColor(R.color.design_red));
+        share_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
+        share_fab.setParentFAB(ok_fab);
+        share_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CollageMaker.shareCollage();
+            }
+        });
     }
 
 }

@@ -34,14 +34,14 @@ public class CollageMaker {
     private GestureRelativeLayout rlCollage = null;
     private int collageWidth;   // relative layout width
     private Activity parentActivity;
+    private CollageAnimation collageAnimation =  new CollageAnimation();
+    private CollageUtils collageUtils = new CollageUtils();
 
     // big_frame -> big_rl -> frame layout -> image_view + progress + back_image
     // this is rls
     private ArrayList<View> m_vImageFLViews = new ArrayList<View>();
 
     public enum ImageSourceType {Instagram, Gallery, None};
-
-    private CollageAnimation collageAnimation =  new CollageAnimation();
 
     public class ImageData {
         ImageData(String url, int like_count) {
@@ -115,6 +115,7 @@ public class CollageMaker {
     public void changeCollageType(CollageType type) {
         eType = type;
         updateImageViews();
+        collageAnimation.onChangeCollageType();
     }
 
     public static void initImageViews(Activity activity, View rootView) {
@@ -309,6 +310,24 @@ public class CollageMaker {
         if (i < 0 || i >= m_lImages.size())
             throw new RuntimeException("wrong index");
         return m_lImages.get(i);
+    }
+
+    public static void saveCollageOnDisk() {
+        GoogleAnalyticsUtils.SendEvent(getInstance().parentActivity,
+                R.string.ga_event_category_save_via_fab,
+                R.string.ga_event_action_save_via_fab,
+                R.string.ga_event_label_save_via_fab);
+
+        getInstance().collageUtils.saveCollageOnDisk();
+    }
+
+    public static void shareCollage() {
+        GoogleAnalyticsUtils.SendEvent(getInstance().parentActivity,
+                R.string.ga_event_category_share_via_fab,
+                R.string.ga_event_action_share_via_fab,
+                R.string.ga_event_label_share_via_fab);
+
+        getInstance().collageUtils.shareCollage();
     }
 
     private void onImageClick(View view) {

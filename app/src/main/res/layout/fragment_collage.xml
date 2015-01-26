@@ -15,4 +15,44 @@
         android:layout_height="fill_parent"
         android:background="@drawable/collage_rl_back"
         android:layout_margin="15dp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="right">
+
+        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
+            android:id="@+id/fabbutton2"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:background="@drawable/fab_save_ripple"
+            android:color="#ff5278b2"
+            android:visibility="visible" />
+
+        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
+            android:id="@+id/fabbutton1"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:background="@drawable/fab_share_ripple"
+            android:color="#ff5278b2"
+            android:visibility="visible" />
+
+        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
+            android:id="@+id/fabbutton0"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:background="@drawable/fab_accept_ripple"
+            android:color="#ff5278b2"
+            />
+    </LinearLayout>
 </LinearLayout>
