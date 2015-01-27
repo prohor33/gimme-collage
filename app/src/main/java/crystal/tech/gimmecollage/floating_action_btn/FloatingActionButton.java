@@ -114,7 +114,8 @@ public class FloatingActionButton extends Button {
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
 
-            final float clickElevation = 35.0f;
+            final float clickElevation =
+                    getResources().getDimension(R.dimen.fab_elevation);
             animate().translationZ(clickElevation).withEndAction(new Runnable() {
                 @Override
                 public void run() {

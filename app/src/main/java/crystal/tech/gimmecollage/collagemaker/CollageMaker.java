@@ -330,9 +330,12 @@ public class CollageMaker {
         CollageUtils.getInstance().shareCollage();
     }
 
-    public void DrawCollageTypeSelector(CollageUtils.CollageTypeSelectorImageView ivSelector,
+    public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
                                         int index, int size) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
+        final int margin =
+                parentActivity.getResources().getDimensionPixelSize(R.dimen.selector_margin);
+        layoutParams.setMargins(margin, margin, margin, margin);
         ivSelector.setLayoutParams(layoutParams);
         if (index < 0 || index >= mCollages.size())
             return;
@@ -345,10 +348,10 @@ public class CollageMaker {
             int s_y = (int)(size * photo_pos.getY()) + selector_padding;
             int e_x = s_x + (int)(size * photo_pos.getSize());
             int e_y = s_y + (int)(size * photo_pos.getSize());
-            ivSelector.AddLine(new CollageUtils.Line(s_x, s_y, e_x, s_y));
-            ivSelector.AddLine(new CollageUtils.Line(e_x, s_y, e_x, e_y));
-            ivSelector.AddLine(new CollageUtils.Line(e_x, e_y, s_x, e_y));
-            ivSelector.AddLine(new CollageUtils.Line(s_x, e_y, s_x, s_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, s_y, e_x, s_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, s_y, e_x, e_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, e_y, s_x, e_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, e_y, s_x, s_y));
         }
     }
 

@@ -21,7 +21,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
         android:layout_weight="0"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
 
         <LinearLayout
             android:id="@+id/layoutTemplates"
@@ -29,9 +31,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
+            android:background="@drawable/collage_type_selectors_back"
             android:weightSum="1">
         </LinearLayout>
     </HorizontalScrollView>
+
 
     <LinearLayout
         android:orientation="horizontal"
