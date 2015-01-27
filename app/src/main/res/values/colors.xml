@@ -9,8 +9,8 @@
 
     <!-- Main activity colors -->
     <color name="collage_type_selector_back">#1a76c1</color>
-    <color name="collage_type_selector">#ffe9ebe9</color>
-    <color name="collage_type_selector_pushed">#ff0a0c0a</color>
+    <color name="collage_type_selector">#ff0a0c0a</color>
+    <color name="collage_type_selector_pushed">#ffe9ebe9</color>
 
     <!-- Main Colors for navdrawer ... -> cross with upper colors!!! -->
     <color name="myPrimaryColor">#3F51B5</color>

@@ -33,32 +33,33 @@
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".CollageFragment" />
         </activity>
         <activity
             android:name="crystal.tech.gimmecollage.app.FriendPicker"
             android:label="@string/title_activity_friend_picker"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".CollageFragment" >
+
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".CollageFragment" />
         </activity>
         <activity
             android:name="crystal.tech.gimmecollage.app.AuthenticationActivity"
             android:label="@string/title_activity_authentication"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".CollageFragment" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".CollageFragment" />
         </activity>
         <activity
             android:name="crystal.tech.gimmecollage.app.GalleryPicker"
             android:label="@string/title_activity_gallery_picker"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".CollageFragment" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".CollageFragment" />
         </activity>
 
         <!-- Activity required to show ad overlays. -->

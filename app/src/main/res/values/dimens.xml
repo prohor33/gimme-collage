@@ -13,4 +13,8 @@
     <dimen name="fab_size">60dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_image_margin">8dp</dimen>
+
+    <!--Collage type selectors-->
+    <dimen name="selector_size">50dp</dimen>
+    <dimen name="stroke_width">1dp</dimen>
 </resources>

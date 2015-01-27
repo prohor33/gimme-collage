@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 
@@ -102,7 +101,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     public void onNavigationDrawerItemSelected(int position) {
         switch (position) {
             case 0:
-                startFragment(new CollageActivity().newInstance("", ""));
+                startFragment(new CollageFragment().newInstance("", ""));
                 break;
             case 1:
                 startFragment(new NewsFragment().newInstance("", ""));

@@ -113,10 +113,12 @@ public class CollageMaker {
     public void changeCollageType(CollageType type) {
         eType = type;
         updateImageViews();
+        CollageUtils.getInstance().updateCollageTypeSelectors();
         collageAnimation.onChangeCollageType();
     }
 
     public static void initImageViews(Activity activity, View rootView) {
+        CollageUtils.Init(activity, rootView);
         getInstance().initImageViewsImpl(activity, rootView);
     }
 
@@ -326,6 +328,28 @@ public class CollageMaker {
                 R.string.ga_event_label_share_via_fab);
 
         CollageUtils.getInstance().shareCollage();
+    }
+
+    public void DrawCollageTypeSelector(CollageUtils.CollageTypeSelectorImageView ivSelector,
+                                        int index, int size) {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
+        ivSelector.setLayoutParams(layoutParams);
+        if (index < 0 || index >= mCollages.size())
+            return;
+        final int selector_padding = size / 20;
+        size -= selector_padding * 2;
+        CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
+        for (int i = 0; i < config.getPhotoCount(); i++) {
+            PhotoPosition photo_pos = config.getPhotoPos(i);
+            int s_x = (int)(size * photo_pos.getX()) + selector_padding;
+            int s_y = (int)(size * photo_pos.getY()) + selector_padding;
+            int e_x = s_x + (int)(size * photo_pos.getSize());
+            int e_y = s_y + (int)(size * photo_pos.getSize());
+            ivSelector.AddLine(new CollageUtils.Line(s_x, s_y, e_x, s_y));
+            ivSelector.AddLine(new CollageUtils.Line(e_x, s_y, e_x, e_y));
+            ivSelector.AddLine(new CollageUtils.Line(e_x, e_y, s_x, e_y));
+            ivSelector.AddLine(new CollageUtils.Line(s_x, e_y, s_x, s_y));
+        }
     }
 
     private void onImageClick(View view) {

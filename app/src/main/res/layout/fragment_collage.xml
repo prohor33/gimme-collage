@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="crystal.tech.gimmecollage.app.CollageActivity"
+    tools:context="crystal.tech.gimmecollage.app.CollageFragment"
     android:id="@+id/layoutMain"
     android:orientation="vertical"
     android:background="@drawable/main_activity_background"
@@ -15,6 +15,23 @@
         android:layout_height="fill_parent"
         android:background="@drawable/collage_rl_back"
         android:layout_margin="15dp"/>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_weight="0"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:id="@+id/layoutTemplates"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:weightSum="1">
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <LinearLayout
         android:orientation="horizontal"
