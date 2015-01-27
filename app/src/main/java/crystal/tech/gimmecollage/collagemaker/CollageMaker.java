@@ -3,7 +3,6 @@ package crystal.tech.gimmecollage.collagemaker;
 import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -35,48 +34,47 @@ public class CollageMaker {
     private int collageWidth;   // relative layout width
     private Activity parentActivity;
     private CollageAnimation collageAnimation =  new CollageAnimation();
-    private CollageUtils collageUtils = new CollageUtils();
 
     // big_frame -> big_rl -> frame layout -> image_view + progress + back_image
     // this is rls
-    private ArrayList<View> m_vImageFLViews = new ArrayList<View>();
+    private ArrayList<View> imageFLViews = new ArrayList<View>();
 
     public enum ImageSourceType {Instagram, Gallery, None};
 
     public class ImageData {
         ImageData(String url, int like_count) {
-            m_strUrl = url;
-            m_iLikeCount = like_count;
-            m_eSrc = ImageSourceType.Instagram;
+            strUrl = url;
+            likeCount = like_count;
+            eSrc = ImageSourceType.Instagram;
         }
         ImageData(String path) {
             m_strImagePath = path;
-            m_eSrc = ImageSourceType.Gallery;
+            eSrc = ImageSourceType.Gallery;
         }
 
-        public String getUrl() { return m_strUrl; }
+        public String getUrl() { return strUrl; }
         public String getImagePath() { return m_strImagePath; }
-        public ImageSourceType getSrc() { return m_eSrc; };
+        public ImageSourceType getSrc() { return eSrc; };
 
 
-        private ImageSourceType m_eSrc = ImageSourceType.None;
+        private ImageSourceType eSrc = ImageSourceType.None;
 
         // instagram data
-        private String m_strUrl = "";
-        private int m_iLikeCount = -1;
+        private String strUrl = "";
+        private int likeCount = -1;
         // gallery data
         private String m_strImagePath = "";
     }
 
     private List<ImageData> m_lImages = new ArrayList<ImageData>();
 
-    private static CollageMaker m_pInstance;
+    private static CollageMaker instance;
 
     public static synchronized CollageMaker getInstance() {
-        if (m_pInstance == null) {
-            m_pInstance = new CollageMaker();
+        if (instance == null) {
+            instance = new CollageMaker();
         }
-        return m_pInstance;
+        return instance;
     }
 
     private CollageMaker() {
@@ -156,9 +154,9 @@ public class CollageMaker {
         rlCollage.setGestureDetector(onSwipeTouchListener.getGestureDetector());
         rlCollage.setOnTouchListener(onSwipeTouchListener);
 
-        m_vImageFLViews.clear();
+        imageFLViews.clear();
         for (int i = 0; i < rlCollage.getChildCount(); i++) {
-            m_vImageFLViews.add(rlCollage.getChildAt(i));
+            imageFLViews.add(rlCollage.getChildAt(i));
         }
 
         ViewTreeObserver vto = rlCollage.getViewTreeObserver();
@@ -181,10 +179,10 @@ public class CollageMaker {
     }
 
     public int getImageCount() {
-        return m_vImageFLViews.size();
+        return imageFLViews.size();
     }
     public RelativeLayout getImageRL(int index) {
-        return (RelativeLayout) m_vImageFLViews.get(index);
+        return (RelativeLayout) imageFLViews.get(index);
     }
 
     private int getMaxImageCount() {
@@ -227,8 +225,8 @@ public class CollageMaker {
 
 
     private void prepareImages() {
-        for (int i = 0; i < m_vImageFLViews.size(); i++) {
-            View iv = m_vImageFLViews.get(i);
+        for (int i = 0; i < imageFLViews.size(); i++) {
+            View iv = imageFLViews.get(i);
 
             if (i < getCollageConf().getPhotoCount()) {
                 iv.setVisibility(View.VISIBLE);
@@ -239,14 +237,14 @@ public class CollageMaker {
     }
 
     private int getActiveImageN() {
-        return Math.min(m_vImageFLViews.size(), getCollageConf().getPhotoCount());
+        return Math.min(imageFLViews.size(), getCollageConf().getPhotoCount());
     }
 
     public void swapViews(View view1, View view2) {
-        int i1 = m_vImageFLViews.indexOf(view1);
-        int i2 = m_vImageFLViews.indexOf(view2);
-        m_vImageFLViews.set(i1, view2);
-        m_vImageFLViews.set(i2, view1);
+        int i1 = imageFLViews.indexOf(view1);
+        int i2 = imageFLViews.indexOf(view2);
+        imageFLViews.set(i1, view2);
+        imageFLViews.set(i2, view1);
         updateViewPosition(i1);
         updateViewPosition(i2);
         GoogleAnalyticsUtils.SendEvent(parentActivity,
@@ -256,11 +254,11 @@ public class CollageMaker {
     }
 
     public void updateViewPosition(int i) {
-        if (i >= m_vImageFLViews.size()) {
-            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + m_vImageFLViews.size());
+        if (i >= imageFLViews.size()) {
+            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + imageFLViews.size());
             return;
         }
-        final View v = m_vImageFLViews.get(i);
+        final View v = imageFLViews.get(i);
 
         PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
@@ -272,7 +270,7 @@ public class CollageMaker {
     }
 
     public void updateViewPosition(View v) {
-        updateViewPosition(m_vImageFLViews.indexOf(v));
+        updateViewPosition(imageFLViews.indexOf(v));
     }
 
     public void setImagesFromGallery(String[] image_paths) {
@@ -294,7 +292,7 @@ public class CollageMaker {
         class ImageComparator implements Comparator<ImageData> {
             @Override
             public int compare(ImageData o1, ImageData o2) {
-                return o2.m_iLikeCount - o1.m_iLikeCount;
+                return o2.likeCount - o1.likeCount;
             }
         }
 
@@ -318,7 +316,7 @@ public class CollageMaker {
                 R.string.ga_event_action_save_via_fab,
                 R.string.ga_event_label_save_via_fab);
 
-        getInstance().collageUtils.saveCollageOnDisk();
+        CollageUtils.getInstance().saveCollageOnDisk();
     }
 
     public static void shareCollage() {
@@ -327,7 +325,7 @@ public class CollageMaker {
                 R.string.ga_event_action_share_via_fab,
                 R.string.ga_event_label_share_via_fab);
 
-        getInstance().collageUtils.shareCollage();
+        CollageUtils.getInstance().shareCollage();
     }
 
     private void onImageClick(View view) {
