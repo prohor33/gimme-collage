@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -15,35 +16,34 @@ import crystal.tech.gimmecollage.app.R;
 /**
  * Created by poliveira on 24/10/2014.
  */
-public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.ViewHolder> {
+public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapter.ViewHolder> {
 
-    private List<NavigationItem> mData;
-    private NavigationDrawerCallbacks mNavigationDrawerCallbacks;
+    private List<SimpleItem> mData;
+    private SimpleDrawerCallbacks mSimpleDrawerCallbacks;
     private int mSelectedPosition;
     private int mTouchedPosition = -1;
 
-    public NavigationDrawerAdapter(List<NavigationItem> data) {
+    public SimpleDrawerAdapter(List<SimpleItem> data) {
         mData = data;
     }
 
-    public NavigationDrawerCallbacks getNavigationDrawerCallbacks() {
-        return mNavigationDrawerCallbacks;
+    public SimpleDrawerCallbacks getSimpleDrawerCallbacks() {
+        return mSimpleDrawerCallbacks;
     }
 
-    public void setNavigationDrawerCallbacks(NavigationDrawerCallbacks navigationDrawerCallbacks) {
-        mNavigationDrawerCallbacks = navigationDrawerCallbacks;
+    public void setSimpleDrawerCallbacks(SimpleDrawerCallbacks SimpleDrawerCallbacks) {
+        mSimpleDrawerCallbacks = SimpleDrawerCallbacks;
     }
 
     @Override
-    public NavigationDrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.navigation_drawer_row, viewGroup, false);
+    public SimpleDrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.simple_drawer_row, viewGroup, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(NavigationDrawerAdapter.ViewHolder viewHolder, final int i) {
-        viewHolder.textView.setText(mData.get(i).getText());
-        viewHolder.textView.setCompoundDrawablesWithIntrinsicBounds(mData.get(i).getDrawable(), null, null, null);
+    public void onBindViewHolder(SimpleDrawerAdapter.ViewHolder viewHolder, final int i) {
+        viewHolder.imageView.setImageDrawable(mData.get(i).getDrawable());
 
         viewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
                                                    @Override
@@ -69,18 +69,19 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                                                    @Override
                                                    public void onClick(View v) {
-                                                       if (mNavigationDrawerCallbacks != null)
-                                                           mNavigationDrawerCallbacks.onNavigationDrawerItemSelected(i);
+                                                       if (mSimpleDrawerCallbacks != null)
+                                                           mSimpleDrawerCallbacks.onSimpleDrawerItemSelected(i);
                                                    }
                                                }
         );
 
-        //TODO: selected menu position, change layout accordingly
+        /*
         if (mSelectedPosition == i || mTouchedPosition == i) {
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getContext().getResources().getColor(R.color.selected_gray));
         } else {
             viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
         }
+        */
     }
 
     private void touchPosition(int position) {
@@ -105,11 +106,11 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
+        public ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.item_name);
+            imageView = (ImageView) itemView.findViewById(R.id.item_name);
         }
     }
 }

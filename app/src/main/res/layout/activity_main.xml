@@ -26,11 +26,20 @@
 
         <!-- android:layout_marginTop="?android:attr/actionBarSize"-->
         <fragment
-            android:id="@+id/fragment_drawer"
+            android:id="@+id/fragment_drawer_left"
             android:name="crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment"
             android:layout_width="@dimen/navigation_drawer_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"
+            app:layout="@layout/fragment_navigation_drawer"/>
+
+        <!-- right fragment drawer -->
+        <fragment
+            android:id="@+id/fragment_drawer_right"
+            android:name="crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment"
+            android:layout_width="@dimen/simple_drawer_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
             app:layout="@layout/fragment_navigation_drawer"/>
     </android.support.v4.widget.DrawerLayout>
 </RelativeLayout>

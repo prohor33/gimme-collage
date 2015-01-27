@@ -13,17 +13,26 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
+import crystal.tech.gimmecollage.navdrawer.NavigationItem;
+import crystal.tech.gimmecollage.navdrawer.SimpleDrawerCallbacks;
+import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
+import crystal.tech.gimmecollage.navdrawer.SimpleItem;
 
-public class MainActivity extends ActionBarActivity implements NavigationDrawerCallbacks {
+public class MainActivity extends ActionBarActivity implements NavigationDrawerCallbacks, SimpleDrawerCallbacks {
 
     private static final String TAG = "MainActivity";
 
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private SimpleDrawerFragment mSimpleDrawerFragment;
+    private List<SimpleItem> mSimpleItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +43,23 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
+        navigationItems.add(new NavigationItem("item 1", getResources().getDrawable(R.drawable.ic_action_select)));
+        navigationItems.add(new NavigationItem("item 2", getResources().getDrawable(R.drawable.ic_action_select)));
+        navigationItems.add(new NavigationItem("item 3", getResources().getDrawable(R.drawable.ic_action_select)));
 
-        //Fragment fragment = new CollageActivity().newInstance("", "");
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
-                .findFragmentById(R.id.fragment_drawer);
-        mNavigationDrawerFragment.setup(R.id.fragment_drawer,
+                .findFragmentById(R.id.fragment_drawer_left);
+        mNavigationDrawerFragment.loadList(navigationItems);
+        mNavigationDrawerFragment.setup(R.id.fragment_drawer_left,
                 (DrawerLayout) findViewById(R.id.drawer), mToolbar);
+
+        mSimpleItems = new ArrayList<SimpleItem>();
+        mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_photopull_add)));
+
+        mSimpleDrawerFragment = (SimpleDrawerFragment) getFragmentManager()
+                .findFragmentById(R.id.fragment_drawer_right);
+        mSimpleDrawerFragment.loadItems(mSimpleItems);
 
         //startApp();
     }
@@ -76,25 +96,41 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         }
     }
 
+    /* Callback for NavigationDrawerFragments. */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new CollageActivity().newInstance("", "");
+                startFragment(new CollageActivity().newInstance("", ""));
                 break;
             case 1:
-                fragment = new NewsFragment().newInstance("","");
+                startFragment(new NewsFragment().newInstance("", ""));
                 break;
             default:
                 Log.e(TAG, "Wrong position of navigation drawer!");
                 break;
         }
-        if(fragment != null) {
-            getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+
+        //Toast.makeText(this, "Menu item -> " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    /* Callback for SimpleDrawerFragments. */
+    @Override
+    public void onSimpleDrawerItemSelected(int position) {
+        if(position == 0) {
+            mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
+            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+        } else {
+            mSimpleItems.remove(position);
+            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
         }
 
-        Toast.makeText(this, "Menu item selected -> " + position, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Menu item -> " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    /* Replace R.id.container for presented fragment. */
+    public void startFragment(Fragment fragment) {
+        getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
     }
 
     @Override

@@ -25,18 +25,17 @@ import crystal.tech.gimmecollage.app.R;
 /**
  * Created by poliveira on 24/10/2014.
  */
-public class NavigationDrawerFragment extends Fragment implements NavigationDrawerCallbacks {
-    private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
+public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallbacks {
+    private static final String PREF_USER_LEARNED_DRAWER = "Simple_drawer_learned";
+    private static final String STATE_SELECTED_POSITION = "selected_Simple_drawer_position";
     private static final String PREFERENCES_FILE = "my_app_settings"; //TODO: change this to your file
-    private NavigationDrawerCallbacks mCallbacks;
+    private SimpleDrawerCallbacks mCallbacks;
     private RecyclerView mDrawerList;
-    private View mFragmentContainerView;
     private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mUserLearnedDrawer;
     private boolean mFromSavedInstanceState;
     private int mCurrentSelectedPosition;
+    private SimpleDrawerAdapter mAdapter;
 
     @Nullable
     @Override
@@ -47,6 +46,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mDrawerList.setLayoutManager(layoutManager);
         mDrawerList.setHasFixedSize(true);
+
 
         return view;
     }
@@ -65,83 +65,29 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
+            mCallbacks = (SimpleDrawerCallbacks) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
+            throw new ClassCastException("Activity must implement SimpleDrawerCallbacks.");
         }
     }
 
-    public ActionBarDrawerToggle getActionBarDrawerToggle() {
-        return mActionBarDrawerToggle;
+    public void loadItems(final List<SimpleItem> SimpleItems) {
+        mAdapter = new SimpleDrawerAdapter(SimpleItems);
+        mAdapter.setSimpleDrawerCallbacks(this);
+        mDrawerList.setAdapter(mAdapter);
     }
 
-    public void setActionBarDrawerToggle(ActionBarDrawerToggle actionBarDrawerToggle) {
-        mActionBarDrawerToggle = actionBarDrawerToggle;
+    public SimpleDrawerAdapter getAdapter() {
+        return mAdapter;
     }
 
-    public void loadList(final List<NavigationItem> navigationItems) {
-        NavigationDrawerAdapter adapter = new NavigationDrawerAdapter(navigationItems);
-        adapter.setNavigationDrawerCallbacks(this);
-        mDrawerList.setAdapter(adapter);
-        selectItem(mCurrentSelectedPosition);
-    }
-
-    public void setup(int fragmentId, DrawerLayout drawerLayout, Toolbar toolbar) {
-        mFragmentContainerView = getActivity().findViewById(fragmentId);
-        mDrawerLayout = drawerLayout;
-        mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.myPrimaryDarkColor));
-
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                if(drawerView.getId() == getId())
-                    super.onDrawerSlide(drawerView, slideOffset);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                if(drawerView.getId() == getId())
-                    super.onDrawerClosed(drawerView);
-
-                if (!isAdded()) return;
-                getActivity().invalidateOptionsMenu();
-            }
-
-            @Override
-                public void onDrawerOpened(View drawerView) {
-                    if(drawerView.getId() == getId())
-                        super.onDrawerOpened(drawerView);
-
-                    if (!isAdded()) return;
-                    if (!mUserLearnedDrawer) {
-                        mUserLearnedDrawer = true;
-                        saveSharedSetting(getActivity(), PREF_USER_LEARNED_DRAWER, "true");
-                    }
-
-                    getActivity().invalidateOptionsMenu();
-            }
-        };
-
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState)
-            mDrawerLayout.openDrawer(mFragmentContainerView);
-
-        mDrawerLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mActionBarDrawerToggle.syncState();
-            }
-        });
-
-        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-    }
 
     public void openDrawer() {
-        mDrawerLayout.openDrawer(mFragmentContainerView);
+        mDrawerLayout.openDrawer(this.getView());
     }
 
     public void closeDrawer() {
-        mDrawerLayout.closeDrawer(mFragmentContainerView);
+        mDrawerLayout.closeDrawer(this.getView());
     }
 
     @Override
@@ -153,22 +99,16 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
     void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
+            mDrawerLayout.closeDrawer(this.getView());
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onSimpleDrawerItemSelected(position);
         }
-        ((NavigationDrawerAdapter) mDrawerList.getAdapter()).selectPosition(position);
+        ((SimpleDrawerAdapter) mDrawerList.getAdapter()).selectPosition(position);
     }
 
     public boolean isDrawerOpen() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mActionBarDrawerToggle.onConfigurationChanged(newConfig);
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(this.getView());
     }
 
     @Override
@@ -178,7 +118,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onSimpleDrawerItemSelected(int position) {
         selectItem(position);
     }
 
