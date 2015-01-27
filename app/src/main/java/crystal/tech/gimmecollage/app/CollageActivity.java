@@ -3,6 +3,7 @@ package crystal.tech.gimmecollage.app;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import crystal.tech.gimmecollage.ads.Ads;
@@ -141,8 +143,6 @@ public class CollageActivity extends Fragment {
 
     private void addFloatingActionButtons(final View rootView) {
         final FloatingActionButton ok_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton0);
-        ok_fab.setColor(getResources().getColor(R.color.design_blue));
-        ok_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_accept));
         ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,8 +154,6 @@ public class CollageActivity extends Fragment {
         });
 
         FloatingActionButton save_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
-        save_fab.setColor(getResources().getColor(R.color.design_yellow));    // maroon
-        save_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_save));
         save_fab.setParentFAB(ok_fab);
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,8 +163,6 @@ public class CollageActivity extends Fragment {
         });
 
         FloatingActionButton share_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
-        share_fab.setColor(getResources().getColor(R.color.design_red));
-        share_fab.setDrawable(getResources().getDrawable(R.drawable.ic_action_share));
         share_fab.setParentFAB(ok_fab);
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
