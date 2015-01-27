@@ -25,4 +25,10 @@ public class CollageAnimation {
         final float clickElevation = 35.0f;
         view.animate().translationZ(clickElevation);
     }
+
+    public void onChangeCollageType() {
+        for (int i = 0; i < rlCollage.getChildCount(); i++) {
+            rlCollage.getChildAt(i).setTranslationZ(0);
+        }
+    }
 }

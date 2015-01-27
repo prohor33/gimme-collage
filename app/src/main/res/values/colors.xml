@@ -230,4 +230,7 @@
     <color name="YellowGreen">#9ACD32</color>
     <!-- z -->
 
+    <!--ripple color-->
+    <color name="fab_ripple_color">#ffffffff</color>
+
 </resources>

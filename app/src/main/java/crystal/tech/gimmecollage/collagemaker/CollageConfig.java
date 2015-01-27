@@ -31,15 +31,16 @@ public class CollageConfig {
             case CenterWithGridAround: {
                 int grid_size_x = 4;
                 int grid_size_y = 4;
-                float size = 1.0f / grid_size_x;
-                m_vPhotoPos.add(new PhotoPosition(size, size,
-                        size * (grid_size_x - 2)));
+                float padding = 0.03f;
+                float size = (1.0f - (grid_size_x + 1) * padding) / (float)grid_size_x;
+                m_vPhotoPos.add(new PhotoPosition(size + 2 * padding, size + 2 * padding,
+                        1.0f - 2 * (size + 2 * padding)));
                 for (int x = 0; x < grid_size_x; x++) {
                     for (int y = 0; y < grid_size_y; y++) {
                         if (x == 0 || x == (grid_size_x - 1) ||
                                 y == 0 || y == (grid_size_y - 1)) {
-                            m_vPhotoPos.add(new PhotoPosition(size * x,
-                                    size * y, size));
+                            m_vPhotoPos.add(new PhotoPosition(size * x + padding * (x + 1),
+                                    size * y + padding * (y + 1), size));
                         }
                     }
                 }
@@ -48,13 +49,15 @@ public class CollageConfig {
             case Test1: {
                 int grid_size_x = 4;
                 int grid_size_y = 4;
-                float size = 1.0f / grid_size_x;
-                m_vPhotoPos.add(new PhotoPosition(0, 0,
-                        size * (grid_size_x - 1)));
+                float padding = 0.03f;
+                float size = (1.0f - (grid_size_x + 1) * padding) / (float)grid_size_x;
+                m_vPhotoPos.add(new PhotoPosition(padding, padding,
+                        1.0f - (size + 3 * padding)));
                 for (int x = 0; x < grid_size_x; x++) {
                     for (int y = 0; y < grid_size_y; y++) {
                         if (x == (grid_size_x - 1) || y == (grid_size_y - 1)) {
-                            m_vPhotoPos.add(new PhotoPosition(size * x, size * y, size));
+                            m_vPhotoPos.add(new PhotoPosition(size * x + padding * (x + 1),
+                                    size * y + padding * (y + 1), size));
                         }
                     }
                 }
@@ -63,15 +66,16 @@ public class CollageConfig {
             case Test2: {
                 int grid_size_x = 6;
                 int grid_size_y = 6;
-                float size = 1.0f / grid_size_x;
-                m_vPhotoPos.add(new PhotoPosition(size, size,
-                        size * (grid_size_x - 2)));
+                float padding = 0.03f;
+                float size = (1.0f - (grid_size_x + 1) * padding) / (float)grid_size_x;
+                m_vPhotoPos.add(new PhotoPosition(size + 2 * padding, size + 2 * padding,
+                        1.0f - 2 * (size + 2 * padding)));
                 for (int x = 0; x < grid_size_x; x++) {
                     for (int y = 0; y < grid_size_y; y++) {
                         if (x == 0 || x == (grid_size_x - 1) ||
                                 y == 0 || y == (grid_size_y - 1)) {
-                            m_vPhotoPos.add(new PhotoPosition(size * x,
-                                    size * y, size));
+                            m_vPhotoPos.add(new PhotoPosition(size * x + padding * (x + 1),
+                                    size * y + padding * (y + 1), size));
                         }
                     }
                 }
@@ -80,10 +84,12 @@ public class CollageConfig {
             case Test3: {
                 int grid_size_x = 6;
                 int grid_size_y = 6;
-                float size = 1.0f / grid_size_x;
+                float padding = 0.03f;
+                float size = (1.0f - (grid_size_x + 1) * padding) / (float)grid_size_x;
                 for (int x = 0; x < grid_size_x; x++) {
                     for (int y = 0; y < grid_size_y; y++) {
-                        m_vPhotoPos.add(new PhotoPosition(size * x, size * y, size));
+                        m_vPhotoPos.add(new PhotoPosition(size * x + padding * (x + 1),
+                                size * y + padding * (y + 1), size));
                     }
                 }
                 break;
