@@ -27,39 +27,38 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="crystal.tech.gimmecollage.app.LoginActivity"
-            android:label="@string/app_name" >
-            android:parentActivityName="crystal.tech.gimmecollage.app.CollageActivity">
+            android:name="crystal.tech.gimmecollage.app.ImageSourceActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="crystal.tech.gimmecollage.app.MainActivity">
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name="crystal.tech.gimmecollage.app.FriendPicker"
             android:label="@string/title_activity_friend_picker"
-            android:parentActivityName=".CollageActivity" >
-
+            android:parentActivityName=".MainActivity" >
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name="crystal.tech.gimmecollage.app.AuthenticationActivity"
             android:label="@string/title_activity_authentication"
-            android:parentActivityName=".CollageActivity" >
+            android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name="crystal.tech.gimmecollage.app.GalleryPicker"
             android:label="@string/title_activity_gallery_picker"
-            android:parentActivityName=".CollageActivity" >
+            android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageActivity" />
+                android:value=".MainActivity" />
         </activity>
 
         <!-- Activity required to show ad overlays. -->
