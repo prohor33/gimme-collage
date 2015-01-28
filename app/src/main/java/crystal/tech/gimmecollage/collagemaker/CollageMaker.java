@@ -34,6 +34,7 @@ public class CollageMaker {
     private int collageWidth;   // relative layout width
     private Activity parentActivity;
     private CollageAnimation collageAnimation =  new CollageAnimation();
+    private View rootView = null;
 
     // big_frame -> big_rl -> frame layout -> image_view + progress + back_image
     // this is rls
@@ -119,6 +120,7 @@ public class CollageMaker {
 
     public static void init(Activity activity, View rootView) {
         getInstance().parentActivity = activity;
+        getInstance().rootView = rootView;
         CollageUtils.Init(activity, rootView);
     }
 
@@ -210,8 +212,6 @@ public class CollageMaker {
 
     private void updateCollageLayoutSize() {
         float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
-        RelativeLayout.LayoutParams layoutParams =
-                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
 
         int collageHeight;
         int max_width = rlCollage.getWidth();
@@ -224,10 +224,22 @@ public class CollageMaker {
             collageWidth = (int)(max_height / aspect_ratio);
         }
 
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
+        layoutParams.removeRule(RelativeLayout.BELOW);
+        layoutParams.removeRule(RelativeLayout.LEFT_OF);
         layoutParams.width = collageWidth;
         layoutParams.height = collageHeight;
         rlCollage.setLayoutParams(layoutParams);
         rlCollage.setClipChildren(false);
+
+        // TODO: move fabs to collage layout
+//        // unattach fabs from bottom
+//        LinearLayout fabLayout =  (LinearLayout)rootView.findViewById(R.id.fabLayout);
+//        RelativeLayout.LayoutParams layoutParams2 =
+//                (RelativeLayout.LayoutParams) fabLayout.getLayoutParams();
+//        layoutParams2.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//        layoutParams2.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
     }
 
     public enum CollageType {
