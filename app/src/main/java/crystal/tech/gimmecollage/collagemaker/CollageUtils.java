@@ -115,13 +115,13 @@ public class CollageUtils {
         // reset all the others
         for (int i = 0; i < llTemplates.getChildCount(); i++) {
             ImageView iv = (ImageView)llTemplates.getChildAt(i);
+            iv.setColorFilter(0);
             if (i == CollageMaker.getInstance().getCollageTypeIndex()) {
                 final float clickElevation =
                         parentActivity.getResources().getDimension(R.dimen.selector_elevation);
                 iv.animate().translationZ(clickElevation);
                 continue;
             }
-            iv.setColorFilter(0);
             iv.setTranslationZ(0);
         }
     }

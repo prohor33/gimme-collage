@@ -332,6 +332,9 @@ public class CollageMaker {
 
     public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
                                         int index, int size) {
+
+//        !!!
+        // TODO: move it from here!!!
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
         final int margin =
                 parentActivity.getResources().getDimensionPixelSize(R.dimen.selector_margin);

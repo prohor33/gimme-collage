@@ -9,7 +9,7 @@
 
     <!-- Main activity colors -->
     <color name="collage_type_selectors_back">#1a76c1</color>
-    <color name="collage_type_selector_back">#ffffffff</color>
+    <color name="collage_type_selector_back">#ff93bcff</color>
     <color name="collage_type_selector">#ff0a0c0a</color>
     <color name="collage_type_selector_pushed">#ffe9ebe9</color>
 
