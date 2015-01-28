@@ -3,5 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_collage_type_selector_iv"
     android:background="@drawable/collage_type_selector_ripple"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+    android:layout_margin="@dimen/selector_margin"
+    android:layout_width="@dimen/selector_size"
+    android:layout_height="@dimen/selector_size"/>

@@ -98,7 +98,8 @@ public class FloatingActionButton extends Button {
             @Override
             public void getOutline(View view, Outline outline) {
                 // Or read size directly from the view's width/height
-                int size = getResources().getDimensionPixelSize(R.dimen.fab_size);
+                final int size =
+                        getResources().getDimensionPixelSize(R.dimen.fab_size);
                 outline.setOval(0, 0, size, size);
             }
         };

@@ -117,13 +117,16 @@ public class CollageMaker {
         collageAnimation.onChangeCollageType();
     }
 
-    public static void initImageViews(Activity activity, View rootView) {
+    public static void init(Activity activity, View rootView) {
+        getInstance().parentActivity = activity;
         CollageUtils.Init(activity, rootView);
-        getInstance().initImageViewsImpl(activity, rootView);
+    }
+
+    public static void initImageViews(View rootView) {
+        getInstance().initImageViewsImpl(instance.parentActivity, rootView);
     }
 
     private void initImageViewsImpl(final Activity activity, View rootView) {
-        parentActivity = activity;
         rlCollage = (GestureRelativeLayout) rootView.findViewById(R.id.rlCollage);
         collageAnimation.init(activity, rlCollage);
 
@@ -166,6 +169,7 @@ public class CollageMaker {
 
             @Override
             public void onGlobalLayout() {
+                updateCollageLayoutSize();
                 updateImageViews();
 
                 ViewTreeObserver obs = rlCollage.getViewTreeObserver();
@@ -198,7 +202,6 @@ public class CollageMaker {
 
     public void updateImageViews() {
         prepareImages();
-        updateCollageLayoutSize();
 
         for (int i = 0; i < getActiveImageN(); i++) {
             updateViewPosition(i);
@@ -206,13 +209,23 @@ public class CollageMaker {
     }
 
     private void updateCollageLayoutSize() {
-        double aspect_ratio = 1.0;  // height / width   TODO: grab from config
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) rlCollage.getLayoutParams();
-        // TODO: more smart sizing
+        float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
 
-        collageWidth = rlCollage.getWidth();
+        int collageHeight;
+        int max_width = rlCollage.getWidth();
+        int max_height = rlCollage.getHeight();
+        if (max_height > aspect_ratio * max_width) {
+            collageWidth = max_width;
+            collageHeight = (int)(aspect_ratio * max_width);
+        } else {
+            collageHeight = max_height;
+            collageWidth = (int)(max_height / aspect_ratio);
+        }
+
         layoutParams.width = collageWidth;
-        layoutParams.height = (int)(aspect_ratio * collageWidth);
+        layoutParams.height = collageHeight;
         rlCollage.setLayoutParams(layoutParams);
         rlCollage.setClipChildren(false);
     }
@@ -332,14 +345,6 @@ public class CollageMaker {
 
     public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
                                         int index, int size) {
-
-//        !!!
-        // TODO: move it from here!!!
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(size, size);
-        final int margin =
-                parentActivity.getResources().getDimensionPixelSize(R.dimen.selector_margin);
-        layoutParams.setMargins(margin, margin, margin, margin);
-        ivSelector.setLayoutParams(layoutParams);
         if (index < 0 || index >= mCollages.size())
             return;
         final int selector_padding = size / 20;
