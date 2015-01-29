@@ -86,9 +86,10 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.myPrimaryDarkColor));
 
-
+        /*
         if (!mUserLearnedDrawer && !mFromSavedInstanceState)
             mDrawerLayout.openDrawer(this.getView());
+            */
     }
 
     public void openDrawer() {

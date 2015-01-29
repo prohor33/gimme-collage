@@ -60,8 +60,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
 
         mSimpleDrawerFragment = (SimpleDrawerFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_drawer_right);
-        mSimpleDrawerFragment.setup((DrawerLayout) findViewById(R.id.drawer));
         mSimpleDrawerFragment.loadItems(mSimpleItems);
+        mSimpleDrawerFragment.setup((DrawerLayout) findViewById(R.id.drawer));
 
         CollageMaker.getInstance().putMainActivity(this);
 
