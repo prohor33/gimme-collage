@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/ivBack"
         android:layout_gravity="center"
-        android:src="@drawable/ic_action_content_add" />
+        android:src="@drawable/ic_photopull_add" />
 
     <ImageView
         android:layout_width="match_parent"

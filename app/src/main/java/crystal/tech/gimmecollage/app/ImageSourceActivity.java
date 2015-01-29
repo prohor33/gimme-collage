@@ -48,13 +48,14 @@ public class ImageSourceActivity extends ActionBarActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
 
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(itemAnimator);
     }
 
     private void populateImageSourceItems(List<ImageSourceItem> items) {
-        for (int i = 0; i<10; i++) {
+        for (int i = 0; i < 100; i++) {
             ImageSourceItem item = new ImageSourceItem();
             item.setText("Instagram");
             item.setDrawable(R.drawable.ic_instagram);
@@ -140,6 +141,7 @@ public class ImageSourceActivity extends ActionBarActivity {
         public void onBindViewHolder(ViewHolder viewHolder, int i) {
             ImageSourceItem item = mItems.get(i);
             viewHolder.textView.setText(item.getText());
+            viewHolder.imageView.setImageDrawable(item.getDrawable());
             //viewHolder.textView.setCompoundDrawablesWithIntrinsicBounds(item.getDrawable(), null, null, null);
         }
 
@@ -152,10 +154,12 @@ public class ImageSourceActivity extends ActionBarActivity {
          * Реализация класса ViewHolder, хранящего ссылки на виджеты.
          */
         class ViewHolder extends RecyclerView.ViewHolder {
+            private ImageView imageView;
             private TextView textView;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+                imageView = (ImageView) itemView.findViewById(R.id.imageView);
                 textView = (TextView) itemView.findViewById(R.id.textView);
             }
         }
