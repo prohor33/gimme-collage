@@ -122,12 +122,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     @Override
     public void onSimpleDrawerItemSelected(int position) {
         if(position == 0) {
-//            // Spawn ImageSourceActivity.
-//            Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
-//            startActivity(intent);
+            // Spawn ImageSourceActivity.
+            Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
+            startActivity(intent);
 
-            mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
-            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+//            mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
+//            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
         } else {
             mSimpleItems.remove(position);
             mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
