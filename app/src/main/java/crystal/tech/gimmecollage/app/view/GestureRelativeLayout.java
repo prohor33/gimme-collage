@@ -1,4 +1,4 @@
-package crystal.tech.gimmecollage.collagemaker;
+package crystal.tech.gimmecollage.app.view;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;

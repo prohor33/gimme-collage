@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -17,9 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
+import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
+import crystal.tech.gimmecollage.app.view.OnSwipeTouchListener;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
+import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
 /**
  * Created by prohor on 04/10/14.
@@ -32,8 +36,10 @@ public class CollageMaker {
     private Map<CollageType, CollageConfig> mCollages;
     private GestureRelativeLayout rlCollage = null;
     private int collageWidth;   // relative layout width
-    private Activity parentActivity;
+    private Activity parentActivity = null;
+    private MainActivity mainActivity = null;
     private CollageAnimation collageAnimation =  new CollageAnimation();
+    private View rootView = null;
 
     // big_frame -> big_rl -> frame layout -> image_view + progress + back_image
     // this is rls
@@ -113,15 +119,25 @@ public class CollageMaker {
     public void changeCollageType(CollageType type) {
         eType = type;
         updateImageViews();
+        CollageUtils.getInstance().updateCollageTypeSelectors();
         collageAnimation.onChangeCollageType();
     }
 
-    public static void initImageViews(Activity activity, View rootView) {
-        getInstance().initImageViewsImpl(activity, rootView);
+    public static void init(Activity activity, View rootView) {
+        getInstance().parentActivity = activity;
+        getInstance().rootView = rootView;
+        CollageUtils.Init(activity, rootView);
+    }
+
+    public void putMainActivity(MainActivity activity) {
+        mainActivity = activity;
+    }
+
+    public static void initImageViews(View rootView) {
+        getInstance().initImageViewsImpl(instance.parentActivity, rootView);
     }
 
     private void initImageViewsImpl(final Activity activity, View rootView) {
-        parentActivity = activity;
         rlCollage = (GestureRelativeLayout) rootView.findViewById(R.id.rlCollage);
         collageAnimation.init(activity, rlCollage);
 
@@ -164,6 +180,7 @@ public class CollageMaker {
 
             @Override
             public void onGlobalLayout() {
+                updateCollageLayoutSize();
                 updateImageViews();
 
                 ViewTreeObserver obs = rlCollage.getViewTreeObserver();
@@ -196,7 +213,6 @@ public class CollageMaker {
 
     public void updateImageViews() {
         prepareImages();
-        updateCollageLayoutSize();
 
         for (int i = 0; i < getActiveImageN(); i++) {
             updateViewPosition(i);
@@ -204,13 +220,28 @@ public class CollageMaker {
     }
 
     private void updateCollageLayoutSize() {
-        double aspect_ratio = 1.0;  // height / width   TODO: grab from config
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) rlCollage.getLayoutParams();
-        // TODO: more smart sizing
+        float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
 
-        collageWidth = rlCollage.getWidth();
+        // TODO: add parent FrameLayout, keep collage in center
+        // TODO: and grab size of the parent each time
+
+        int collageHeight;
+        int max_width = rlCollage.getWidth();
+        int max_height = rlCollage.getHeight();
+        if (max_height > aspect_ratio * max_width) {
+            collageWidth = max_width;
+            collageHeight = (int)(aspect_ratio * max_width);
+        } else {
+            collageHeight = max_height;
+            collageWidth = (int)(max_height / aspect_ratio);
+        }
+
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
+        layoutParams.removeRule(RelativeLayout.BELOW);
+        layoutParams.removeRule(RelativeLayout.LEFT_OF);
         layoutParams.width = collageWidth;
-        layoutParams.height = (int)(aspect_ratio * collageWidth);
+        layoutParams.height = collageHeight;
         rlCollage.setLayoutParams(layoutParams);
         rlCollage.setClipChildren(false);
     }
@@ -328,7 +359,33 @@ public class CollageMaker {
         CollageUtils.getInstance().shareCollage();
     }
 
+    public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
+                                        int index, int size) {
+        if (index < 0 || index >= mCollages.size())
+            return;
+        final int selector_padding = size / 20;
+        size -= selector_padding * 2;
+        CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
+        for (int i = 0; i < config.getPhotoCount(); i++) {
+            PhotoPosition photo_pos = config.getPhotoPos(i);
+            int s_x = (int)(size * photo_pos.getX()) + selector_padding;
+            int s_y = (int)(size * photo_pos.getY()) + selector_padding;
+            int e_x = s_x + (int)(size * photo_pos.getSize());
+            int e_y = s_y + (int)(size * photo_pos.getSize());
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, s_y, e_x, s_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, s_y, e_x, e_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, e_y, s_x, e_y));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, e_y, s_x, s_y));
+        }
+    }
+
     private void onImageClick(View view) {
+        SimpleDrawerFragment rightFragment = (SimpleDrawerFragment) mainActivity.getRightDrawer();
+        if (rightFragment == null) {
+            Log.e(TAG, "rightFragment = " + rightFragment);
+        }
+        rightFragment.openDrawer();
+
         collageAnimation.animateOnImageClick(view);
     }
 }

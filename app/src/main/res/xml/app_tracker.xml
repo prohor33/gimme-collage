@@ -6,7 +6,7 @@
     <bool name="ga_autoActivityTracking">true</bool>
 
     <!-- The screen names that will appear in reports -->
-    <screenName name="crystal.tech.gimmecollage.app.CollageActivity">
+    <screenName name="crystal.tech.gimmecollage.app.CollageFragment">
         GC MainActivity
     </screenName>
     <screenName name="crystal.tech.gimmecollage.app.FriendPicker">

@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 
@@ -19,6 +18,7 @@ import java.util.List;
 
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
 import crystal.tech.gimmecollage.navdrawer.NavigationItem;
@@ -63,6 +63,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         mSimpleDrawerFragment.setup((DrawerLayout) findViewById(R.id.drawer));
         mSimpleDrawerFragment.loadItems(mSimpleItems);
 
+        CollageMaker.getInstance().putMainActivity(this);
+
         //startApp();
     }
 
@@ -103,7 +105,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     public void onNavigationDrawerItemSelected(int position) {
         switch (position) {
             case 0:
-                startFragment(new CollageActivity().newInstance("", ""));
+                startFragment(new CollageFragment().newInstance("", ""));
                 break;
             case 1:
                 startFragment(new NewsFragment().newInstance("", ""));
@@ -145,6 +147,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
             mNavigationDrawerFragment.closeDrawer();
         else
             super.onBackPressed();
+    }
+
+    public SimpleDrawerFragment getRightDrawer() {
+        return mSimpleDrawerFragment;
     }
 
     /* Google staticstics ?.. */

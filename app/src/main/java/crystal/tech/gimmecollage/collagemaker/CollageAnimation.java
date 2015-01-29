@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import crystal.tech.gimmecollage.app.R;
+
 /**
  * Created by prohor on 24/01/15.
  */
@@ -22,7 +24,8 @@ public class CollageAnimation {
             rlCollage.getChildAt(i).animate().translationZ(0);
         }
 
-        final float clickElevation = 35.0f;
+        final float clickElevation =
+                parentActivity.getResources().getDimension(R.dimen.collage_iv_elevation);
         view.animate().translationZ(clickElevation);
     }
 

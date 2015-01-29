@@ -13,47 +13,47 @@
         android:id="@+id/rlCollage"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/horScrollView"
         android:background="@drawable/collage_rl_back"
         android:layout_margin="15dp"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/scrollView" />
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/horScrollView"
-        android:layout_above="@+id/fabLayout"
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_toLeftOf="@+id/fabLayout"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
 
         <LinearLayout
             android:id="@+id/layoutTemplates"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
             android:background="@drawable/collage_type_selectors_back"
             android:weightSum="1">
         </LinearLayout>
-    </HorizontalScrollView>
+    </ScrollView>
 
 
     <LinearLayout
         android:id="@+id/fabLayout"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
         android:padding="@dimen/fab_margin"
-        android:gravity="right"
+        android:gravity="bottom"
         android:clipToPadding="false"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentRight="true">
 
         <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
             android:id="@+id/fabbutton2"
             android:layout_width="@dimen/fab_size"
             android:layout_height="@dimen/fab_size"
             android:layout_gravity="bottom|right"
-            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
             android:background="@drawable/fab_save_ripple"
             android:color="#ff5278b2"
             android:visibility="visible" />
@@ -63,7 +63,7 @@
             android:layout_width="@dimen/fab_size"
             android:layout_height="@dimen/fab_size"
             android:layout_gravity="bottom|right"
-            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
             android:background="@drawable/fab_share_ripple"
             android:color="#ff5278b2"
             android:visibility="visible" />

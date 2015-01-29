@@ -1,4 +1,4 @@
-package crystal.tech.gimmecollage.collagemaker;
+package crystal.tech.gimmecollage.app.view;
 
 /**
  * Created by prohor on 25/01/15.

@@ -3,7 +3,6 @@ package crystal.tech.gimmecollage.app;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,11 +10,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.collagemaker.CollageUtils;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
 import java.io.File;
@@ -23,7 +23,7 @@ import java.io.File;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
 
-public class CollageActivity extends Fragment {
+public class CollageFragment extends Fragment {
 
     private static final String TAG = "CollageActivity";
     private static final int INSTAGRAM_FRIEND_REQUEST = 1;
@@ -44,8 +44,8 @@ public class CollageActivity extends Fragment {
      * @return A new instance of fragment NewsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CollageActivity newInstance(String param1, String param2) {
-        CollageActivity fragment = new CollageActivity();
+    public static CollageFragment newInstance(String param1, String param2) {
+        CollageFragment fragment = new CollageFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -53,18 +53,20 @@ public class CollageActivity extends Fragment {
         return fragment;
     }
 
-    public CollageActivity() {
+    public CollageFragment() {
         // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_collage,
+        View rootView = inflater.inflate(R.layout.fragment_collage,
                 container, false);
 
-        CollageMaker.initImageViews(getActivity(), rootView);
-        addFloatingActionButtons(rootView);
+        CollageMaker.init(getActivity(), rootView);
+        CollageUtils.addFloatingActionButtons(rootView);
+        CollageUtils.addCollageTypeSelectorLayout(rootView);
+        CollageMaker.initImageViews(rootView);
 
         return rootView;
     }
@@ -140,36 +142,4 @@ public class CollageActivity extends Fragment {
             }
         }
     }
-
-    private void addFloatingActionButtons(final View rootView) {
-        final FloatingActionButton ok_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton0);
-        ok_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FloatingActionButton mFab1 = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
-                mFab1.hide(!mFab1.getHidden());
-                FloatingActionButton mFab2 = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
-                mFab2.hide(!mFab2.getHidden());
-            }
-        });
-
-        FloatingActionButton save_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
-        save_fab.setParentFAB(ok_fab);
-        save_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CollageMaker.saveCollageOnDisk();
-            }
-        });
-
-        FloatingActionButton share_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
-        share_fab.setParentFAB(ok_fab);
-        share_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CollageMaker.shareCollage();
-            }
-        });
-    }
-
 }

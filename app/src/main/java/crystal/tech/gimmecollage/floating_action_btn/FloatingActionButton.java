@@ -98,7 +98,8 @@ public class FloatingActionButton extends Button {
             @Override
             public void getOutline(View view, Outline outline) {
                 // Or read size directly from the view's width/height
-                int size = getResources().getDimensionPixelSize(R.dimen.fab_size);
+                final int size =
+                        getResources().getDimensionPixelSize(R.dimen.fab_size);
                 outline.setOval(0, 0, size, size);
             }
         };
@@ -114,7 +115,8 @@ public class FloatingActionButton extends Button {
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
 
-            final float clickElevation = 35.0f;
+            final float clickElevation =
+                    getResources().getDimension(R.dimen.fab_elevation);
             animate().translationZ(clickElevation).withEndAction(new Runnable() {
                 @Override
                 public void run() {

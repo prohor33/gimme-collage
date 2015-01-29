@@ -8,9 +8,10 @@
     <color name="design_blue">#0466ff</color>
 
     <!-- Main activity colors -->
-    <color name="collage_type_selector_back">#1a76c1</color>
-    <color name="collage_type_selector">#ffe9ebe9</color>
-    <color name="collage_type_selector_pushed">#ff0a0c0a</color>
+    <color name="collage_type_selectors_back">#1a76c1</color>
+    <color name="collage_type_selector_back">#ff93bcff</color>
+    <color name="collage_type_selector">#ff0a0c0a</color>
+    <color name="collage_type_selector_pushed">#ffe9ebe9</color>
 
     <!-- Main Colors for navdrawer ... -> cross with upper colors!!! -->
     <color name="myPrimaryColor">#3F51B5</color>
@@ -28,6 +29,15 @@
 
     <!-- Android style -->
     <color name="android_green">#A4C639</color>
+
+    <!--fabs-->
+    <color name="fab_ripple_color">#ffffffff</color>
+
+    <!--collage type selector-->
+    <color name="collage_selector_ripple_clr">#ffffffff</color>
+
+
+    <!--Do we need this?-->
 
     <!-- Android Holo style -->
     <color name="holo_blue_bright">#ff00ddff</color>
@@ -229,8 +239,5 @@
 
     <color name="YellowGreen">#9ACD32</color>
     <!-- z -->
-
-    <!--ripple color-->
-    <color name="fab_ripple_color">#ffffffff</color>
 
 </resources>
