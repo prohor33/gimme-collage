@@ -1,4 +1,4 @@
-package crystal.tech.gimmecollage.collagemaker;
+package crystal.tech.gimmecollage.app.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
 /**
  * Created by prohor on 28/01/15.

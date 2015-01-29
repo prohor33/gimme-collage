@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -17,9 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
+import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
+import crystal.tech.gimmecollage.app.view.OnSwipeTouchListener;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
+import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
 /**
  * Created by prohor on 04/10/14.
@@ -32,7 +36,8 @@ public class CollageMaker {
     private Map<CollageType, CollageConfig> mCollages;
     private GestureRelativeLayout rlCollage = null;
     private int collageWidth;   // relative layout width
-    private Activity parentActivity;
+    private Activity parentActivity = null;
+    private MainActivity mainActivity = null;
     private CollageAnimation collageAnimation =  new CollageAnimation();
     private View rootView = null;
 
@@ -124,6 +129,10 @@ public class CollageMaker {
         CollageUtils.Init(activity, rootView);
     }
 
+    public void putMainActivity(MainActivity activity) {
+        mainActivity = activity;
+    }
+
     public static void initImageViews(View rootView) {
         getInstance().initImageViewsImpl(instance.parentActivity, rootView);
     }
@@ -213,6 +222,9 @@ public class CollageMaker {
     private void updateCollageLayoutSize() {
         float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
 
+        // TODO: add parent FrameLayout, keep collage in center
+        // TODO: and grab size of the parent each time
+
         int collageHeight;
         int max_width = rlCollage.getWidth();
         int max_height = rlCollage.getHeight();
@@ -232,14 +244,6 @@ public class CollageMaker {
         layoutParams.height = collageHeight;
         rlCollage.setLayoutParams(layoutParams);
         rlCollage.setClipChildren(false);
-
-        // TODO: move fabs to collage layout
-//        // unattach fabs from bottom
-//        LinearLayout fabLayout =  (LinearLayout)rootView.findViewById(R.id.fabLayout);
-//        RelativeLayout.LayoutParams layoutParams2 =
-//                (RelativeLayout.LayoutParams) fabLayout.getLayoutParams();
-//        layoutParams2.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//        layoutParams2.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
     }
 
     public enum CollageType {
@@ -376,6 +380,12 @@ public class CollageMaker {
     }
 
     private void onImageClick(View view) {
+        SimpleDrawerFragment rightFragment = (SimpleDrawerFragment) mainActivity.getRightDrawer();
+        if (rightFragment == null) {
+            Log.e(TAG, "rightFragment = " + rightFragment);
+        }
+        rightFragment.openDrawer();
+
         collageAnimation.animateOnImageClick(view);
     }
 }

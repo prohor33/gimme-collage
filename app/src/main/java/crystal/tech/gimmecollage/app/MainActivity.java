@@ -18,6 +18,7 @@ import java.util.List;
 
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
 import crystal.tech.gimmecollage.navdrawer.NavigationItem;
@@ -60,6 +61,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         mSimpleDrawerFragment = (SimpleDrawerFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_drawer_right);
         mSimpleDrawerFragment.loadItems(mSimpleItems);
+
+        CollageMaker.getInstance().putMainActivity(this);
 
         //startApp();
     }
@@ -143,6 +146,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
             mNavigationDrawerFragment.closeDrawer();
         else
             super.onBackPressed();
+    }
+
+    public SimpleDrawerFragment getRightDrawer() {
+        return mSimpleDrawerFragment;
     }
 
     /* Google staticstics ?.. */

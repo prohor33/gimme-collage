@@ -3,11 +3,11 @@ package crystal.tech.gimmecollage.collagemaker;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
 /**
