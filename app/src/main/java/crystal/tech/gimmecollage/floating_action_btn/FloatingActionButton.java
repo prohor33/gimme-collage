@@ -32,11 +32,11 @@ public class FloatingActionButton extends Button {
     /**
      * The FAB button's X position when it is displayed.
      */
-    private float mXDisplayed = -1;
+    private Point mPosDisplayed = new Point(-1, -1);
     /**
      * The FAB button's X position when it is hidden.
      */
-    private float mXHidden = -1;
+    private Point mPosHidden = new Point(-1, -1);
     private FloatingActionButton mParentFAB = null;
 
     public FloatingActionButton(Context context) {
@@ -65,17 +65,22 @@ public class FloatingActionButton extends Button {
                 }
 
                 // Store the FAB button's displayed X position if we are not already aware of it
-                if (mXDisplayed == -1)
-                    mXDisplayed = getX();
+                if (mPosDisplayed.x == -1) {
+                    mPosDisplayed.x = (int)getX();
+                    mPosDisplayed.y = (int)getY();
+                }
 
                 if (mParentFAB != null) {
                     mHidden = CollageUtils.getFabCollapsed();
                     setUnderParent(mHidden);
 
-                    mXHidden = mParentFAB.getLeft();
+                    mPosHidden.x = mParentFAB.getLeft();
+                    mPosHidden.y = mParentFAB.getTop();
 
-                    if (mHidden)
-                        setX(mXHidden);
+                    if (mHidden) {
+                        setX(mPosHidden.x);
+                        setY(mPosHidden.y);
+                    }
                 }
             }
 
@@ -86,12 +91,9 @@ public class FloatingActionButton extends Button {
                 context.getSystemService(Context.WINDOW_SERVICE);
         Display display = mWindowManager.getDefaultDisplay();
         Point size = new Point();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            display.getSize(size);
-            mXHidden = size.x;
-        } else {
-            mXHidden = display.getWidth();
-        }
+        display.getSize(size);
+        mPosHidden.x = size.x;
+        mPosHidden.y = size.y;
 
         // Outline
         ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
@@ -137,9 +139,13 @@ public class FloatingActionButton extends Button {
             CollageUtils.putFabCollapsed(mHidden);
 
             // Animate the FAB to it's new X position
-            ObjectAnimator animator = ObjectAnimator.ofFloat(this, "x", mHidden ? mXHidden : mXDisplayed).setDuration(500);
-            animator.setInterpolator(mInterpolator);
-            animator.addListener(new Animator.AnimatorListener() {
+            ObjectAnimator animatorX = ObjectAnimator.ofFloat(this,
+                    "x", mHidden ? mPosHidden.x : mPosDisplayed.x).setDuration(500);
+            ObjectAnimator animatorY = ObjectAnimator.ofFloat(this,
+                    "y", mHidden ? mPosHidden.y : mPosDisplayed.y).setDuration(500);
+            animatorX.setInterpolator(mInterpolator);
+
+            animatorX.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     if (!mHidden) {
@@ -159,7 +165,8 @@ public class FloatingActionButton extends Button {
                 @Override
                 public void onAnimationRepeat(Animator animation) {}
             });
-            animator.start();
+            animatorX.start();
+            animatorY.start();
         }
     }
 

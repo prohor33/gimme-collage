@@ -380,10 +380,7 @@ public class CollageMaker {
     }
 
     private void onImageClick(View view) {
-        SimpleDrawerFragment rightFragment = (SimpleDrawerFragment) mainActivity.getRightDrawer();
-        if (rightFragment == null) {
-            Log.e(TAG, "rightFragment = " + rightFragment);
-        }
+        SimpleDrawerFragment rightFragment = mainActivity.getRightDrawer();
         rightFragment.openDrawer();
 
         collageAnimation.animateOnImageClick(view);
