@@ -30,10 +30,11 @@ import java.io.File;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 
 public class GalleryPicker extends ActionBarActivity {
 
-    private static final String DEBUG_TAG = "GalleryPicker";
+    private static final String TAG = "GalleryPicker";
 
     class GalleryImageHolder {
         private String mImagePath;
@@ -77,8 +78,8 @@ public class GalleryPicker extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_picker);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 
         mResultArray = null;
 
@@ -148,7 +149,7 @@ public class GalleryPicker extends ActionBarActivity {
                             R.string.ga_event_label_apply_gallery_images);
 
                     Intent intent = new Intent();
-                    CollageMaker.getInstance().setImagesFromGallery(mResultArray);
+                    ImageStorage.getInstance().setImagesFromGallery(mResultArray);
                     GalleryPicker.this.setResult(RESULT_OK, intent);
                     GalleryPicker.this.finish();
 
@@ -221,7 +222,7 @@ public class GalleryPicker extends ActionBarActivity {
                         view.findViewById(R.id.imageSelectBackground));
                 view.setTag(R.id.imageSelect, view.findViewById(R.id.imageSelect));
 
-                //Log.d(DEBUG_TAG, "View constructed, " + position);
+                //Log.d(TAG, "View constructed, " + position);
             }
 
             // Check if current position is Selected, and show/hide selection effect.
@@ -249,7 +250,7 @@ public class GalleryPicker extends ActionBarActivity {
             Picasso.with(mContext).load(new File(mGalleryImages[position].getImagePath()))
                     .into(imageView);
 
-            //Log.d(DEBUG_TAG, "View updated, " + position);
+            //Log.d(TAG, "View updated, " + position);
 
             return view;
         }
@@ -273,6 +274,8 @@ public class GalleryPicker extends ActionBarActivity {
         int data_column_index = imageCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
         int count = imageCursor.getCount();
+
+        Log.d(TAG, "count = " + count);
 
         mGalleryImages = new GalleryImageHolder[count];
 

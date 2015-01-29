@@ -27,6 +27,7 @@ import java.util.List;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.analytics.TagManagerUtils;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
 
@@ -50,8 +51,8 @@ public class FriendPicker extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_picker);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 
         GridView friendGridView = (GridView) findViewById(R.id.friendGridView);
 
@@ -189,7 +190,7 @@ public class FriendPicker extends ActionBarActivity {
                 loadingProgress.dismiss();
             Log.v(TAG, "Friend media list successfully loaded!");
             Log.v(TAG, "have images: " + InstagramAPI.getImages().size());
-            CollageMaker.getInstance().getImagesFromInstagram();
+            ImageStorage.getInstance().getImagesFromInstagram();
 
             Intent data = new Intent();
             data.putExtra("intSelectedFriendID", mSelectedFriendID);
