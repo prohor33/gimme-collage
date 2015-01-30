@@ -98,6 +98,8 @@ public class CollageMaker {
         getInstance().parentActivity = activity;
         getInstance().rootView = rootView;
         CollageUtils.Init(activity, rootView);
+        ImageStorage.putCollageActivity(getInstance().parentActivity);
+        ImageStorage.putPullActivity(getInstance().mainActivity);
     }
 
     public void putMainActivity(MainActivity activity) {

@@ -149,7 +149,7 @@ public class GalleryPicker extends ActionBarActivity {
                             R.string.ga_event_label_apply_gallery_images);
 
                     Intent intent = new Intent();
-                    ImageStorage.getInstance().setImagesFromGallery(mResultArray);
+//                    ImageStorage.getInstance().setImagesFromGallery(mResultArray);
                     GalleryPicker.this.setResult(RESULT_OK, intent);
                     GalleryPicker.this.finish();
 

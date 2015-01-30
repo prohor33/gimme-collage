@@ -12,20 +12,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 
 /**
  * Created by poliveira on 24/10/2014.
  */
 public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapter.ViewHolder> {
 
-    private List<SimpleItem> mData;
     private SimpleDrawerCallbacks mSimpleDrawerCallbacks;
     private int mSelectedPosition;
     private int mTouchedPosition = -1;
-
-    public SimpleDrawerAdapter(List<SimpleItem> data) {
-        mData = data;
-    }
 
     public SimpleDrawerCallbacks getSimpleDrawerCallbacks() {
         return mSimpleDrawerCallbacks;
@@ -43,7 +39,8 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
 
     @Override
     public void onBindViewHolder(SimpleDrawerAdapter.ViewHolder viewHolder, final int i) {
-        viewHolder.imageView.setImageDrawable(mData.get(i).getDrawable());
+        ImageStorage.fillPullView(viewHolder.imageView, i);
+
 
         viewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
                                                    @Override
@@ -102,7 +99,7 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
 
     @Override
     public int getItemCount() {
-        return mData != null ? mData.size() : 0;
+        return ImageStorage.getPullImageCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

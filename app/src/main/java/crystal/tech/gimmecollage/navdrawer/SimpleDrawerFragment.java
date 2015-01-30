@@ -16,11 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.collagemaker.ImageData;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 
 /**
  * Created by poliveira on 24/10/2014.
@@ -40,13 +43,24 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        View view = inflater.inflate(R.layout.fragment_right_nav_drawer, container, false);
         mDrawerList = (RecyclerView) view.findViewById(R.id.drawerList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mDrawerList.setLayoutManager(layoutManager);
         mDrawerList.setHasFixedSize(true);
 
+        ImageView addImageView = (ImageView) view.findViewById(R.id.drawerAddIimageView);
+        addImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallbacks.onSimpleDrawerAddImage();
+            }
+        });
+
+        mAdapter = new SimpleDrawerAdapter();
+        mAdapter.setSimpleDrawerCallbacks(this);
+        mDrawerList.setAdapter(mAdapter);
 
         return view;
     }
@@ -69,12 +83,6 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement SimpleDrawerCallbacks.");
         }
-    }
-
-    public void loadItems(final List<SimpleItem> SimpleItems) {
-        mAdapter = new SimpleDrawerAdapter(SimpleItems);
-        mAdapter.setSimpleDrawerCallbacks(this);
-        mDrawerList.setAdapter(mAdapter);
     }
 
     public SimpleDrawerAdapter getAdapter() {
@@ -130,6 +138,13 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
     @Override
     public void onSimpleDrawerItemSelected(int position) {
         selectItem(position);
+    }
+
+    @Override
+    public void onSimpleDrawerAddImage() {
+        if (mCallbacks != null) {
+            mCallbacks.onSimpleDrawerAddImage();
+        }
     }
 
     public DrawerLayout getDrawerLayout() {

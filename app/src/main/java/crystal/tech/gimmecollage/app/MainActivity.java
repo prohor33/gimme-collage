@@ -19,6 +19,8 @@ import java.util.List;
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+import crystal.tech.gimmecollage.collagemaker.ImageData;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
 import crystal.tech.gimmecollage.navdrawer.NavigationItem;
@@ -55,12 +57,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         mNavigationDrawerFragment.setup(R.id.fragment_drawer_left,
                 (DrawerLayout) findViewById(R.id.drawer), mToolbar);
 
-        mSimpleItems = new ArrayList<SimpleItem>();
-        mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_photopull_add)));
-
         mSimpleDrawerFragment = (SimpleDrawerFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_drawer_right);
-        mSimpleDrawerFragment.loadItems(mSimpleItems);
         mSimpleDrawerFragment.setup((DrawerLayout) findViewById(R.id.drawer));
 
         CollageMaker.getInstance().putMainActivity(this);
@@ -121,19 +119,43 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     /* Callback for SimpleDrawerFragments. */
     @Override
     public void onSimpleDrawerItemSelected(int position) {
-        if(position == 0) {
-            // Spawn ImageSourceActivity.
-            Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
-            startActivity(intent);
+//            mSimpleItems.remove(position);
+//            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+
+        //Toast.makeText(this, "Menu item -> " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    /* Callback for SimpleDrawerFragments. */
+    @Override
+    public void onSimpleDrawerAddImage() {
+        // Spawn ImageSourceActivity.
+//            Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
+//            startActivity(intent);
 
 //            mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
 //            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
-        } else {
-            mSimpleItems.remove(position);
-            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+
+        // TODO: remove, it's for debug
+        switch ((int)(Math.random() * 4)) {
+            case 0:
+                ImageStorage.addImage(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png",
+                        512, 512, true));
+                break;
+            case 1:
+                ImageStorage.addImage(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg",
+                        600, 400, true));
+                break;
+            case 2:
+                ImageStorage.addImage(new ImageData("http://www.bearingscity.am/gallery/img/demopage/image-3.jpg",
+                        500, 500, true));
+                break;
+            case 3:
+                ImageStorage.addImage(new ImageData("http://technologie-f-mauriac.jimdo.com/app/download/8664189394/bmp_oiseau004.bmp?t=1395577376",
+                        477, 358, true));
+                break;
         }
 
-        //Toast.makeText(this, "Menu item -> " + position, Toast.LENGTH_SHORT).show();
+        mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
     }
 
     /* Replace R.id.container for presented fragment. */

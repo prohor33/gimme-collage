@@ -1,14 +1,15 @@
 package crystal.tech.gimmecollage.collagemaker;
 
+import android.app.Activity;
 import android.util.Log;
+import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
-import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
-import crystal.tech.gimmecollage.instagram_api.Storage;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by prohor on 29/01/15.
@@ -18,6 +19,10 @@ public class ImageStorage {
     private final String TAG = "ImageStorage";
 
     private static ImageStorage instance;
+    private Map<Integer, ImageData> pullImages = new HashMap<>();
+    private Map<Integer, ImageData> collageImages = new HashMap<>();
+    private Activity pullActivity = null;
+    private Activity collageActivity = null;
 
     public static synchronized ImageStorage getInstance() {
         if (instance == null) {
@@ -26,69 +31,115 @@ public class ImageStorage {
         return instance;
     }
 
-    public enum ImageSourceType {Instagram, Gallery, None};
-
-    public class ImageData {
-        ImageData(String url, int like_count) {
-            strUrl = url;
-            likeCount = like_count;
-            eSrc = ImageSourceType.Instagram;
-        }
-        ImageData(String path) {
-            m_strImagePath = path;
-            eSrc = ImageSourceType.Gallery;
-        }
-
-        public String getUrl() { return strUrl; }
-        public String getImagePath() { return m_strImagePath; }
-        public ImageSourceType getSrc() { return eSrc; };
-
-
-        private ImageSourceType eSrc = ImageSourceType.None;
-
-        // instagram data
-        private String strUrl = "";
-        private int likeCount = -1;
-        // gallery data
-        private String m_strImagePath = "";
+    public static void addImage(ImageData img) {
+        getInstance().addImageImpl(img);
+    }
+    private void addImageImpl(ImageData img) {
+        if (img.dataPath.isEmpty())
+            throw new IllegalArgumentException("dataPath is empty");
+        // TODO: remove this debug rundom
+        pullImages.put(img.dataPath.hashCode() + (int)(Math.random() * 10000), img);
     }
 
-    private List<ImageData> m_lImages = new ArrayList<ImageData>();
+    public static int getPullImageCount() {
+        return getInstance().pullImages.size();
+    }
 
-    public void setImagesFromGallery(String[] image_paths) {
-        m_lImages.clear();
-        for (String str : image_paths) {
-            m_lImages.add(new ImageData(str));
+    public static int getCollageImageCount() {
+        return getInstance().collageImages.size();
+    }
+
+    public static ImageData getPullImage(int i) {
+        return getInstance().getImagePullImpl(i);
+    }
+    private ImageData getImagePullImpl(int i) {
+        if (i < 0 || i >= pullImages.size())
+            throw new IllegalArgumentException("wrong index");
+        return pullImages.get(i);
+    }
+
+    public static void putPullActivity(Activity activity) {
+        getInstance().pullActivity = activity;
+    }
+
+    public static void putCollageActivity(Activity activity) {
+        getInstance().collageActivity = activity;
+    }
+
+    public static void fillPullView(ImageView iv, int i) {
+        getInstance().fillPullViewImpl(iv, i);
+    }
+    private void fillPullViewImpl(ImageView iv, int i) {
+        ImageData image = getPullImageByIndex(i);
+        if (image.fromNetwork) {
+            fillViewFromNetwork(iv, image);
+        } else {
+            fillViewFromHardDrive(iv, image);
         }
     }
 
-    public void getImagesFromInstagram() {
-        List<Storage.ImageInfo> imagesInfo = InstagramAPI.getImages();
-        Log.v(TAG, "have " + imagesInfo.size() + " images");
-        m_lImages.clear();
-        for (int i = 0; i < imagesInfo.size(); i++) {
-            m_lImages.add(new ImageData(imagesInfo.get(i).standard_resolution.url,
-                    imagesInfo.get(i).likes_count));
-        }
-
-        class ImageComparator implements Comparator<ImageData> {
+    private void fillViewFromNetwork(ImageView iv, ImageData image) {
+        Callback on_load = new Callback() {
             @Override
-            public int compare(ImageData o1, ImageData o2) {
-                return o2.likeCount - o1.likeCount;
+            public void onSuccess() {
+//                if (pb != null)
+//                    pb.setVisibility(View.GONE);
             }
+
+            @Override
+            public void onError() {
+//                if (pb != null)
+//                    pb.setVisibility(View.GONE);
+            }
+        };
+
+        Picasso.with(pullActivity)
+               .load(image.peviewDataPath)
+                .into(iv, on_load);
+    }
+
+    private void fillViewFromHardDrive(ImageView iv, ImageData image) {
+        // TODO: to implement
+        Log.w(TAG, "fillViewFromHardDrive not implemented yet");
+    }
+
+    private ImageData getPullImageByIndex(int index) {
+        // TODO: smart ordering
+        Iterator it = pullImages.entrySet().iterator();
+        int i = 0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if (i == index) {
+                return (ImageData)pair.getValue();
+            }
+            i++;
         }
-
-        // Let's sort images by likes count
-        Collections.sort(m_lImages, new ImageComparator());
+        throw new RuntimeException("index = " + index + ", size = " + pullImages.size());
     }
 
-    public int getImagesDataSize() {
-        return m_lImages.size();
+    public static void fillCollageView(ImageView iv, int i) {
+        getInstance().fillCollageViewImpl(iv, i);
+    }
+    private void fillCollageViewImpl(ImageView iv, int i) {
+        ImageData image = getCollageImageByIndex(i);
+        if (image.fromNetwork) {
+            fillViewFromNetwork(iv, image);
+        } else {
+            fillViewFromHardDrive(iv, image);
+        }
     }
 
-    public ImageData getImageData(int i) {
-        if (i < 0 || i >= m_lImages.size())
-            throw new RuntimeException("wrong index");
-        return m_lImages.get(i);
+    private ImageData getCollageImageByIndex(int index) {
+        // TODO: smart ordering
+        Iterator it = collageImages.entrySet().iterator();
+        int i = 0;
+        while (it.hasNext()) {
+            if (i == index) {
+                Map.Entry pair = (Map.Entry) it.next();
+                return (ImageData)pair.getValue();
+            }
+            i++;
+        }
+        throw new RuntimeException("index = " + index + ", size = " + collageImages.size());
     }
 }

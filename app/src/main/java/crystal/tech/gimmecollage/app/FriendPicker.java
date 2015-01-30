@@ -190,7 +190,7 @@ public class FriendPicker extends ActionBarActivity {
                 loadingProgress.dismiss();
             Log.v(TAG, "Friend media list successfully loaded!");
             Log.v(TAG, "have images: " + InstagramAPI.getImages().size());
-            ImageStorage.getInstance().getImagesFromInstagram();
+//            ImageStorage.getInstance().getImagesFromInstagram();
 
             Intent data = new Intent();
             data.putExtra("intSelectedFriendID", mSelectedFriendID);
