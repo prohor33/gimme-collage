@@ -16,8 +16,10 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.app.R;
@@ -32,6 +34,8 @@ public class ImageStorage {
     private static ImageStorage instance;
     private Map<Integer, ImageData> pullImages = new HashMap<>();
     private Map<Integer, ImageData> collageImages = new HashMap<>();
+    private List<Integer> pullImagesOrder = new ArrayList<>();
+    private List<Integer> collageImagesOrder = new ArrayList<>();
     private Activity pullActivity = null;
     private Activity collageActivity = null;
 
@@ -49,7 +53,9 @@ public class ImageStorage {
         if (img.dataPath.isEmpty())
             throw new IllegalArgumentException("dataPath is empty");
         // TODO: remove this debug random
-        pullImages.put(img.dataPath.hashCode() + (int)(Math.random() * 10000), img);
+        int id = img.dataPath.hashCode() + (int)(Math.random() * 10000);
+        pullImages.put(id, img);
+        pullImagesOrder.add(0, id);
     }
 
     public static void addImageToCollage(ImageData img) {
@@ -59,7 +65,9 @@ public class ImageStorage {
         if (img.dataPath.isEmpty())
             throw new IllegalArgumentException("dataPath is empty");
         // TODO: remove this debug random
-        collageImages.put(img.dataPath.hashCode() + (int)(Math.random() * 10000), img);
+        int id = img.dataPath.hashCode() + (int)(Math.random() * 10000);
+        collageImages.put(id, img);
+        collageImagesOrder.add(id);
     }
 
     public static int getPullImageCount() {
@@ -101,9 +109,9 @@ public class ImageStorage {
         getInstance().fillCollageViewImpl(iv, i);
     }
     private void fillCollageViewImpl(ImageView iv, int i) {
-        if (i >= collageImages.size())
-            return;
         ImageData image = getCollageImageByIndex(i);
+        if (image == null)
+            return;
         if (image.fromNetwork) {
             fillViewFromNetwork(iv, image);
         } else {
@@ -127,31 +135,44 @@ public class ImageStorage {
 
     // private members only ==========
 
+    private ImageData getPullImageByIndex(int index) {
+        return getPullImageByIndex(index, false);
+    }
+
+    private ImageData getPullImageByIndex(int index, boolean remove) {
+        if (index >= pullImagesOrder.size())
+            return null;
+        Integer id = pullImagesOrder.get(index);
+        ImageData imageData = pullImages.get(id);
+        if (remove)
+            removePullImage(id);
+        return imageData;
+    }
+
     private ImageData getCollageImageByIndex(int index) {
         return getCollageImageByIndex(index, false);
     }
 
     private ImageData getCollageImageByIndex(int index, boolean remove) {
-        // TODO: smart ordering
-        Iterator it = collageImages.entrySet().iterator();
-        int i = 0;
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            if (i == index) {
-                if (remove)
-                    it.remove();
-                return (ImageData)pair.getValue();
-            }
-            i++;
-        }
-        return null;
+        if (index >= collageImagesOrder.size())
+            return null;
+        int id = collageImagesOrder.get(index);
+        ImageData imageData = collageImages.get(id);
+        if (remove)
+            removeCollageImage(id);
+        return imageData;
     }
 
     private void fillViewFromNetwork(final ImageView iv, ImageData image) {
         // TODO: check if url has changed
         if (iv.getTag() != null) {
             // It's already loading
-            return;
+            ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();
+            if (target.url == image.peviewDataPath)
+                return;
+            // Abort loading to start new one
+            target.cancel();
+            iv.setTag(null);
         }
 
         View parent = (View)iv.getParent();
@@ -160,44 +181,8 @@ public class ImageStorage {
         if (pb != null)
             pb.setVisibility(View.VISIBLE);
 
-        Target t = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                if (bitmap != null) {
-                    onSuccess();
-
-                    ColorStateList imageColorlist =
-                            pullActivity.getResources().getColorStateList(R.color.image_colorlist);
-
-                    iv.setImageDrawable(new RippleDrawable(imageColorlist,
-                            new BitmapDrawable(bitmap), null));
-                } else {
-//                    loadDefaultMarker(listener);
-                    onError();
-                }
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                onError();
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-
-            private void onSuccess() {
-                onEnd();
-            }
-            private void onError() {
-                onEnd();
-            }
-            private void onEnd() {
-                if (pb != null)
-                    pb.setVisibility(View.GONE);
-                iv.setTag(null);
-            }
-        };
+        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, pullActivity);
+        t.url = image.peviewDataPath;
         iv.setTag(t);
 
         Picasso.with(pullActivity)
@@ -210,36 +195,35 @@ public class ImageStorage {
         Log.w(TAG, "fillViewFromHardDrive not implemented yet");
     }
 
-    private ImageData getPullImageByIndex(int index) {
-        return getPullImageByIndex(index, false);
-    }
-
-    private ImageData getPullImageByIndex(int index, boolean remove) {
-        // TODO: smart ordering
-        Iterator it = pullImages.entrySet().iterator();
-        int i = 0;
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            if (i == index) {
-                if (remove)
-                    it.remove();
-                return (ImageData)pair.getValue();
-            }
-            i++;
-        }
-        return null;
-    }
-
     private void moveImagesBetweenPullAndCollage(int count, boolean from_pull_to_collage) {
         if (from_pull_to_collage) {
             for (int i = 0; i < count && pullImages.size() > 0; i++) {
-                Log.d(TAG, "i = " + i + " pullImages.size() = " + pullImages.size());
-                addImageToCollage(getPullImageByIndex(0, true));
+                addImageToCollage(grabPullImage());
             }
         } else {
             for (int i = 0; i < count && collageImages.size() > 0; i++) {
-                addImageToPull(getCollageImageByIndex(0, true));
+                addImageToPull(grabCollageImage());
             }
         }
+    }
+
+    // removing
+    private ImageData grabPullImage() {
+        return getPullImageByIndex(0, true);
+    }
+
+    // removing
+    private ImageData grabCollageImage() {
+        return getCollageImageByIndex(collageImagesOrder.size() - 1, true);
+    }
+
+    private void removePullImage(Integer id) {
+        pullImages.remove(id);
+        pullImagesOrder.remove(id);
+    }
+
+    private void removeCollageImage(Integer id) {
+        collageImages.remove(id);
+        collageImagesOrder.remove(id);
     }
 }
