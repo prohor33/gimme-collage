@@ -1,6 +1,12 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,6 +14,7 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -140,29 +147,62 @@ public class ImageStorage {
         return null;
     }
 
-    private void fillViewFromNetwork(ImageView iv, ImageData image) {
+    private void fillViewFromNetwork(final ImageView iv, ImageData image) {
+        // TODO: check if url has changed
+        if (iv.getTag() != null) {
+            // It's already loading
+            return;
+        }
+
         View parent = (View)iv.getParent();
+        iv.setImageDrawable(null);
         final ProgressBar pb = (ProgressBar)parent.findViewById(R.id.progressBar);
         if (pb != null)
             pb.setVisibility(View.VISIBLE);
 
-        Callback on_load = new Callback() {
+        Target t = new Target() {
             @Override
-            public void onSuccess() {
-                if (pb != null)
-                    pb.setVisibility(View.GONE);
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                if (bitmap != null) {
+                    onSuccess();
+
+                    ColorStateList imageColorlist =
+                            pullActivity.getResources().getColorStateList(R.color.image_colorlist);
+
+                    iv.setImageDrawable(new RippleDrawable(imageColorlist,
+                            new BitmapDrawable(bitmap), null));
+                } else {
+//                    loadDefaultMarker(listener);
+                    onError();
+                }
             }
 
             @Override
-            public void onError() {
+            public void onBitmapFailed(Drawable errorDrawable) {
+                onError();
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+
+            private void onSuccess() {
+                onEnd();
+            }
+            private void onError() {
+                onEnd();
+            }
+            private void onEnd() {
                 if (pb != null)
                     pb.setVisibility(View.GONE);
+                iv.setTag(null);
             }
         };
+        iv.setTag(t);
 
         Picasso.with(pullActivity)
                 .load(image.peviewDataPath)
-                .into(iv, on_load);
+                .into(t);
     }
 
     private void fillViewFromHardDrive(ImageView iv, ImageData image) {
