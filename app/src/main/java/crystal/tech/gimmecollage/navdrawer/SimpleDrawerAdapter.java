@@ -1,15 +1,11 @@
 package crystal.tech.gimmecollage.navdrawer;
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import java.util.List;
 
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
@@ -107,7 +103,7 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.item_name);
+            imageView = (ImageView) itemView.findViewById(R.id.drawerImageView);
         }
     }
 }

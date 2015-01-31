@@ -6,13 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
@@ -21,8 +19,6 @@ import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.app.view.OnSwipeTouchListener;
-import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
-import crystal.tech.gimmecollage.instagram_api.Storage;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
 /**
@@ -32,6 +28,7 @@ public class CollageMaker {
 
     private static final String TAG = "CollageMaker";
 
+    private static CollageMaker instance;
     private CollageType eType = CollageType.Grid;
     private Map<CollageType, CollageConfig> mCollages;
     private GestureRelativeLayout rlCollage = null;
@@ -42,10 +39,16 @@ public class CollageMaker {
     private View rootView = null;
 
     // big_frame -> big_rl -> frame layout -> image_view + progress + back_image
-    // this is rls
-    private ArrayList<View> imageFLViews = new ArrayList<View>();
+    // this is fls
+    private ArrayList<View> imageFLViews = new ArrayList<>();
 
-    private static CollageMaker instance;
+    public enum CollageType {
+        Grid,
+        CenterWithGridAround,
+        Test1,
+        Test2,
+        Test3
+    };
 
     public static synchronized CollageMaker getInstance() {
         if (instance == null) {
@@ -56,7 +59,7 @@ public class CollageMaker {
 
     private CollageMaker() {
         eType = CollageType.Grid; // by default
-        mCollages = new HashMap<CollageType, CollageConfig>();
+        mCollages = new HashMap<>();
         for (CollageType type : CollageType.values()) {
             mCollages.put(type, new CollageConfig(type));
         }
@@ -78,7 +81,6 @@ public class CollageMaker {
         return eType.ordinal();
     }
 
-
     public void changeCollageType(int type_index) {
         if (type_index < 0 || type_index >= CollageType.values().length) {
             Log.v(TAG, "Error: wrong collage type index = " + type_index);
@@ -92,6 +94,9 @@ public class CollageMaker {
         updateImageViews();
         CollageUtils.getInstance().updateCollageTypeSelectors();
         collageAnimation.onChangeCollageType();
+
+        ImageStorage.updateImageCountInCollage();
+        updateImageDataImpl();
     }
 
     public static void init(Activity activity, View rootView) {
@@ -166,84 +171,42 @@ public class CollageMaker {
             }
 
         });
+
+        ImageStorage.updateImageCountInCollage();
+        updateImageDataImpl();
     }
 
-    public int getImageCount() {
+    public int getAllImageViewCount() {
         return imageFLViews.size();
     }
-    public RelativeLayout getImageRL(int index) {
+    public RelativeLayout getImageFL(int index) {
         return (RelativeLayout) imageFLViews.get(index);
-    }
-
-    private int getMaxImageCount() {
-        int max_count = -1;
-        for (CollageType type : CollageType.values()) {
-            int count = getCollageConf(type).getPhotoCount();
-            max_count = count > max_count ? count : max_count;
-        }
-        return max_count;
     }
 
     public void updateImageViews() {
         prepareImages();
 
-        for (int i = 0; i < getActiveImageN(); i++) {
+        for (int i = 0; i < getVisibleImageCount(); i++) {
             updateViewPosition(i);
         }
     }
 
-    private void updateCollageLayoutSize() {
-        float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
-
-        // TODO: add parent FrameLayout, keep collage in center
-        // TODO: and grab size of the parent each time
-
-        int collageHeight;
-        int max_width = rlCollage.getWidth();
-        int max_height = rlCollage.getHeight();
-        if (max_height > aspect_ratio * max_width) {
-            collageWidth = max_width;
-            collageHeight = (int)(aspect_ratio * max_width);
-        } else {
-            collageHeight = max_height;
-            collageWidth = (int)(max_height / aspect_ratio);
-        }
-
-        RelativeLayout.LayoutParams layoutParams =
-                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
-        layoutParams.removeRule(RelativeLayout.BELOW);
-        layoutParams.removeRule(RelativeLayout.LEFT_OF);
-        layoutParams.width = collageWidth;
-        layoutParams.height = collageHeight;
-        rlCollage.setLayoutParams(layoutParams);
-        rlCollage.setClipChildren(false);
+    public static void updateImageData() {
+        getInstance().updateImageDataImpl();
     }
-
-    public enum CollageType {
-        Grid,
-        CenterWithGridAround,
-        Test1,
-        Test2,
-        Test3
-    };
-
-
-    private void prepareImages() {
-        for (int i = 0; i < imageFLViews.size(); i++) {
-            View iv = imageFLViews.get(i);
-
-            if (i < getCollageConf().getPhotoCount()) {
-                iv.setVisibility(View.VISIBLE);
-            } else {
-                iv.setVisibility(View.GONE);
-            }
+    private void updateImageDataImpl() {
+        for (int i = 0; i < getVisibleImageCount(); i++) {
+            View v = imageFLViews.get(i);
+            ImageView iv = (ImageView)v.findViewById(R.id.ivMain);
+            ImageStorage.fillCollageView(iv, i);
         }
     }
 
-    private int getActiveImageN() {
+    public int getVisibleImageCount() {
         return Math.min(imageFLViews.size(), getCollageConf().getPhotoCount());
     }
 
+    // TODO: move swap operation to ImageStorage class
     public void swapViews(View view1, View view2) {
         int i1 = imageFLViews.indexOf(view1);
         int i2 = imageFLViews.indexOf(view2);
@@ -315,10 +278,63 @@ public class CollageMaker {
         }
     }
 
-    private void onImageClick(View view) {
-        SimpleDrawerFragment rightFragment = mainActivity.getRightDrawer();
-        rightFragment.openDrawer();
+    // private members only ================
 
+    private void updateCollageLayoutSize() {
+        float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
+
+        // TODO: add parent FrameLayout, keep collage in center
+        // TODO: and grab size of the parent each time
+
+        int collageHeight;
+        int max_width = rlCollage.getWidth();
+        int max_height = rlCollage.getHeight();
+        if (max_height > aspect_ratio * max_width) {
+            collageWidth = max_width;
+            collageHeight = (int)(aspect_ratio * max_width);
+        } else {
+            collageHeight = max_height;
+            collageWidth = (int)(max_height / aspect_ratio);
+        }
+
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
+        layoutParams.removeRule(RelativeLayout.BELOW);
+        layoutParams.removeRule(RelativeLayout.LEFT_OF);
+        layoutParams.width = collageWidth;
+        layoutParams.height = collageHeight;
+        rlCollage.setLayoutParams(layoutParams);
+        rlCollage.setClipChildren(false);
+    }
+
+    private void prepareImages() {
+        for (int i = 0; i < imageFLViews.size(); i++) {
+            View iv = imageFLViews.get(i);
+
+            if (i < getCollageConf().getPhotoCount()) {
+                iv.setVisibility(View.VISIBLE);
+            } else {
+                iv.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private int getMaxImageCount() {
+        int max_count = -1;
+        for (CollageType type : CollageType.values()) {
+            int count = getCollageConf(type).getPhotoCount();
+            max_count = count > max_count ? count : max_count;
+        }
+        return max_count;
+    }
+
+    private void onImageClick(View view) {
+        int index = imageFLViews.indexOf(view);
+        ImageData imageData = ImageStorage.getCollageImage(index);
+        if (imageData == null) {
+            SimpleDrawerFragment rightFragment = mainActivity.getRightDrawer();
+            rightFragment.openDrawer();
+        }
         collageAnimation.animateOnImageClick(view);
     }
 }

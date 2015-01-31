@@ -1,7 +1,6 @@
 package crystal.tech.gimmecollage.app;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -123,6 +122,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
 //            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
 
         //Toast.makeText(this, "Menu item -> " + position, Toast.LENGTH_SHORT).show();
+
+        // TODO: call after fetching images from instagram / gallery / other_source
+        ImageStorage.moveAllImagesFromPullToCollage();
+        CollageMaker.updateImageData();
+        mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
     }
 
     /* Callback for SimpleDrawerFragments. */
@@ -138,19 +142,19 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         // TODO: remove, it's for debug
         switch ((int)(Math.random() * 4)) {
             case 0:
-                ImageStorage.addImage(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png",
+                ImageStorage.addImageToPull(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png",
                         512, 512, true));
                 break;
             case 1:
-                ImageStorage.addImage(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg",
+                ImageStorage.addImageToPull(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg",
                         600, 400, true));
                 break;
             case 2:
-                ImageStorage.addImage(new ImageData("http://www.bearingscity.am/gallery/img/demopage/image-3.jpg",
+                ImageStorage.addImageToPull(new ImageData("http://www.bearingscity.am/gallery/img/demopage/image-3.jpg",
                         500, 500, true));
                 break;
             case 3:
-                ImageStorage.addImage(new ImageData("http://technologie-f-mauriac.jimdo.com/app/download/8664189394/bmp_oiseau004.bmp?t=1395577376",
+                ImageStorage.addImageToPull(new ImageData("http://technologie-f-mauriac.jimdo.com/app/download/8664189394/bmp_oiseau004.bmp?t=1395577376",
                         477, 358, true));
                 break;
         }
