@@ -164,7 +164,6 @@ public class ImageStorage {
     }
 
     private void fillViewFromNetwork(final ImageView iv, ImageData image) {
-        // TODO: check if url has changed
         if (iv.getTag() != null) {
             // It's already loading
             ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();

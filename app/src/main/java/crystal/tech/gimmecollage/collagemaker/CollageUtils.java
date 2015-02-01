@@ -1,10 +1,21 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
@@ -21,6 +32,7 @@ public class CollageUtils {
     private boolean fabCollapsed = true;
     private Activity parentActivity = null;
     private View rootView = null;
+    private ProgressDialog progressDialog = null;
 
     public static synchronized CollageUtils getInstance() {
         if (instance == null) {
@@ -34,12 +46,134 @@ public class CollageUtils {
         getInstance().rootView = root_view;
     }
 
-    public void saveCollageOnDisk() {
-        Log.w(TAG, "saveCollageOnDisk() not implemented yet");
+    public interface FileSaveCallback {
+        void onSuccess(File file_result);
+
+        void onError();
+
+        public static class EmptyFileSaveCallback implements FileSaveCallback {
+
+            @Override public void onSuccess(File file_result) {
+            }
+
+            @Override public void onError() {
+            }
+        }
     }
 
     public void shareCollage() {
-        Log.w(TAG, "shareCollage() not implemented yet");
+        if (progressDialog == null)
+            progressDialog = new ProgressDialog(parentActivity);
+        progressDialog.setTitle("Just a second");
+        progressDialog.setMessage("Generating collage for you...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
+        // Save file on disk and open share dialog
+        new SaveFileTask().with(new FileSaveCallback() {
+            @Override
+            public void onSuccess(File file_result) {
+                openShareDialog(file_result);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        }).execute(imgCollage);
+    }
+
+    private class SaveFileTask extends AsyncTask<Bitmap, Void, File> {
+
+        FileSaveCallback callback = null;
+
+        public SaveFileTask with(FileSaveCallback cb) {
+            callback = cb;
+            return this;
+        }
+
+        protected File doInBackground(Bitmap... bmpImages) {
+            Bitmap bmpImage = bmpImages[0];
+            Log.v(TAG, "Start to save a file");
+
+            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+            OutputStream outStream = null;
+            String temp = new String("collage");
+            File file = new File(extStorageDirectory, temp + ".png");
+            if (file.exists()) {
+                file.delete();
+                file = new File(extStorageDirectory, temp + ".png");
+            }
+
+            try {
+                outStream = new FileOutputStream(file);
+                bmpImage.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                outStream.flush();
+                outStream.close();
+            } catch (Exception e) {
+                Log.v(TAG, "Error saving file: " + e.toString());
+                return null;
+            }
+            return file;
+        }
+
+        protected void onPostExecute(File fileResult) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (fileResult == null) {
+                Log.v(TAG, "Error saving file");
+                if (callback != null)
+                    callback.onError();
+            } else {
+                Log.v(TAG, "File successfully saved");
+                if (callback != null)
+                    callback.onSuccess(fileResult);
+            }
+        }
+    }
+
+    private void openShareDialog(File fileResult) {
+        if (fileResult == null) {
+            Log.v(TAG, "Null file pointer");
+            return;
+        }
+
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("image/png");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Little candy");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                "Look! I have nice photo collage here, special for you!\nVia GimmeCollage");
+
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileResult));
+        parentActivity.startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
+
+    public void saveCollageOnDisk() {
+        if (progressDialog == null)
+            progressDialog = new ProgressDialog(parentActivity);
+        progressDialog.setTitle("Just a second");
+        progressDialog.setMessage("Saving collage...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
+        // Save file on disk and open share dialog
+        new SaveFileTask().with(new FileSaveCallback() {
+            @Override
+            public void onSuccess(File file_result) {
+                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                extStorageDirectory += "/" + file_result.getName();
+                Toast.makeText(parentActivity, "Collage saved to " + extStorageDirectory,
+                        Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        }).execute(imgCollage);
     }
 
     public static void putFabCollapsed(boolean x) {

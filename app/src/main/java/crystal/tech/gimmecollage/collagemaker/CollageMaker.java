@@ -1,6 +1,12 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -276,6 +282,38 @@ public class CollageMaker {
             ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, e_y, s_x, e_y));
             ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, e_y, s_x, s_y));
         }
+    }
+
+    public Bitmap GenerateCollageImage() {
+        final int target_size = 1024;
+        Bitmap collageImage = Bitmap.createBitmap(target_size,
+                target_size, Bitmap.Config.ARGB_8888);
+        Canvas comboCanvas = new Canvas(collageImage);
+        comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
+
+        for (int i = 0; i < getVisibleImageCount(); i++) {
+            FrameLayout fl = (FrameLayout)imageFLViews.get(i);
+            ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
+            PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
+
+            RippleDrawable rippleDrawable = ((RippleDrawable) iv.getDrawable());
+            if (rippleDrawable == null)
+                continue;
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            final int square_size = Math.min(bitmap.getHeight(), bitmap.getWidth());
+            // crop square in center
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, square_size, square_size);
+            int size = (int)(target_size * photoPos.getSize());
+            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, true),
+                    target_size * photoPos.getX(),
+                    target_size * photoPos.getY(),
+                    new Paint(Paint.FILTER_BITMAP_FLAG));
+        }
+
+        Log.v(TAG, "Collage is successfully generated!");
+
+        return collageImage;
     }
 
     // private members only ================

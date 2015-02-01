@@ -49,7 +49,7 @@
         android:layout_alignParentBottom="true">
 
         <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-            android:id="@+id/fabbutton2"
+            android:id="@+id/fabbutton1"
             android:layout_width="@dimen/fab_size"
             android:layout_height="@dimen/fab_size"
             android:layout_gravity="bottom|right"
@@ -59,7 +59,7 @@
             android:visibility="visible" />
 
         <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-            android:id="@+id/fabbutton1"
+            android:id="@+id/fabbutton2"
             android:layout_width="@dimen/fab_size"
             android:layout_height="@dimen/fab_size"
             android:layout_gravity="bottom|right"
