@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -42,8 +43,12 @@ public class ImageLoadingTarget  implements Target {
             ColorStateList imageColorlist =
                     activity.getResources().getColorStateList(R.color.image_colorlist);
 
-            imageView.setImageDrawable(new RippleDrawable(imageColorlist,
-                    new BitmapDrawable(bitmap), null));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                imageView.setImageDrawable(new RippleDrawable(imageColorlist,
+                        new BitmapDrawable(bitmap), null));
+            } else {
+                imageView.setImageDrawable(new BitmapDrawable(bitmap));
+            }
         } else {
 //                    loadDefaultMarker(listener);
             onError();

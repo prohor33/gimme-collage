@@ -95,19 +95,20 @@ public class FloatingActionButton extends Button {
         mPosHidden.x = size.x;
         mPosHidden.y = size.y;
 
-        // Outline
-        ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                // Or read size directly from the view's width/height
-                final int size =
-                        getResources().getDimensionPixelSize(R.dimen.fab_size);
-                outline.setOval(0, 0, size, size);
-            }
-        };
-        setOutlineProvider(viewOutlineProvider);
-
-        setClipToOutline(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Outline
+            ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    // Or read size directly from the view's width/height
+                    final int size =
+                            getResources().getDimensionPixelSize(R.dimen.fab_size);
+                    outline.setOval(0, 0, size, size);
+                }
+            };
+            setOutlineProvider(viewOutlineProvider);
+            setClipToOutline(true);
+        }
     }
 
     @Override
@@ -117,14 +118,16 @@ public class FloatingActionButton extends Button {
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
 
-            final float clickElevation =
-                    getResources().getDimension(R.dimen.fab_elevation);
-            animate().translationZ(clickElevation).withEndAction(new Runnable() {
-                @Override
-                public void run() {
-                    animate().translationZ(0);
-                }
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final float clickElevation =
+                        getResources().getDimension(R.dimen.fab_elevation);
+                animate().translationZ(clickElevation).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        animate().translationZ(0);
+                    }
+                });
+            }
         }
         return super.onTouchEvent(event);
     }

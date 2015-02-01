@@ -296,10 +296,15 @@ public class CollageMaker {
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 
-            RippleDrawable rippleDrawable = ((RippleDrawable) iv.getDrawable());
-            if (rippleDrawable == null)
-                continue;
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
+            BitmapDrawable bitmapDrawable = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                RippleDrawable rippleDrawable = (RippleDrawable) iv.getDrawable();
+                if (rippleDrawable == null)
+                    continue;
+                bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
+            } else {
+                bitmapDrawable = (BitmapDrawable) iv.getDrawable();
+            }
             Bitmap bitmap = bitmapDrawable.getBitmap();
             final int square_size = Math.min(bitmap.getHeight(), bitmap.getWidth());
             // crop square in center

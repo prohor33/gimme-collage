@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -250,13 +251,16 @@ public class CollageUtils {
         for (int i = 0; i < llTemplates.getChildCount(); i++) {
             ImageView iv = (ImageView)llTemplates.getChildAt(i);
             iv.setColorFilter(0);
-            if (i == CollageMaker.getInstance().getCollageTypeIndex()) {
-                final float clickElevation =
-                        parentActivity.getResources().getDimension(R.dimen.selector_elevation);
-                iv.animate().translationZ(clickElevation);
-                continue;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (i == CollageMaker.getInstance().getCollageTypeIndex()) {
+                    final float clickElevation =
+                            parentActivity.getResources().getDimension(R.dimen.selector_elevation);
+                    iv.animate().translationZ(clickElevation);
+                    continue;
+                }
+                iv.setTranslationZ(0);
             }
-            iv.setTranslationZ(0);
         }
     }
 }
