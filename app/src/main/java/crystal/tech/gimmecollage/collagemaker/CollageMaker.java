@@ -10,6 +10,8 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -305,6 +307,10 @@ public class CollageMaker {
             } else {
                 bitmapDrawable = (BitmapDrawable) iv.getDrawable();
             }
+            if (bitmapDrawable == null) {
+                Log.e(TAG, "BuildCollage: No bitmap not loaded, leave blank");
+                continue;
+            }
             Bitmap bitmap = bitmapDrawable.getBitmap();
             final int square_size = Math.min(bitmap.getHeight(), bitmap.getWidth());
             // crop square in center
@@ -326,12 +332,11 @@ public class CollageMaker {
     private void updateCollageLayoutSize() {
         float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
 
-        // TODO: add parent FrameLayout, keep collage in center
-        // TODO: and grab size of the parent each time
+        FrameLayout parent = (FrameLayout) rlCollage.getParent();
 
         int collageHeight;
-        int max_width = rlCollage.getWidth();
-        int max_height = rlCollage.getHeight();
+        int max_width = parent.getWidth();
+        int max_height = parent.getHeight();
         if (max_height > aspect_ratio * max_width) {
             collageWidth = max_width;
             collageHeight = (int)(aspect_ratio * max_width);
@@ -340,14 +345,12 @@ public class CollageMaker {
             collageWidth = (int)(max_height / aspect_ratio);
         }
 
-        RelativeLayout.LayoutParams layoutParams =
-                (RelativeLayout.LayoutParams) rlCollage.getLayoutParams();
-        layoutParams.removeRule(RelativeLayout.BELOW);
-        layoutParams.removeRule(RelativeLayout.LEFT_OF);
+        FrameLayout.LayoutParams layoutParams =
+                (FrameLayout.LayoutParams) rlCollage.getLayoutParams();
+
         layoutParams.width = collageWidth;
         layoutParams.height = collageHeight;
         rlCollage.setLayoutParams(layoutParams);
-        rlCollage.setClipChildren(false);
     }
 
     private void prepareImages() {

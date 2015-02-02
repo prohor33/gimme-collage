@@ -8,15 +8,23 @@
     android:background="@drawable/main_activity_background"
     android:baselineAligned="false">
 
-
-    <crystal.tech.gimmecollage.app.view.GestureRelativeLayout
-        android:id="@+id/rlCollage"
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/collage_rl_back"
-        android:layout_margin="15dp"
+        android:layout_toLeftOf="@+id/scrollView"
         android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/scrollView" />
+        android:layout_margin="15dp"
+        >
+
+        <crystal.tech.gimmecollage.app.view.GestureRelativeLayout
+            android:id="@+id/rlCollage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/collage_rl_back"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
+
 
     <ScrollView
         android:layout_width="wrap_content"

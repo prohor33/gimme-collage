@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -20,17 +21,18 @@ import crystal.tech.gimmecollage.app.R;
  * Created by prohor on 31/01/15.
  */
 public class ImageLoadingTarget  implements Target {
-    ImageLoadingTarget(ImageView image_view, ProgressBar progress_bar, Activity context) {
-        imageView = image_view;
-        progressBar = progress_bar;
-        activity = context;
-    }
-
+    private final String TAG = "ImageLoadingTarget";
     public String url;
     private ProgressBar progressBar;
     private ImageView imageView;
     private Activity activity;
     private boolean canceled = false;
+
+    ImageLoadingTarget(ImageView image_view, ProgressBar progress_bar, Activity context) {
+        imageView = image_view;
+        progressBar = progress_bar;
+        activity = context;
+    }
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -51,6 +53,7 @@ public class ImageLoadingTarget  implements Target {
             }
         } else {
 //                    loadDefaultMarker(listener);
+            Log.e(TAG, "Error on load image: bitmap == null");
             onError();
         }
     }
@@ -59,6 +62,7 @@ public class ImageLoadingTarget  implements Target {
     public void onBitmapFailed(Drawable errorDrawable) {
         if (canceled)
             return;
+        imageView.setImageDrawable(errorDrawable);
         onError();
     }
 
@@ -74,6 +78,7 @@ public class ImageLoadingTarget  implements Target {
         onEnd();
     }
     private void onError() {
+        Log.e(TAG, "Error on load image");
         onEnd();
     }
     private void onEnd() {
