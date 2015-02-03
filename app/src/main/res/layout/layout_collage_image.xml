@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:id="@+id/frameLayout"
     android:background="@drawable/collage_image_ripple">
+
 
     <ImageView
         android:id="@+id/ivBack"
@@ -12,11 +16,17 @@
         android:layout_gravity="center"
         android:src="@drawable/ic_action_content_add" />
 
-    <ImageView
-        android:id="@+id/ivMain"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+    <crystal.tech.gimmecollage.app.view.RippleView
+        android:id="@+id/rippleView"
+        ripple:rv_color="#a5733bff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+            <ImageView
+                android:id="@+id/ivMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+    </crystal.tech.gimmecollage.app.view.RippleView>
 
     <ProgressBar
         android:id="@+id/progressBar"

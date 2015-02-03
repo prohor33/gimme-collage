@@ -1,4 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -74,6 +76,7 @@
             android:background="@drawable/fab_share_ripple"
             android:color="#ff5278b2"
             android:visibility="visible" />
+
 
         <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
             android:id="@+id/fabbutton0"

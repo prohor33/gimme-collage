@@ -10,8 +10,6 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -294,7 +292,7 @@ public class CollageMaker {
         comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            FrameLayout fl = (FrameLayout)imageFLViews.get(i);
+            FrameLayout fl = (FrameLayout) imageFLViews.get(i);
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 

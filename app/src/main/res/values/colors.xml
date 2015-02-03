@@ -2,7 +2,10 @@
 
 <resources>
 
-    <!--Lenka design colors-->
+    <!-- API < 21 RippleView -->
+    <color name="rippleColor">#FFFFFF</color>
+
+    <!--Lena design colors-->
     <color name="design_yellow">#fff74a</color>
     <color name="design_red">#fe2321</color>
     <color name="design_blue">#0466ff</color>
