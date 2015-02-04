@@ -186,6 +186,7 @@ public class ImageStorage {
 
         Picasso.with(pullActivity)
                 .load(image.peviewDataPath)
+                .error(R.drawable.ic_content_problem)
                 .into(t);
     }
 

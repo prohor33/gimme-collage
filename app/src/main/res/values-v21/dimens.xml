@@ -1,0 +1,4 @@
+<resources>
+    <!--Fab-->
+    <dimen name="fab_size">60dp</dimen>
+</resources>

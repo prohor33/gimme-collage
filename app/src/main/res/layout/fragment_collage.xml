@@ -1,4 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,15 +10,22 @@
     android:background="@drawable/main_activity_background"
     android:baselineAligned="false">
 
-
-    <crystal.tech.gimmecollage.app.view.GestureRelativeLayout
-        android:id="@+id/rlCollage"
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/horScrollView"
-        android:background="@drawable/collage_rl_back"
+        android:layout_alignParentTop="true"
         android:layout_margin="15dp"
-        android:layout_alignParentTop="true" />
+        >
+
+        <crystal.tech.gimmecollage.app.view.GestureRelativeLayout
+            android:id="@+id/rlCollage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/collage_rl_back"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -67,6 +76,7 @@
             android:background="@drawable/fab_share_ripple"
             android:color="#ff5278b2"
             android:visibility="visible" />
+
 
         <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
             android:id="@+id/fabbutton0"

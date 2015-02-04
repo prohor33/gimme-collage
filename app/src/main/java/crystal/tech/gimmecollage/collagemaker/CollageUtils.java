@@ -189,6 +189,8 @@ public class CollageUtils {
     }
     private void addFloatingActionButtonsImpl(final View rootView) {
         final FloatingActionButton ok_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton0);
+        ok_fab.setColor(parentActivity.getResources().getColor(R.color.design_blue));
+        ok_fab.setDrawable(parentActivity.getResources().getDrawable(R.drawable.ic_action_accept));
         ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -201,6 +203,8 @@ public class CollageUtils {
 
         FloatingActionButton save_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
         save_fab.setParentFAB(ok_fab);
+        save_fab.setColor(parentActivity.getResources().getColor(R.color.design_yellow));    // maroon
+        save_fab.setDrawable(parentActivity.getResources().getDrawable(R.drawable.ic_action_save));
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,6 +214,8 @@ public class CollageUtils {
 
         FloatingActionButton share_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
         share_fab.setParentFAB(ok_fab);
+        share_fab.setColor(parentActivity.getResources().getColor(R.color.design_red));
+        share_fab.setDrawable(parentActivity.getResources().getDrawable(R.drawable.ic_action_share));
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
