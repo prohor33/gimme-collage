@@ -19,14 +19,12 @@ import java.util.List;
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
-import crystal.tech.gimmecollage.collagemaker.ImageData;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
 import crystal.tech.gimmecollage.navdrawer.NavigationItem;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
-import crystal.tech.gimmecollage.navdrawer.SimpleItem;
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerCallbacks, SimpleDrawerCallbacks {
 
@@ -35,7 +33,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private SimpleDrawerFragment mSimpleDrawerFragment;
-    private List<SimpleItem> mSimpleItems;
+    static final int ADD_PICTURES_REQUEST = 1;  // The request code
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +96,20 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == ADD_PICTURES_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                ImageStorage.moveAllImagesFromPullToCollage();
+                CollageMaker.updateImageData();
+                mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+                if (ImageStorage.getPullImageCount() == 0)
+                    mSimpleDrawerFragment.closeDrawer();
+            }
+        }
+    }
+
     /* Callback for NavigationDrawerFragments. */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -119,15 +131,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     /* Callback for SimpleDrawerFragments. */
     @Override
     public void onSimpleDrawerItemSelected(int position) {
-//            mSimpleItems.remove(position);
-//            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
-
-        //Toast.makeText(this, "Menu item -> " + position, Toast.LENGTH_SHORT).show();
-
-        // TODO: call after fetching images from instagram / gallery / other_source
-        ImageStorage.moveAllImagesFromPullToCollage();
-        CollageMaker.updateImageData();
-        mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+        // TODO: implement
     }
 
     /* Callback for SimpleDrawerFragments. */
@@ -135,36 +139,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     public void onSimpleDrawerAddImage() {
         // Spawn ImageSourceActivity.
         Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
-        startActivity(intent);
-
-        //mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
-        //mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
-
-
-
-        /*
-        // TODO: remove, it's for debug
-        switch ((int)(Math.random() * 4)) {
-            case 0:
-                ImageStorage.addImageToPull(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png",
-                        512, 512, true));
-                break;
-            case 1:
-                ImageStorage.addImageToPull(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg",
-                        600, 400, true));
-                break;
-            case 2:
-                ImageStorage.addImageToPull(new ImageData("http://www.bearingscity.am/gallery/img/demopage/image-3.jpg",
-                        500, 500, true));
-                break;
-            case 3:
-                ImageStorage.addImageToPull(new ImageData("http://technologie-f-mauriac.jimdo.com/app/download/8664189394/bmp_oiseau004.bmp?t=1395577376",
-                        477, 358, true));
-                break;
-        }
-        */
-
-        mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+        startActivityForResult(intent, ADD_PICTURES_REQUEST);
     }
 
     /* Replace R.id.container for presented fragment. */

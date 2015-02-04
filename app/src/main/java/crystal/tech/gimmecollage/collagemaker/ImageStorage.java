@@ -3,6 +3,7 @@ package crystal.tech.gimmecollage.collagemaker;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -119,8 +121,15 @@ public class ImageStorage {
         }
     }
 
-    public static void moveAllImagesFromPullToCollage() {
+    // return true if some images where moved to collage
+    public static boolean moveAllImagesFromPullToCollage() {
+        return getInstance().moveAllImagesFromPullToCollageImpl();
+    }
+    private boolean moveAllImagesFromPullToCollageImpl() {
+        int count = CollageMaker.getInstance().getVisibleImageCount();
+        int move_to_collage = count - collageImages.size();
         getInstance().updateImageCountInCollageImpl();
+        return move_to_collage > 0;
     }
 
     public static void updateImageCountInCollage() {
@@ -164,6 +173,14 @@ public class ImageStorage {
     }
 
     private void fillViewFromNetwork(final ImageView iv, ImageData image) {
+        fillView(iv, image, true);
+    }
+
+    private void fillViewFromHardDrive(ImageView iv, ImageData image) {
+        fillView(iv, image, false);
+    }
+
+    private void fillView(final ImageView iv, ImageData image, boolean from_network) {
         if (iv.getTag() != null) {
             // It's already loading
             ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();
@@ -184,15 +201,17 @@ public class ImageStorage {
         t.url = image.peviewDataPath;
         iv.setTag(t);
 
-        Picasso.with(pullActivity)
-                .load(image.peviewDataPath)
-                .error(R.drawable.ic_content_problem)
-                .into(t);
-    }
-
-    private void fillViewFromHardDrive(ImageView iv, ImageData image) {
-        // TODO: to implement
-        Log.w(TAG, "fillViewFromHardDrive not implemented yet");
+        if (from_network) {
+            Picasso.with(pullActivity)
+                    .load(image.peviewDataPath)
+                    .error(R.drawable.ic_content_problem)
+                    .into(t);
+        } else {
+            Picasso.with(pullActivity)
+                    .load(new File(image.peviewDataPath))
+                    .error(R.drawable.ic_content_problem)
+                    .into(t);
+        }
     }
 
     private void moveImagesBetweenPullAndCollage(int count, boolean from_pull_to_collage) {

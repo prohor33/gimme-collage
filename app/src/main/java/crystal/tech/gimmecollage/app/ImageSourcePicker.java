@@ -1,6 +1,7 @@
 package crystal.tech.gimmecollage.app;
 
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -26,6 +27,9 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import crystal.tech.gimmecollage.collagemaker.ImageData;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 
 
 public class ImageSourcePicker extends ActionBarActivity
@@ -178,8 +182,11 @@ public class ImageSourcePicker extends ActionBarActivity
                 setSelectionMode(false);
                 return true;
             case R.id.action_confirm:
-                // TODO: send images to main activity.
-                // mSelectedImages.toArray()
+                for (String path : mSelectedImages) {
+                    // TODO: add other data eg main image data path
+                    ImageStorage.addImageToPull(new ImageData(path, false));
+                }
+
                 ImageSourcePicker.this.setResult(RESULT_OK);
                 ImageSourcePicker.this.finish();
                 return true;
@@ -251,6 +258,7 @@ public class ImageSourcePicker extends ActionBarActivity
             final PickerItem item = mItems.get(i);
             Picasso.with(ImageSourcePicker.this).load(new File(item.mImagePath))
                     .into(viewHolder.imageView);
+
             viewHolder.showSelection(item.mSelected);
 
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

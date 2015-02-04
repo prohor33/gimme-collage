@@ -21,6 +21,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import crystal.tech.gimmecollage.collagemaker.ImageData;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.utility.DividerItemDecoration;
 
 /**
@@ -32,6 +34,7 @@ public class ImageSourceActivity extends ActionBarActivity {
 
     private final int IMAGE_SOURCE_GALLERY = 0;
     private final int IMAGE_SOURCE_INSTAGRAM = 1;
+    static final int PICK_PICTURE_REQUEST = 1;  // The request code
 
     private Toolbar mToolbar;
 
@@ -84,9 +87,17 @@ public class ImageSourceActivity extends ActionBarActivity {
                 // Open some special activity with folders .. or something.
                 // Send special activity ???
                 Intent intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
-                startActivity(intent);
+                startActivityForResult(intent, PICK_PICTURE_REQUEST);
                 break;
             case IMAGE_SOURCE_INSTAGRAM:
+                // TODO: remove, it's for debug
+                ImageStorage.addImageToPull(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png", true));
+                ImageStorage.addImageToPull(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg", true));
+                ImageStorage.addImageToPull(new ImageData("http://www.bearingscity.am/gallery/img/demopage/image-3.jpg", true));
+                ImageStorage.addImageToPull(new ImageData("http://technologie-f-mauriac.jimdo.com/app/download/8664189394/bmp_oiseau004.bmp?t=1395577376", true));
+
+                ImageSourceActivity.this.setResult(RESULT_OK);
+                ImageSourceActivity.this.finish();
                 break;
             default:
                 break;
@@ -111,6 +122,16 @@ public class ImageSourceActivity extends ActionBarActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_PICTURE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                ImageSourceActivity.this.setResult(RESULT_OK);
+                ImageSourceActivity.this.finish();
+            }
+        }
     }
 
     /**
