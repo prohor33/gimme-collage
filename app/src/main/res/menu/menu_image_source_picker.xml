@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="crystal.tech.gimmecollage.app.ImageSourcePicker">
+
+    <item android:id="@+id/action_remove"
+        android:title="@string/isp_close"
+        android:icon="@drawable/ic_action_remove"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/action_counter"
+        android:title="0"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/action_confirm"
+        android:title="@string/gp_confirm"
+        android:icon="@drawable/ic_action_select"
+        app:showAsAction="always"/>
+</menu>

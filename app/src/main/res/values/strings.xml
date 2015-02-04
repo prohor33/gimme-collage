@@ -24,9 +24,7 @@
     <!-- Gallery Picker Activity -->
     <string name="title_activity_gallery_picker">Gallery Picker</string>
     <string name="gp_confirm">Confirm</string>
-    <string name="gp_confirm_dialog">Are you sure?</string>
-    <string name="gp_confirm_dialog_yes">Yes</string>
-    <string name="gp_confirm_dialog_no">No</string>
+    <string name="isp_close">Close</string>
     <string name="gp_counter_text">images picked</string>
 
     <!-- AdMob id -->
@@ -97,7 +95,11 @@
 
     <string name="drawer_open">Menu opened</string>
     <string name="drawer_close">Menu closed</string>
-
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_world">Hello world!</string>
 
+
+    <string name="title_activity_image_source_picker">ImageSourcePicker</string>
+    <string name="image_source_gallery">Gallery</string>
+    <string name="image_source_instagram">Instagram</string>
 </resources>

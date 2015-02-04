@@ -1,6 +1,7 @@
 package crystal.tech.gimmecollage.app;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -133,12 +134,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     @Override
     public void onSimpleDrawerAddImage() {
         // Spawn ImageSourceActivity.
-//            Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
-//            startActivity(intent);
+        Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
+        startActivity(intent);
 
-//            mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
-//            mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
+        //mSimpleItems.add(new SimpleItem(getResources().getDrawable(R.drawable.ic_launcher)));
+        //mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
 
+
+
+        /*
         // TODO: remove, it's for debug
         switch ((int)(Math.random() * 4)) {
             case 0:
@@ -158,6 +162,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
                         477, 358, true));
                 break;
         }
+        */
 
         mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
     }

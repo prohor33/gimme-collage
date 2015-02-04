@@ -1,13 +1,14 @@
 package crystal.tech.gimmecollage.app;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,10 +21,17 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import crystal.tech.gimmecollage.utility.DividerItemDecoration;
+
 /**
  * Created by Дмитрий on 28.01.2015.
  */
 public class ImageSourceActivity extends ActionBarActivity {
+
+    private final String TAG = "ImageSourceActivity";
+
+    private final int IMAGE_SOURCE_GALLERY = 0;
+    private final int IMAGE_SOURCE_INSTAGRAM = 1;
 
     private Toolbar mToolbar;
 
@@ -44,23 +52,46 @@ public class ImageSourceActivity extends ActionBarActivity {
         populateImageSourceItems(imageSourceItems);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(imageSourceItems);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(itemAnimator);
+        recyclerView.setAdapter(new RecyclerViewAdapter(imageSourceItems));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL_LIST));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
     private void populateImageSourceItems(List<ImageSourceItem> items) {
+        items.add(new ImageSourceItem(R.string.image_source_gallery, R.drawable.ic_gallery));
+        items.add(new ImageSourceItem(R.string.image_source_instagram, R.drawable.ic_instagram));
+
+        /*
         for (int i = 0; i < 100; i++) {
             ImageSourceItem item = new ImageSourceItem();
             item.setText("Instagram");
             item.setDrawable(R.drawable.ic_instagram);
             items.add(item);
         }
+        */
+    }
+
+    private void selectImageSource(int i) {
+        // Check if image source is login???
+        // Open AuthActivity or ImageSourceGallery ??
+        switch (i) {
+            case IMAGE_SOURCE_GALLERY:
+                // Open some special activity with folders .. or something.
+                // Send special activity ???
+                Intent intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                startActivity(intent);
+                break;
+            case IMAGE_SOURCE_INSTAGRAM:
+                break;
+            default:
+                break;
+        }
+        Log.d(TAG, "selectImageSource " + i);
     }
 
     @Override
@@ -96,24 +127,14 @@ public class ImageSourceActivity extends ActionBarActivity {
             mDrawable = drawable;
         }
 
-        public String getText() {
-            return mText;
-        }
-
-        public void setText(String text) {
+        public ImageSourceItem(String text, int id) {
             mText = text;
-        }
-
-        public Drawable getDrawable() {
-            return mDrawable;
-        }
-
-        public void setDrawable(Drawable drawable) {
-            mDrawable = drawable;
-        }
-
-        public void setDrawable(int id) {
             mDrawable = getResources().getDrawable(id);
+        }
+
+        public ImageSourceItem(int text_id, int drawable_id) {
+            mText = getResources().getString(text_id);
+            mDrawable = getResources().getDrawable(drawable_id);
         }
     }
 
@@ -138,11 +159,18 @@ public class ImageSourceActivity extends ActionBarActivity {
          * Заполнение виджетов View данными из элемента списка с номером i
          */
         @Override
-        public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        public void onBindViewHolder(ViewHolder viewHolder, final int i) {
             ImageSourceItem item = mItems.get(i);
-            viewHolder.textView.setText(item.getText());
-            viewHolder.imageView.setImageDrawable(item.getDrawable());
+            viewHolder.textView.setText(item.mText);
+            viewHolder.imageView.setImageDrawable(item.mDrawable);
             //viewHolder.textView.setCompoundDrawablesWithIntrinsicBounds(item.getDrawable(), null, null, null);
+
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ImageSourceActivity.this.selectImageSource(i);
+                }
+            });
         }
 
         @Override
@@ -159,6 +187,7 @@ public class ImageSourceActivity extends ActionBarActivity {
 
             public ViewHolder(View itemView) {
                 super(itemView);
+
                 imageView = (ImageView) itemView.findViewById(R.id.imageView);
                 textView = (TextView) itemView.findViewById(R.id.textView);
             }

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="crystal.tech.gimmecollage.app">
+    package="crystal.tech.gimmecollage.app" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".GimmeCollageApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name=".GimmeCollageApp">
-
+        android:theme="@style/AppTheme" >
         // Google Play Services
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
@@ -27,16 +27,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="crystal.tech.gimmecollage.app.ImageSourceActivity"
+            android:name=".ImageSourceActivity"
             android:label="@string/app_name"
-            android:parentActivityName="crystal.tech.gimmecollage.app.MainActivity">
+            android:parentActivityName=".MainActivity" >
+
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CollageFragment" />
         </activity>
         <activity
-            android:name="crystal.tech.gimmecollage.app.FriendPicker"
+            android:name=".FriendPicker"
             android:label="@string/title_activity_friend_picker"
             android:parentActivityName=".CollageFragment" >
 
@@ -46,7 +47,7 @@
                 android:value=".CollageFragment" />
         </activity>
         <activity
-            android:name="crystal.tech.gimmecollage.app.AuthenticationActivity"
+            android:name=".AuthenticationActivity"
             android:label="@string/title_activity_authentication"
             android:parentActivityName=".CollageFragment" >
             <meta-data
@@ -54,7 +55,7 @@
                 android:value=".CollageFragment" />
         </activity>
         <activity
-            android:name="crystal.tech.gimmecollage.app.GalleryPicker"
+            android:name=".GalleryPicker"
             android:label="@string/title_activity_gallery_picker"
             android:parentActivityName=".CollageFragment" >
             <meta-data
@@ -65,16 +66,27 @@
         <!-- Activity required to show ad overlays. -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
-        <!-- Used for Google Play Store Campaign Measurement-->
+        <!-- Used for Google Play Store Campaign Measurement -->
         <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
-        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true">
+
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".ImageSourcePicker"
+            android:label="@string/title_activity_image_source_picker"
+            android:parentActivityName=".ImageSourceActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="crystal.tech.gimmecollage.app.ImageSourceActivity" />
+        </activity>
     </application>
 
 </manifest>
