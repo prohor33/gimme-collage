@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 
 /**
@@ -38,7 +39,7 @@ public class ImageStorage {
     private Map<Integer, ImageData> collageImages = new HashMap<>();
     private List<Integer> pullImagesOrder = new ArrayList<>();
     private List<Integer> collageImagesOrder = new ArrayList<>();
-    private Activity pullActivity = null;
+    private MainActivity pullActivity = null;
     private Activity collageActivity = null;
 
     public static synchronized ImageStorage getInstance() {
@@ -85,7 +86,7 @@ public class ImageStorage {
     }
 
 
-    public static void putPullActivity(Activity activity) {
+    public static void putPullActivity(MainActivity activity) {
         getInstance().pullActivity = activity;
     }
 
@@ -100,11 +101,7 @@ public class ImageStorage {
         if (i >= pullImages.size())
             return;
         ImageData image = getPullImageByIndex(i);
-        if (image.fromNetwork) {
-            fillViewFromNetwork(iv, image);
-        } else {
-            fillViewFromHardDrive(iv, image);
-        }
+        fillView(iv, image, image.fromNetwork);
     }
 
     public static void fillCollageView(ImageView iv, int i) {
@@ -114,11 +111,7 @@ public class ImageStorage {
         ImageData image = getCollageImageByIndex(i);
         if (image == null)
             return;
-        if (image.fromNetwork) {
-            fillViewFromNetwork(iv, image);
-        } else {
-            fillViewFromHardDrive(iv, image);
-        }
+        fillView(iv, image, image.fromNetwork);
     }
 
     // return true if some images where moved to collage
@@ -140,6 +133,8 @@ public class ImageStorage {
         int move_to_collage = count - collageImages.size();
         if (move_to_collage != 0)
             moveImagesBetweenPullAndCollage(Math.abs(move_to_collage), move_to_collage > 0);
+
+        pullActivity.getRightDrawer().getAdapter().notifyDataSetChanged();
     }
 
     // private members only ==========
@@ -170,14 +165,6 @@ public class ImageStorage {
         if (remove)
             removeCollageImage(id);
         return imageData;
-    }
-
-    private void fillViewFromNetwork(final ImageView iv, ImageData image) {
-        fillView(iv, image, true);
-    }
-
-    private void fillViewFromHardDrive(ImageView iv, ImageData image) {
-        fillView(iv, image, false);
     }
 
     private void fillView(final ImageView iv, ImageData image, boolean from_network) {

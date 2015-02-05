@@ -1,6 +1,7 @@
 package crystal.tech.gimmecollage.navdrawer;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +16,7 @@ import crystal.tech.gimmecollage.collagemaker.ImageStorage;
  */
 public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapter.ViewHolder> {
 
+    private final String TAG = "SimpleDrawerAdapter";
     private SimpleDrawerCallbacks mSimpleDrawerCallbacks;
     private int mSelectedPosition;
     private int mTouchedPosition = -1;
