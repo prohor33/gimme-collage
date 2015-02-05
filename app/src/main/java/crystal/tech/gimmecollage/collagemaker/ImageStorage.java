@@ -1,28 +1,17 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +30,7 @@ public class ImageStorage {
     private Map<Integer, ImageData> collageImages = new HashMap<>();
     private List<Integer> pullImagesOrder = new ArrayList<>();
     private List<Integer> collageImagesOrder = new ArrayList<>();
-    private MainActivity pullActivity = null;
+    private MainActivity mainActivity = null;
     private Activity collageActivity = null;
 
     public static synchronized ImageStorage getInstance() {
@@ -88,8 +77,8 @@ public class ImageStorage {
     }
 
 
-    public static void putPullActivity(MainActivity activity) {
-        getInstance().pullActivity = activity;
+    public static void putMainActivity(MainActivity activity) {
+        getInstance().mainActivity = activity;
     }
 
     public static void putCollageActivity(Activity activity) {
@@ -136,7 +125,7 @@ public class ImageStorage {
         if (move_to_collage != 0)
             moveImagesBetweenPullAndCollage(Math.abs(move_to_collage), move_to_collage > 0);
 
-        pullActivity.getRightDrawer().getAdapter().notifyDataSetChanged();
+        mainActivity.getRightDrawer().getAdapter().notifyDataSetChanged();
     }
 
     // private members only ==========
@@ -186,7 +175,7 @@ public class ImageStorage {
         if (pb != null)
             pb.setVisibility(View.VISIBLE);
 
-        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, pullActivity);
+        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, mainActivity);
         t.url = image.peviewDataPath;
         iv.setTag(t);
 
@@ -203,12 +192,12 @@ public class ImageStorage {
         final boolean load_full_image = image_view_square > max_thumbnail_square;
 
         if (from_network) {
-            Picasso.with(pullActivity)
+            Picasso.with(mainActivity)
                     .load(load_full_image ? image.dataPath : image.peviewDataPath)
                     .error(R.drawable.ic_content_problem)
                     .into(t);
         } else {
-            Picasso.with(pullActivity)
+            Picasso.with(mainActivity)
                     .load(new File(load_full_image ? image.dataPath : image.peviewDataPath))
                     .error(R.drawable.ic_content_problem)
                     .into(t);

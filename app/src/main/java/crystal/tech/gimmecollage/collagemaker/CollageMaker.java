@@ -26,6 +26,7 @@ import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.app.view.OnSwipeTouchListener;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
+import crystal.tech.gimmecollage.utility.MyDragEventListener;
 
 /**
  * Created by prohor on 04/10/14.
@@ -105,12 +106,12 @@ public class CollageMaker {
         updateImageDataImpl();
     }
 
-    public static void init(Activity activity, View rootView) {
-        getInstance().parentActivity = activity;
+    public static void init(Activity collage_activity, View rootView) {
+        getInstance().parentActivity = collage_activity;
         getInstance().rootView = rootView;
-        CollageUtils.Init(activity, rootView);
+        CollageUtils.Init(getInstance().mainActivity, collage_activity, rootView);
         ImageStorage.putCollageActivity(getInstance().parentActivity);
-        ImageStorage.putPullActivity(getInstance().mainActivity);
+        ImageStorage.putMainActivity(getInstance().mainActivity);
     }
 
     public void putMainActivity(MainActivity activity) {
@@ -135,6 +136,8 @@ public class CollageMaker {
                     onImageClick(view);
                 }
             });
+            ImageView iv =(ImageView) flImage.findViewById(R.id.ivMain);
+            iv.setOnDragListener(new MyDragEventListener());
 
             rlCollage.addView(flImage);
         }
@@ -376,8 +379,7 @@ public class CollageMaker {
         int index = imageFLViews.indexOf(view);
         ImageData imageData = ImageStorage.getCollageImage(index);
         if (imageData == null) {
-            SimpleDrawerFragment rightFragment = mainActivity.getRightDrawer();
-            rightFragment.openDrawer();
+            CollageUtils.moveRightDrawer(true);
         }
         collageAnimation.animateOnImageClick(view);
     }
