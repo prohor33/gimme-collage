@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.squareup.picasso.Picasso;
+
+import crystal.tech.gimmecollage.collagemaker.ImageData;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.utility.ComplexImageItem;
 
 public class ImageSourcePicker extends ActionBarActivity
@@ -236,8 +239,12 @@ public class ImageSourcePicker extends ActionBarActivity
                 setSelectionMode(false);
                 return true;
             case R.id.action_confirm:
-                // TODO: send images to main activity.
-                // mSelectedItems contains all selected images.
+
+                for (ComplexImageItem imageItem : mSelectedItems) {
+                    ImageStorage.addImageToPull(new ImageData(imageItem.getImage(),
+                            imageItem.getThumbnail(), false));
+                }
+
                 ImageSourcePicker.this.setResult(RESULT_OK);
                 ImageSourcePicker.this.finish();
                 return true;

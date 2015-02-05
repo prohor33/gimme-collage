@@ -10,8 +10,10 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -188,14 +190,26 @@ public class ImageStorage {
         t.url = image.peviewDataPath;
         iv.setTag(t);
 
+        // standard gallery thumbnail 320x240 or 240x320
+        int image_view_square = iv.getWidth() * iv.getHeight();
+        View gandParent = (View)iv.getParent().getParent();
+        if (gandParent instanceof FrameLayout) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)gandParent.getLayoutParams();
+            image_view_square = params.width * params.height;
+//                Log.d(TAG, "image_view_square = " + image_view_square);
+        }
+
+        final int max_thumbnail_square = 60000;
+        final boolean load_full_image = image_view_square > max_thumbnail_square;
+
         if (from_network) {
             Picasso.with(pullActivity)
-                    .load(image.peviewDataPath)
+                    .load(load_full_image ? image.dataPath : image.peviewDataPath)
                     .error(R.drawable.ic_content_problem)
                     .into(t);
         } else {
             Picasso.with(pullActivity)
-                    .load(new File(image.peviewDataPath))
+                    .load(new File(load_full_image ? image.dataPath : image.peviewDataPath))
                     .error(R.drawable.ic_content_problem)
                     .into(t);
         }

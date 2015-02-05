@@ -51,6 +51,7 @@ public class ImageLoadingTarget  implements Target {
             } else {
                 imageView.setImageDrawable(new BitmapDrawable(bitmap));
             }
+            Log.d(TAG, "image size = " + bitmap.getWidth() + " x " + bitmap.getHeight());
         } else {
 //                    loadDefaultMarker(listener);
             Log.e(TAG, "Error on load image: bitmap == null");
