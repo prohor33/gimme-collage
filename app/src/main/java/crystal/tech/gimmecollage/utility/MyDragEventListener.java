@@ -2,13 +2,14 @@ package crystal.tech.gimmecollage.utility;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 
 /**
  * Created by prohor on 05/02/15.
@@ -16,15 +17,15 @@ import android.widget.Toast;
 
 public class MyDragEventListener implements View.OnDragListener {
 
+    private final String TAG = "MyDragEventListener";
+
     // This is the method that the system calls when it dispatches a drag event to the
     // listener.
     public boolean onDrag(View view, DragEvent event) {
 
-        ImageView v = (ImageView)view;
-        // Defines a variable to store the action type for the incoming event
+        ImageView iv = (ImageView)view;
         final int action = event.getAction();
 
-        // Handles each of the expected events
         switch(action) {
 
             case DragEvent.ACTION_DRAG_STARTED:
@@ -35,10 +36,10 @@ public class MyDragEventListener implements View.OnDragListener {
                     // As an example of what your application might do,
                     // applies a blue color tint to the View to indicate that it can accept
                     // data.
-                    v.setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
+                    // v.setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
 
                     // Invalidate the view to force a redraw in the new tint
-                    v.invalidate();
+//                    v.invalidate();
 
                     // returns true to indicate that the View can accept the dragged data.
                     return true;
@@ -53,11 +54,7 @@ public class MyDragEventListener implements View.OnDragListener {
 
                 // Applies a green tint to the View. Return true; the return value is ignored.
 
-                v.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
-
-                // Invalidate the view to force a redraw in the new tint
-                v.invalidate();
-
+                onDragOverBegin(iv);
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
@@ -67,12 +64,7 @@ public class MyDragEventListener implements View.OnDragListener {
 
             case DragEvent.ACTION_DRAG_EXITED:
 
-                // Re-sets the color tint to blue. Returns true; the return value is ignored.
-                v.setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
-
-                // Invalidate the view to force a redraw in the new tint
-                v.invalidate();
-
+                onDragOverEnd(iv);
                 return true;
 
             case DragEvent.ACTION_DROP:
@@ -82,15 +74,14 @@ public class MyDragEventListener implements View.OnDragListener {
 
                 // Gets the text data from the item.
                 CharSequence dragData = item.getText();
+                int pullImageIndex = Integer.parseInt(dragData.toString());
+                Log.d(TAG, "ACTION_DROP i = " + pullImageIndex);
+                ImageStorage.dropPullImageToCollage(pullImageIndex, iv);
 
                 // Displays a message containing the dragged data.
 //                Toast.makeText(this, "Dragged data is " + dragData, Toast.LENGTH_LONG);
 
-                // Turns off any color tints
-                v.clearColorFilter();
-
-                // Invalidates the view to force a redraw
-                v.invalidate();
+                onDragOverEnd(iv);
 
                 // Returns true. DragEvent.getResult() will return true.
                 return true;
@@ -98,10 +89,7 @@ public class MyDragEventListener implements View.OnDragListener {
             case DragEvent.ACTION_DRAG_ENDED:
 
                 // Turns off any color tinting
-                v.clearColorFilter();
-
-                // Invalidates the view to force a redraw
-                v.invalidate();
+                onDragOverEnd(iv);
 
                 // Does a getResult(), and displays what happened.
                 if (event.getResult()) {
@@ -122,5 +110,18 @@ public class MyDragEventListener implements View.OnDragListener {
         }
 
         return false;
+    }
+
+    void onDragOverBegin(ImageView iv) {
+        iv.setColorFilter(iv.getResources().getColor(R.color.collage_image_drag_sel_clr),
+                PorterDuff.Mode.MULTIPLY);
+        iv.setBackgroundResource(R.drawable.collage_image_back);
+        iv.invalidate();
+    }
+
+    void onDragOverEnd(ImageView iv) {
+        iv.clearColorFilter();
+        iv.setBackgroundResource(0);
+        iv.invalidate();
     }
 };

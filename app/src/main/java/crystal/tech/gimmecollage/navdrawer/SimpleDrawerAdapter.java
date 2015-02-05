@@ -74,6 +74,43 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
                                                }
         );
 
+        final ImageView imageView = (ImageView) viewHolder.itemView.findViewById(R.id.drawerImageView);
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            // Defines the one method for the interface, which is called when the View is long-clicked
+            public boolean onLongClick(View v) {
+
+                // Create a new ClipData.
+                // This is done in two steps to provide clarity. The convenience method
+                // ClipData.newPlainText() can create a plain text ClipData in one step.
+
+                // Create a new ClipData.Item from the ImageView object's tag
+                ClipData.Item item = new ClipData.Item(Integer.toString(i));
+
+                // Create a new ClipData using the tag as a label, the plain text MIME type, and
+                // the already-created item. This will create a new ClipDescription object within the
+                // ClipData, and set its MIME type entry to "text/plain"
+                String[] mimeTypes = new String[1];
+                mimeTypes[0] = ClipDescription.MIMETYPE_TEXT_PLAIN;
+                ClipData dragData = new ClipData("blah", mimeTypes, item);
+
+                // Instantiates the drag shadow builder.
+                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(imageView);
+
+                // Starts the drag
+
+                v.startDrag(dragData,  // the data to be dragged
+                        myShadow,  // the drag shadow builder
+                        null,      // no need to use local data
+                        0          // flags (not currently used, set to 0)
+                );
+
+                CollageUtils.moveRightDrawer(false);
+
+                return true;
+            }
+        });
+
         /*
         if (mSelectedPosition == i || mTouchedPosition == i) {
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getContext().getResources().getColor(R.color.selected_gray));
@@ -110,42 +147,6 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.drawerImageView);
-
-            imageView.setOnLongClickListener(new View.OnLongClickListener() {
-
-                // Defines the one method for the interface, which is called when the View is long-clicked
-                public boolean onLongClick(View v) {
-
-                    // Create a new ClipData.
-                    // This is done in two steps to provide clarity. The convenience method
-                    // ClipData.newPlainText() can create a plain text ClipData in one step.
-
-                    // Create a new ClipData.Item from the ImageView object's tag
-                    ClipData.Item item = new ClipData.Item("blah");
-
-                    // Create a new ClipData using the tag as a label, the plain text MIME type, and
-                    // the already-created item. This will create a new ClipDescription object within the
-                    // ClipData, and set its MIME type entry to "text/plain"
-                    String[] mimeTypes = new String[1];
-                    mimeTypes[0] = ClipDescription.MIMETYPE_TEXT_PLAIN;
-                    ClipData dragData = new ClipData("blah", mimeTypes, item);
-
-                    // Instantiates the drag shadow builder.
-                    View.DragShadowBuilder myShadow = new View.DragShadowBuilder(imageView);
-
-                    // Starts the drag
-
-                    v.startDrag(dragData,  // the data to be dragged
-                            myShadow,  // the drag shadow builder
-                            null,      // no need to use local data
-                            0          // flags (not currently used, set to 0)
-                    );
-
-                    CollageUtils.moveRightDrawer(false);
-
-                    return true;
-                }
-            });
         }
     }
 }

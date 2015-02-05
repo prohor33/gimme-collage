@@ -116,9 +116,9 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
 
     void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(this.getView());
-        }
+//        if (mDrawerLayout != null) {
+//            mDrawerLayout.closeDrawer(this.getView());
+//        }
         if (mCallbacks != null) {
             mCallbacks.onSimpleDrawerItemSelected(position);
         }

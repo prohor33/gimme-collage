@@ -191,6 +191,9 @@ public class CollageMaker {
     public RelativeLayout getImageFL(int index) {
         return (RelativeLayout) imageFLViews.get(index);
     }
+    public int getIndexByFLView(View v) {
+        return imageFLViews.indexOf(v);
+    }
 
     public void updateImageViews() {
         prepareImages();
@@ -213,20 +216,6 @@ public class CollageMaker {
 
     public int getVisibleImageCount() {
         return Math.min(imageFLViews.size(), getCollageConf().getPhotoCount());
-    }
-
-    // TODO: move swap operation to ImageStorage class
-    public void swapViews(View view1, View view2) {
-        int i1 = imageFLViews.indexOf(view1);
-        int i2 = imageFLViews.indexOf(view2);
-        imageFLViews.set(i1, view2);
-        imageFLViews.set(i2, view1);
-        updateViewPosition(i1);
-        updateViewPosition(i2);
-        GoogleAnalyticsUtils.SendEvent(parentActivity,
-                R.string.ga_event_category_swap_images,
-                R.string.ga_event_action_swap_images,
-                R.string.ga_event_label_swap_images);
     }
 
     public void updateViewPosition(int i) {

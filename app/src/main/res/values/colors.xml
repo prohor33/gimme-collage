@@ -36,9 +36,11 @@
     <!--fabs-->
     <color name="fab_ripple_color">#ffffffff</color>
 
-    <!--collage type selector-->
+    <!-- collage type selector-->
     <color name="collage_selector_ripple_clr">#ffffffff</color>
 
+    <!-- collage image drag and drop selector -->
+    <color name="collage_image_drag_sel_clr">#c2b3ffd2</color>
 
     <!--Do we need this?-->
 

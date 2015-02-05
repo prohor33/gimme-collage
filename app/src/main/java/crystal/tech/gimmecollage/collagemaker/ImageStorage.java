@@ -1,6 +1,7 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -46,8 +47,7 @@ public class ImageStorage {
     private void addImageToPullImpl(ImageData img) {
         if (img.dataPath.isEmpty())
             throw new IllegalArgumentException("dataPath is empty");
-        // TODO: remove this debug random
-        int id = img.dataPath.hashCode() + (int)(Math.random() * 10000);
+        int id = generateID(img);
         pullImages.put(id, img);
         pullImagesOrder.add(0, id);
     }
@@ -58,8 +58,7 @@ public class ImageStorage {
     private void addImageToCollageImpl(ImageData img) {
         if (img.dataPath.isEmpty())
             throw new IllegalArgumentException("dataPath is empty");
-        // TODO: remove this debug random
-        int id = img.dataPath.hashCode() + (int)(Math.random() * 10000);
+        int id = generateID(img);
         collageImages.put(id, img);
         collageImagesOrder.add(id);
     }
@@ -101,7 +100,7 @@ public class ImageStorage {
     private void fillCollageViewImpl(ImageView iv, int i) {
         ImageData image = getCollageImageByIndex(i);
         if (image == null)
-            return;
+            return; // not such many photos available
         fillView(iv, image, image.fromNetwork);
     }
 
@@ -125,7 +124,25 @@ public class ImageStorage {
         if (move_to_collage != 0)
             moveImagesBetweenPullAndCollage(Math.abs(move_to_collage), move_to_collage > 0);
 
-        mainActivity.getRightDrawer().getAdapter().notifyDataSetChanged();
+        updatePull();
+    }
+
+    public static void dropPullImageToCollage(int pullIndex, ImageView collageImageView) {
+        getInstance().dropPullImageToCollageImpl(pullIndex, collageImageView);
+    }
+    private void dropPullImageToCollageImpl(int pullIndex, ImageView collageImageView) {
+        View parentFLView = (View) collageImageView.getParent().getParent();
+        int collageIndex = CollageMaker.getInstance().getIndexByFLView(parentFLView);
+        if (collageIndex < 0 || collageIndex >= collageImages.size()) {
+            Log.e(TAG, "trying drop to nowhere");
+            return;
+        }
+        ImageData pullImageData = getPullImageByIndex(pullIndex, true);
+        ImageData collageImageData = replaceCollageImageByIndex(collageIndex, pullImageData);
+        addImageToPull(collageImageData);
+
+        updatePull();
+        updateCollage();
     }
 
     // private members only ==========
@@ -156,6 +173,18 @@ public class ImageStorage {
         if (remove)
             removeCollageImage(id);
         return imageData;
+    }
+
+    private ImageData replaceCollageImageByIndex(int index, ImageData newImage) {
+        if (index >= collageImagesOrder.size())
+            return null;
+        int old_id = collageImagesOrder.get(index);
+        ImageData oldImage = collageImages.get(old_id);
+        int new_id = generateID(newImage);
+        collageImagesOrder.set(index, new_id);
+        collageImages.remove(old_id);
+        collageImages.put(new_id, newImage);
+        return oldImage;
     }
 
     private void fillView(final ImageView iv, ImageData image, boolean from_network) {
@@ -234,5 +263,18 @@ public class ImageStorage {
     private void removeCollageImage(Integer id) {
         collageImages.remove(id);
         collageImagesOrder.remove(id);
+    }
+
+    private void updatePull() {
+        mainActivity.getRightDrawer().getAdapter().notifyDataSetChanged();
+    }
+
+    private void updateCollage() {
+        CollageMaker.updateImageData();
+    }
+
+    private int generateID(ImageData img) {
+        // TODO: remove this debug random
+        return img.dataPath.hashCode() + (int)(Math.random() * 10000);
     }
 }
