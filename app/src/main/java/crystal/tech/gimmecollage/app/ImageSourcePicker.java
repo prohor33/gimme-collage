@@ -1,8 +1,8 @@
 package crystal.tech.gimmecollage.app;
 
+import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
-import android.os.Build;
+import android.graphics.drawable.GradientDrawable;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,52 +16,79 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import crystal.tech.gimmecollage.collagemaker.ImageData;
-import crystal.tech.gimmecollage.collagemaker.ImageStorage;
-
+import com.squareup.picasso.Picasso;
+import crystal.tech.gimmecollage.utility.ComplexImageItem;
 
 public class ImageSourcePicker extends ActionBarActivity
         implements AdapterView.OnItemSelectedListener {
 
-    private final String TAG = "ImageSourcePicker";
+    static final String TAG = "ImageSourcePicker";
+    static final String STATE_SELECTION_MODE = "selectionMode";
+
+    static final String STATE_SELECTED_NUM = "selectedNum";
+    static final String STATE_SELECTED_IMAGES = "selectedImages";
+    static final String STATE_SELECTED_THUMBNAILS = "selectedThumbnails";
+    static final String STATE_SELECTED_SELECTED = "selectedSeleted";
 
     Toolbar mToolbar;
-    List<PickerItem> mPickerItems;
     RecyclerViewAdapter mAdapter;
 
     MenuItem mItemCounter;
     MenuItem mItemConfirm;
     MenuItem mItemRemove;
-    boolean mSelection;
-    List<String> mSelectedImages;
+
+    boolean mSelectionMode = false;
+    List<ComplexImageItem> mCurrentItems = new ArrayList<>();
+    List<ComplexImageItem> mSelectedItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_source_picker);
 
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            mSelectionMode = savedInstanceState.getBoolean(STATE_SELECTION_MODE);
+
+            int num = savedInstanceState.getInt(STATE_SELECTED_NUM);
+            mSelectedItems.clear();
+            for(int i = 0; i < num; i++) {
+                mSelectedItems.add(new ComplexImageItem());
+            }
+            ComplexImageItem.RestoreImagesFromArray(mSelectedItems,
+                    savedInstanceState.getStringArray(STATE_SELECTED_IMAGES));
+            ComplexImageItem.RestoreThumbnailsFromArray(mSelectedItems,
+                    savedInstanceState.getStringArray(STATE_SELECTED_THUMBNAILS));
+            ComplexImageItem.RestoreSelectedFromArray(mSelectedItems,
+                    savedInstanceState.getBooleanArray(STATE_SELECTED_SELECTED));
+
+            Log.d(TAG, "onCreate() from savedInstanceState");
+        } else {
+            // Probably initialize members with default values for a new instance
+            mSelectionMode = false;
+            Log.d(TAG, "onCreate()");
+        }
+
         mToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mSelectedImages = new ArrayList<>();
-        mPickerItems = new ArrayList<>();
-
         setupSpinner();
         setupRecyclerView();
+        // TODO: make choice for gallery or instagram image source.
+        loadImagesFromGalley(mCurrentItems);
+        updateSelectedFlags();
     }
 
     private void setupSpinner() {
@@ -78,41 +105,59 @@ public class ImageSourcePicker extends ActionBarActivity
     }
 
     private void setupRecyclerView() {
-        mPickerItems.clear();
-        String[] galleryImages = getGalleryImages();
-        for(int i = 0; i < galleryImages.length; i++) {
-            mPickerItems.add(new PickerItem(galleryImages[i], false));
-        }
-        //populateImageSourceItems(imageSourceItems);
-
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mAdapter = new RecyclerViewAdapter(mPickerItems);
+        mAdapter = new RecyclerViewAdapter();
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+
+        int spanCount;
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            spanCount = 3;
+        } else {
+            spanCount = 5;
+        }
+        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
     private void selectImage(int i) {
-        if(!mSelection)
+        if(!mSelectionMode)
             setSelectionMode(true);
-        // Adds image path to selected array.
-        String imagePath = mPickerItems.get(i).mImagePath;
-        if(!mSelectedImages.contains(imagePath)) {
-            mSelectedImages.add(imagePath);
-        } else {
-            mSelectedImages.remove(imagePath);
-        }
-        mItemCounter.setTitle(String.valueOf(mSelectedImages.size()));
-        Log.d(TAG, "selectImageSource " + i);
+        // Check if this item, with index i is selected.
+        int pos = checkSelected(i);
+        // If this image is already in selected list, we remove it.
+        if(pos >= 0)
+            mSelectedItems.remove(pos);
+        else
+            mSelectedItems.add(mCurrentItems.get(i));
+        // Update counter.
+        mItemCounter.setTitle(String.valueOf(mSelectedItems.size()));
     }
 
-    private String[] getGalleryImages() {
+    public int checkSelected(ComplexImageItem item) {
+        int pos = -1;
+        for(int i = 0; i < mSelectedItems.size(); i++) {
+            if(mSelectedItems.get(i).getImage().equals(item.getImage())) {
+                // This element is already in a list.
+                pos = i;
+                break;
+            }
+        }
+        return pos;
+    }
+
+    public int checkSelected(int i) {
+        return checkSelected(mCurrentItems.get(i));
+    }
+
+    private void loadImagesFromGalley(List<ComplexImageItem> items) {
+        // Clear list.
+        items.clear();
+
         // Define which columns we need from sql table.
         final String[] columns = {
-                MediaStore.Images.Thumbnails.DATA,
-                MediaStore.Images.Thumbnails._ID
+                MediaStore.Images.Media.DATA
         };
 
         Cursor imageCursor = getContentResolver().query(
@@ -120,43 +165,51 @@ public class ImageSourcePicker extends ActionBarActivity
                 columns,
                 null,
                 null,
-                MediaStore.Images.Thumbnails._ID); // we sort results by ?name?
+                null); // we sort results by ?name?
 
-        int data_column_index = imageCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
-
-        int count = imageCursor.getCount();
-
-        Log.d(TAG, "count = " + count);
-
-        String[] galleryImages = new String[count];
+        int image_column_index = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
+        int thumbnail_column_index = imageCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
         imageCursor.moveToLast();
-        for (int i = 0; i < count; i++) {
-            galleryImages[i] = imageCursor.getString(data_column_index);
+        for (int i = 0; i < imageCursor.getCount(); i++) {
+            // Create new item.
+            ComplexImageItem item = new ComplexImageItem();
+            // Set image path.
+            item.setImage(imageCursor.getString(image_column_index));
+            // Set thumbnail path.
+            item.setThumbnail(imageCursor.getString(thumbnail_column_index));
+            // Add this item to items.
+            items.add(item);
+
             imageCursor.moveToPrevious();
+            //Log.d(TAG, "Image = " + item.getImage() + " Thumbnail = " + item.getThumbnail());
         }
         imageCursor.close();
-        return galleryImages;
+    }
+
+    private void updateSelectedFlags() {
+        for(ComplexImageItem item : mCurrentItems) {
+            item.setSelected(checkSelected(item) >= 0);
+        }
     }
 
     private void setSelectionMode(boolean selection) {
-        mSelection = selection;
+        mSelectionMode = selection;
         mItemRemove.setVisible(selection);
         mItemCounter.setVisible(selection);
         mItemConfirm.setVisible(selection);
         getSupportActionBar().setDisplayHomeAsUpEnabled(!selection);
 
         if(selection) {
-            mItemCounter.setTitle("0");
-            mSelectedImages.clear();
+            // Set counter so 0.
+            mItemCounter.setTitle(String.valueOf(mSelectedItems.size()));
         } else {
-            for(PickerItem item : mPickerItems) {
-                item.mSelected = false;
+            for(ComplexImageItem item : mCurrentItems) {
+                item.setSelected(false);
             }
+            mSelectedItems.clear();
             mAdapter.notifyDataSetChanged();
         }
-
-        Log.d(TAG, "Selection: " + selection);
     }
 
     @Override
@@ -167,7 +220,7 @@ public class ImageSourcePicker extends ActionBarActivity
         mItemCounter = menu.getItem(1);
         mItemConfirm = menu.getItem(2);
         // Selection mode!
-        setSelectionMode(false);
+        setSelectionMode(mSelectionMode);
         return true;
     }
 
@@ -179,14 +232,12 @@ public class ImageSourcePicker extends ActionBarActivity
         int id = item.getItemId();
         switch(id) {
             case R.id.action_remove:
+                // Stop selection mode, clear selected images.
                 setSelectionMode(false);
                 return true;
             case R.id.action_confirm:
-                for (String path : mSelectedImages) {
-                    // TODO: add other data eg main image data path
-                    ImageStorage.addImageToPull(new ImageData(path, false));
-                }
-
+                // TODO: send images to main activity.
+                // mSelectedItems contains all selected images.
                 ImageSourcePicker.this.setResult(RESULT_OK);
                 ImageSourcePicker.this.finish();
                 return true;
@@ -195,54 +246,32 @@ public class ImageSourcePicker extends ActionBarActivity
         }
     }
 
+    // Event for pressing back button on a phone.
     @Override
     public void onBackPressed() {
-        if(mSelection) {
+        if(mSelectionMode) {
             setSelectionMode(false);
         } else {
             super.onBackPressed();
         }
     }
 
-    // OnItemSelected
+    // Spinner item selected event.
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
     }
 
+    // Spinner nothing selected event.
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
     }
 
-    /**
-     * RecyclerViewAdapter with Items.
-     */
-    class PickerItem {
-        private String mImagePath;
-        private boolean mSelected;
-
-        public PickerItem(String imagePath, boolean selected) {
-            mImagePath = imagePath;
-            mSelected = selected;
-        }
-
-        public void toggle() {
-            mSelected = !mSelected;
-        }
-    }
-
+    // Adapter, which manages data for RecyclerView class.
     class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+        public RecyclerViewAdapter() {}
 
-        private List<PickerItem> mItems;
-
-        public RecyclerViewAdapter(List<PickerItem> items) {
-            mItems = items;
-        }
-
-        /**
-         * Создание новых View и ViewHolder элемента списка, которые впоследствии могут переиспользоваться.
-         */
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(
@@ -250,22 +279,18 @@ public class ImageSourcePicker extends ActionBarActivity
             return new ViewHolder(v);
         }
 
-        /**
-         * Заполнение виджетов View данными из элемента списка с номером i
-         */
         @Override
         public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
-            final PickerItem item = mItems.get(i);
-            Picasso.with(ImageSourcePicker.this).load(new File(item.mImagePath))
+            final ComplexImageItem item = mCurrentItems.get(i);
+            Picasso.with(ImageSourcePicker.this).load(new File(item.getThumbnail()))
                     .into(viewHolder.imageView);
-
-            viewHolder.showSelection(item.mSelected);
+            viewHolder.showSelection(item.getSelected());
 
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     item.toggle();
-                    viewHolder.showSelection(item.mSelected);
+                    viewHolder.showSelection(item.getSelected());
                     ImageSourcePicker.this.selectImage(i);
                 }
             });
@@ -273,12 +298,10 @@ public class ImageSourcePicker extends ActionBarActivity
 
         @Override
         public int getItemCount() {
-            return mItems.size();
+            return mCurrentItems.size();
         }
 
-        /**
-         * Реализация класса ViewHolder, хранящего ссылки на виджеты.
-         */
+        // Class, that holds widgets for a single RecyclerView item.
         class ViewHolder extends RecyclerView.ViewHolder {
             private ImageView imageView;
             private ImageView imageBackground;
@@ -302,5 +325,24 @@ public class ImageSourcePicker extends ActionBarActivity
                 }
             }
         }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the current selected items & selectionMode.
+        savedInstanceState.putBoolean(STATE_SELECTION_MODE, mSelectionMode);
+
+        savedInstanceState.putInt(STATE_SELECTED_NUM, mSelectedItems.size());
+        savedInstanceState.putStringArray(STATE_SELECTED_IMAGES,
+                ComplexImageItem.GenerateImagesArray(mSelectedItems));
+        savedInstanceState.putStringArray(STATE_SELECTED_THUMBNAILS,
+                ComplexImageItem.GenerateThumbnailsArray(mSelectedItems));
+        savedInstanceState.putBooleanArray(STATE_SELECTED_SELECTED,
+                ComplexImageItem.GenerateSelectedArray(mSelectedItems));
+
+        Log.d(TAG, "onSaveInstanceState()");
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 }
