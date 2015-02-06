@@ -2,8 +2,11 @@
 
 <resources>
 
+    <!-- ripple color -->
+    <color name="ripple_color">#a79f9de5</color>
+
     <!-- API < 21 RippleView -->
-    <color name="rippleColor">#FFFFFF</color>
+    <color name="prev_sdk_ripple_color">#FFFFFF</color>
 
     <!--Lena design colors-->
     <color name="design_yellow">#fff74a</color>
