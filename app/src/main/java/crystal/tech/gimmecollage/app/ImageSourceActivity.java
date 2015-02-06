@@ -23,6 +23,7 @@ import java.util.List;
 
 import crystal.tech.gimmecollage.collagemaker.ImageData;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
+import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.utility.DividerItemDecoration;
 
 /**
@@ -32,33 +33,31 @@ public class ImageSourceActivity extends ActionBarActivity {
 
     private final String TAG = "ImageSourceActivity";
 
-    private final int IMAGE_SOURCE_GALLERY = 0;
-    private final int IMAGE_SOURCE_INSTAGRAM = 1;
-    static final int PICK_PICTURE_REQUEST = 1;  // The request code
+    static final int GALLERY_REQUEST = 0;
+    static final int INSTAGRAM_REQUEST = 1;
+    static final int INSTAGRAM_AUTH_REQUEST = 2;
 
-    private Toolbar mToolbar;
+    private List<ImageSourceItem> mImageSourceItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_source);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setupRecyclerView();
     }
 
     private void setupRecyclerView() {
-        List<ImageSourceItem> imageSourceItems = new ArrayList<>();
-        populateImageSourceItems(imageSourceItems);
+        populateImageSourceItems(mImageSourceItems);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(new RecyclerViewAdapter(imageSourceItems));
+        recyclerView.setAdapter(new RecyclerViewAdapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL_LIST));
@@ -66,30 +65,32 @@ public class ImageSourceActivity extends ActionBarActivity {
     }
 
     private void populateImageSourceItems(List<ImageSourceItem> items) {
+        items.clear();
+
         items.add(new ImageSourceItem(R.string.image_source_gallery, R.drawable.ic_gallery));
         items.add(new ImageSourceItem(R.string.image_source_instagram, R.drawable.ic_instagram));
-
-        /*
-        for (int i = 0; i < 100; i++) {
-            ImageSourceItem item = new ImageSourceItem();
-            item.setText("Instagram");
-            item.setDrawable(R.drawable.ic_instagram);
-            items.add(item);
-        }
-        */
     }
 
     private void selectImageSource(int i) {
         // Check if image source is login???
         // Open AuthActivity or ImageSourceGallery ??
+        Intent intent;
         switch (i) {
-            case IMAGE_SOURCE_GALLERY:
-                // Open some special activity with folders .. or something.
-                // Send special activity ???
-                Intent intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
-                startActivityForResult(intent, PICK_PICTURE_REQUEST);
+            case 0: // Gallery
+                intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                startActivityForResult(intent, GALLERY_REQUEST);
                 break;
-            case IMAGE_SOURCE_INSTAGRAM:
+            case 1: // Instagram
+                // Check if instagram is logged.
+                if(!InstagramAPI.isAuthenticated()) {
+                    intent = new Intent(ImageSourceActivity.this, AuthenticationActivity.class);
+                    startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
+                } else {
+                    intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                    startActivityForResult(intent, INSTAGRAM_REQUEST);
+                }
+
+                /*
                 // TODO: remove, it's for debug
                 ImageStorage.addImageToPull(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png", true));
                 ImageStorage.addImageToPull(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg", true));
@@ -98,6 +99,8 @@ public class ImageSourceActivity extends ActionBarActivity {
 
                 ImageSourceActivity.this.setResult(RESULT_OK);
                 ImageSourceActivity.this.finish();
+                */
+
                 break;
             default:
                 break;
@@ -125,18 +128,31 @@ public class ImageSourceActivity extends ActionBarActivity {
     }
 
     @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        intent.putExtra("requestCode", requestCode);
+        super.startActivityForResult(intent, requestCode);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_PICTURE_REQUEST) {
+        if (requestCode == GALLERY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 ImageSourceActivity.this.setResult(RESULT_OK);
                 ImageSourceActivity.this.finish();
             }
+        } else if (requestCode == INSTAGRAM_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                ImageSourceActivity.this.setResult(RESULT_OK);
+                ImageSourceActivity.this.finish();
+            }
+        } else if (requestCode == INSTAGRAM_AUTH_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Intent intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                startActivityForResult(intent, INSTAGRAM_REQUEST);
+            }
         }
     }
 
-    /**
-     * RecyclerViewAdapter with Items.
-     */
     class ImageSourceItem {
         private String mText;
         private Drawable mDrawable;
@@ -161,27 +177,17 @@ public class ImageSourceActivity extends ActionBarActivity {
 
     class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-        private List<ImageSourceItem> mItems;
+        public RecyclerViewAdapter() {}
 
-        public RecyclerViewAdapter(List<ImageSourceItem> items) {
-            mItems = items;
-        }
-
-        /**
-         * Создание новых View и ViewHolder элемента списка, которые впоследствии могут переиспользоваться.
-         */
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_image_source_item, viewGroup, false);
             return new ViewHolder(v);
         }
 
-        /**
-         * Заполнение виджетов View данными из элемента списка с номером i
-         */
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, final int i) {
-            ImageSourceItem item = mItems.get(i);
+            ImageSourceItem item = mImageSourceItems.get(i);
             viewHolder.textView.setText(item.mText);
             viewHolder.imageView.setImageDrawable(item.mDrawable);
             //viewHolder.textView.setCompoundDrawablesWithIntrinsicBounds(item.getDrawable(), null, null, null);
@@ -196,12 +202,10 @@ public class ImageSourceActivity extends ActionBarActivity {
 
         @Override
         public int getItemCount() {
-            return mItems.size();
+            return mImageSourceItems.size();
         }
 
-        /**
-         * Реализация класса ViewHolder, хранящего ссылки на виджеты.
-         */
+        // Special ViewHolder class for holding recylcer view elements.
         class ViewHolder extends RecyclerView.ViewHolder {
             private ImageView imageView;
             private TextView textView;

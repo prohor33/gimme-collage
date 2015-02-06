@@ -29,6 +29,8 @@ import com.squareup.picasso.Picasso;
 
 import crystal.tech.gimmecollage.collagemaker.ImageData;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
+import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
+import crystal.tech.gimmecollage.instagram_api.Storage;
 import crystal.tech.gimmecollage.utility.ComplexImageItem;
 
 public class ImageSourcePicker extends ActionBarActivity
@@ -49,6 +51,7 @@ public class ImageSourcePicker extends ActionBarActivity
     MenuItem mItemConfirm;
     MenuItem mItemRemove;
 
+    int mRequestCode;
     boolean mSelectionMode = false;
     List<ComplexImageItem> mCurrentItems = new ArrayList<>();
     List<ComplexImageItem> mSelectedItems = new ArrayList<>();
@@ -90,8 +93,14 @@ public class ImageSourcePicker extends ActionBarActivity
         setupSpinner();
         setupRecyclerView();
         // TODO: make choice for gallery or instagram image source.
-        loadImagesFromGalley(mCurrentItems);
-        updateSelectedFlags();
+        mRequestCode = getIntent().getIntExtra("requestCode", 0);
+        mCurrentItems.clear();
+        if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
+            loadImagesFromGalley();
+            updateSelectedFlags();
+        } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
+            loadImagesFromInstagram();
+        }
     }
 
     private void setupSpinner() {
@@ -154,10 +163,7 @@ public class ImageSourcePicker extends ActionBarActivity
         return checkSelected(mCurrentItems.get(i));
     }
 
-    private void loadImagesFromGalley(List<ComplexImageItem> items) {
-        // Clear list.
-        items.clear();
-
+    private void loadImagesFromGalley() {
         // Define which columns we need from sql table.
         final String[] columns = {
                 MediaStore.Images.Media.DATA
@@ -182,12 +188,32 @@ public class ImageSourcePicker extends ActionBarActivity
             // Set thumbnail path.
             item.setThumbnail(imageCursor.getString(thumbnail_column_index));
             // Add this item to items.
-            items.add(item);
+            mCurrentItems.add(item);
 
             imageCursor.moveToPrevious();
             //Log.d(TAG, "Image = " + item.getImage() + " Thumbnail = " + item.getThumbnail());
         }
         imageCursor.close();
+    }
+
+    private void loadImagesFromInstagram() {
+        InstagramAPI.with(new InstagramAPI.Listener() {
+            @Override
+            public void onSuccess() {
+                for(Storage.ImageInfo imageInfo : InstagramAPI.getImages()) {
+                    ComplexImageItem item = new ComplexImageItem();
+                    item.setImage(imageInfo.standard_resolution.url);
+                    item.setThumbnail(imageInfo.thumbnail.url);
+                    mCurrentItems.add(item);
+                }
+                updateSelectedFlags();
+            }
+
+            @Override
+            public void onFail(String error) {
+
+            }
+        }).updateImages("self");
     }
 
     private void updateSelectedFlags() {
