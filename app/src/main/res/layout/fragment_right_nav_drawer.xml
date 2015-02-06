@@ -7,7 +7,7 @@
     android:background="@color/myDrawerBackground"
     >
 
-<crystal.tech.gimmecollage.app.SquareImageView
+<crystal.tech.gimmecollage.app.view.SquareImageView
     android:id="@+id/drawerAddIimageView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

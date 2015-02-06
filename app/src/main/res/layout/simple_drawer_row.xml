@@ -9,7 +9,7 @@
             android:background="@drawable/photopull_image_back"
             >
 
-    <crystal.tech.gimmecollage.app.SquareImageView
+    <crystal.tech.gimmecollage.app.view.SquareImageView
         android:id="@+id/drawerImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
+import crystal.tech.gimmecollage.app.Application;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
-import crystal.tech.gimmecollage.app.view.OnSwipeTouchListener;
-import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
+import crystal.tech.gimmecollage.utility.OnSwipeTouchListener;
 import crystal.tech.gimmecollage.utility.MyDragEventListener;
 
 /**
@@ -368,7 +368,7 @@ public class CollageMaker {
         int index = imageFLViews.indexOf(view);
         ImageData imageData = ImageStorage.getCollageImage(index);
         if (imageData == null) {
-            CollageUtils.moveRightDrawer(true);
+            Application.moveRightDrawer(true);
         }
         collageAnimation.animateOnImageClick(view);
     }

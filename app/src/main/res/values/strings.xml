@@ -35,7 +35,7 @@
     <!-- Google Tag Manager -->
     <string name="tag_manager_tracker_id">GTM-NKM9JC</string>
 
-    <!-- Google Analytic Events -->
+    <!-- Google Analytic Events ================================================================ -->
     <!-- Add images event -->
     <string name="ga_event_category_add_image">Main GUI</string>
     <string name="ga_event_action_add_image">Touch Collage</string>
@@ -87,6 +87,8 @@
     <string name="ga_event_category_swap_images">Additional GUI</string>
     <string name="ga_event_action_swap_images">Collage Image Control</string>
     <string name="ga_event_label_swap_images">Swap Images</string>
+
+    <!-- ======================================================================================= -->
 
     <string-array name="tabs_array">
         <item>Newsfeed</item>

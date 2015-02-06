@@ -177,6 +177,10 @@ public class InstagramAPI {
         }.start();
     }
 
+    public static void putContext(Context context) {
+        mSingleton.mContext = context;
+    }
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

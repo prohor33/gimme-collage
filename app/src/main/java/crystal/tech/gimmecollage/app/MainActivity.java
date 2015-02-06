@@ -20,6 +20,7 @@ import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
+import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
 import crystal.tech.gimmecollage.navdrawer.NavigationItem;
@@ -59,9 +60,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
                 .findFragmentById(R.id.fragment_drawer_right);
         mSimpleDrawerFragment.setup((DrawerLayout) findViewById(R.id.drawer));
 
-        CollageMaker.getInstance().putMainActivity(this);
-
-        //startApp();
+        Application.startMainActivity(MainActivity.this);
     }
 
     @Override
@@ -158,35 +157,4 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     public SimpleDrawerFragment getRightDrawer() {
         return mSimpleDrawerFragment;
     }
-
-    /* Google staticstics ?.. */
-    private void startApp() {
-        // Load and update LocalStatistic
-        LocalStatistics localStatistics = LocalStatistics.getInstance(MainActivity.this);
-        localStatistics.IncrementAppUsagesNumber();
-
-        if (Settings.showAds) {
-            if (localStatistics.getAppUsagesNumber() > 2 && Math.random() < 0.5) {
-                Ads.LoadInterstitial(MainActivity.this);
-            }
-        }
-
-        // TODO: use Google Tag Manager
-        {
-//        GoogleTagManager.LoadContainer(this);
-
-//        if (ContainerHolderSingleton.getContainerHolder() != null)
-//            ContainerHolderSingleton.getContainerHolder().refresh();
-
-//        DataLayer dataLayer = TagManager.getInstance(this).getDataLayer();
-//        dataLayer.push("AppUsageNumber", LocalStatistics.getInstance(CollageActivity.this).getAppUsagesNumber());
-        }
-
-        if (!Settings.collectStatistics) {
-            // When dry run is set, hits will not be dispatched, but will still be logged as
-            // though they were dispatched.
-            GoogleAnalytics.getInstance(MainActivity.this).setDryRun(true);
-        }
-    }
-
 }

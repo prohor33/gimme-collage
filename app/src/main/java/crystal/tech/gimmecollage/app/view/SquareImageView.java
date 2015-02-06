@@ -1,4 +1,4 @@
-package crystal.tech.gimmecollage.app;
+package crystal.tech.gimmecollage.app.view;
 
 /**
  * Created by Noitorra on 03.10.2014.

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import crystal.tech.gimmecollage.app.Application;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.collagemaker.CollageUtils;
@@ -105,7 +106,7 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
                         0          // flags (not currently used, set to 0)
                 );
 
-                CollageUtils.moveRightDrawer(false);
+                Application.moveRightDrawer(false);
 
                 return true;
             }

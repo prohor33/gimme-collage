@@ -273,16 +273,4 @@ public class CollageUtils {
             }
         }
     }
-
-    public static void moveRightDrawer(boolean open) {
-        getInstance().moveRightDrawerImpl(open);
-    }
-    private void moveRightDrawerImpl(boolean open) {
-        SimpleDrawerFragment rightFragment = mainActivity.getRightDrawer();
-        if (open) {
-            rightFragment.openDrawer();
-        } else {
-            rightFragment.closeDrawer();
-        }
-    }
 }

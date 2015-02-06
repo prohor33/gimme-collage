@@ -18,19 +18,10 @@ public class LocalStatistics {
     private static final String APP_USAGE_NUMBER = "AppUsageNumber";
     private int mAppUsagesNumber = 0;
 
-    LocalStatistics(Context context) {
+    public LocalStatistics(Context context) {
         mSharedPref = context.getSharedPreferences(SHARED, Context.MODE_PRIVATE);
         mEditor = mSharedPref.edit();
         ReStoreData();
-    }
-
-    private static LocalStatistics mInstance = null;
-
-    public static synchronized LocalStatistics getInstance(Activity activity) {
-        if (mInstance == null) {
-            mInstance = new LocalStatistics(activity);
-        }
-        return mInstance;
     }
 
     public void IncrementAppUsagesNumber() {
