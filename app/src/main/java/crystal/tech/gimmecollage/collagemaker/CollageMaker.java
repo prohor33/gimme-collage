@@ -1,6 +1,8 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -127,7 +129,7 @@ public class CollageMaker {
         collageAnimation.init(activity, rlCollage);
 
         for (int i = 0; i < getMaxImageCount(); i++) {
-            FrameLayout flImage = (FrameLayout) activity.getLayoutInflater().inflate(
+            final FrameLayout flImage = (FrameLayout) activity.getLayoutInflater().inflate(
                     R.layout.layout_collage_image, null, false);
 
             flImage.setOnClickListener(new View.OnClickListener() {
@@ -136,8 +138,34 @@ public class CollageMaker {
                     onImageClick(view);
                 }
             });
-            ImageView iv =(ImageView) flImage.findViewById(R.id.ivMain);
+            final ImageView iv =(ImageView) flImage.findViewById(R.id.ivMain);
             iv.setOnDragListener(new MyDragEventListener());
+            iv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    ClipData.Item itemSource =
+                            new ClipData.Item(MyDragEventListener.FROM_COLLAGE_DRAG_SOURCE);
+                    String[] mimeTypes = new String[1];
+                    mimeTypes[0] = ClipDescription.MIMETYPE_TEXT_PLAIN;
+                    ClipData dragData = new ClipData("blah", mimeTypes, itemSource);
+
+                    ClipData.Item itemPullIndex =
+                            new ClipData.Item(Integer.toString(getIndexByFLView(flImage)));
+                    dragData.addItem(itemPullIndex);
+
+                    // Instantiates the drag shadow builder.
+                    View.DragShadowBuilder myShadow = new View.DragShadowBuilder(iv);
+
+                    // Starts the drag
+
+                    iv.startDrag(dragData,  // the data to be dragged
+                            myShadow,  // the drag shadow builder
+                            null,      // no need to use local data
+                            0          // flags (not currently used, set to 0)
+                    );
+                    return false;
+                }
+            });
 
             rlCollage.addView(flImage);
         }

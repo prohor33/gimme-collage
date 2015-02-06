@@ -145,6 +145,21 @@ public class ImageStorage {
         updateCollage();
     }
 
+    public static void dropCollageImageToCollage(int collageIndex1, ImageView collageImageView) {
+        getInstance().dropCollageImageToCollageImpl(collageIndex1, collageImageView);
+    }
+    private void dropCollageImageToCollageImpl(int collageIndex1, ImageView collageImageView) {
+        View parentFLView = (View) collageImageView.getParent().getParent();
+        int collageIndex2 = CollageMaker.getInstance().getIndexByFLView(parentFLView);
+        if (collageIndex1 == collageIndex2)
+            return; // nothing to swap
+        ImageData image1 = getCollageImage(collageIndex1);
+        ImageData image2 = replaceCollageImageByIndex(collageIndex2, image1);
+        replaceCollageImageByIndex(collageIndex1, image2);
+
+        updateCollage();
+    }
+
     // private members only ==========
 
     private ImageData getPullImageByIndex(int index) {

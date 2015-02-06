@@ -3,7 +3,6 @@ package crystal.tech.gimmecollage.navdrawer;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,10 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import crystal.tech.gimmecollage.app.Application;
-import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
-import crystal.tech.gimmecollage.collagemaker.CollageUtils;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
+import crystal.tech.gimmecollage.utility.MyDragEventListener;
 
 /**
  * Created by poliveira on 24/10/2014.
@@ -86,14 +84,18 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
                 // ClipData.newPlainText() can create a plain text ClipData in one step.
 
                 // Create a new ClipData.Item from the ImageView object's tag
-                ClipData.Item item = new ClipData.Item(Integer.toString(i));
+                ClipData.Item itemSource = new ClipData.Item(MyDragEventListener.FROM_PULL_DRAG_SOURCE);
 
                 // Create a new ClipData using the tag as a label, the plain text MIME type, and
                 // the already-created item. This will create a new ClipDescription object within the
                 // ClipData, and set its MIME type entry to "text/plain"
-                String[] mimeTypes = new String[1];
+                String[] mimeTypes = new String[2];
                 mimeTypes[0] = ClipDescription.MIMETYPE_TEXT_PLAIN;
-                ClipData dragData = new ClipData("blah", mimeTypes, item);
+                mimeTypes[1] = ClipDescription.MIMETYPE_TEXT_PLAIN;
+                ClipData dragData = new ClipData("blah", mimeTypes, itemSource);
+
+                ClipData.Item itemPullIndex = new ClipData.Item(Integer.toString(i));
+                dragData.addItem(itemPullIndex);
 
                 // Instantiates the drag shadow builder.
                 View.DragShadowBuilder myShadow = new View.DragShadowBuilder(imageView);

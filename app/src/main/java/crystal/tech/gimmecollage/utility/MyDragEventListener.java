@@ -17,6 +17,9 @@ import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 
 public class MyDragEventListener implements View.OnDragListener {
 
+    public static String FROM_PULL_DRAG_SOURCE = "FromPull";
+    public static String FROM_COLLAGE_DRAG_SOURCE = "FromCollage";
+
     private final String TAG = "MyDragEventListener";
 
     // This is the method that the system calls when it dispatches a drag event to the
@@ -70,16 +73,23 @@ public class MyDragEventListener implements View.OnDragListener {
             case DragEvent.ACTION_DROP:
 
                 // Gets the item containing the dragged data
-                ClipData.Item item = event.getClipData().getItemAt(0);
-
+                ClipData.Item itemSource = event.getClipData().getItemAt(0);
                 // Gets the text data from the item.
-                CharSequence dragData = item.getText();
-                int pullImageIndex = Integer.parseInt(dragData.toString());
-                Log.d(TAG, "ACTION_DROP i = " + pullImageIndex);
-                ImageStorage.dropPullImageToCollage(pullImageIndex, iv);
+                String sourceName = itemSource.getText().toString();
 
-                // Displays a message containing the dragged data.
-//                Toast.makeText(this, "Dragged data is " + dragData, Toast.LENGTH_LONG);
+                ClipData.Item itemIndex = event.getClipData().getItemAt(1);
+
+                int imageIndex = Integer.parseInt(itemIndex.getText().toString());
+
+                if (sourceName.compareTo(FROM_PULL_DRAG_SOURCE) == 0) {
+                    Log.d(TAG, "Drop from pull i = " + imageIndex);
+                    ImageStorage.dropPullImageToCollage(imageIndex, iv);
+                } else if (sourceName.compareTo(FROM_COLLAGE_DRAG_SOURCE) == 0) {
+                    Log.d(TAG, "Drop from collage i = " + imageIndex);
+                    ImageStorage.dropCollageImageToCollage(imageIndex, iv);
+                } else {
+                    Log.e(TAG, "Wrong source name. Drop from nowhere.");
+                }
 
                 onDragOverEnd(iv);
 
