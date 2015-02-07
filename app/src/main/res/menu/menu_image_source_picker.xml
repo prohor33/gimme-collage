@@ -15,5 +15,9 @@
     <item android:id="@+id/action_confirm"
         android:title="@string/gp_confirm"
         android:icon="@drawable/ic_action_select"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_logout"
+        android:title="@string/action_logout"
+        app:showAsAction="never" />
 </menu>
