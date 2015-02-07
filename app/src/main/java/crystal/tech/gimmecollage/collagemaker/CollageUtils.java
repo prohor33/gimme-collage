@@ -3,7 +3,12 @@ package crystal.tech.gimmecollage.collagemaker;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,6 +26,7 @@ import java.io.OutputStream;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
+import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
@@ -37,6 +43,7 @@ public class CollageUtils {
     private MainActivity mainActivity = null;
     private View rootView = null;
     private ProgressDialog progressDialog = null;
+    private ImageActionButtons imageActionButtons = new ImageActionButtons();
 
     public static synchronized CollageUtils getInstance() {
         if (instance == null) {
@@ -45,10 +52,12 @@ public class CollageUtils {
         return instance;
     }
 
-    public static void Init(MainActivity main_activity, Activity collage_activity, View root_view) {
+    public static void Init(MainActivity main_activity, Activity collage_activity,
+                            View root_view) {
         getInstance().collageActivity = collage_activity;
         getInstance().rootView = root_view;
         getInstance().mainActivity = main_activity;
+        getInstance().imageActionButtons.init(collage_activity, root_view);
     }
 
     public interface FileSaveCallback {
@@ -198,6 +207,7 @@ public class CollageUtils {
         ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CollageMaker.getCollageAnimation().dischargeAllSelection();
                 FloatingActionButton mFab1 = (FloatingActionButton) rootView.findViewById(R.id.fabbutton1);
                 mFab1.hide(!mFab1.getHidden());
                 FloatingActionButton mFab2 = (FloatingActionButton) rootView.findViewById(R.id.fabbutton2);
@@ -212,6 +222,7 @@ public class CollageUtils {
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CollageMaker.getCollageAnimation().dischargeAllSelection();
                 CollageMaker.saveCollageOnDisk();
             }
         });
@@ -223,6 +234,7 @@ public class CollageUtils {
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CollageMaker.getCollageAnimation().dischargeAllSelection();
                 CollageMaker.shareCollage();
             }
         });
@@ -271,6 +283,46 @@ public class CollageUtils {
                 }
                 iv.setTranslationZ(0);
             }
+        }
+    }
+
+    public static ImageActionButtons getImageActionButtons() {
+        return getInstance().imageActionButtons;
+    }
+
+    public static void rotateImage(ImageView imageView, float angle) {
+        getInstance().rotateImageImpl(imageView, angle);
+    }
+    private void rotateImageImpl(ImageView imageView, float angle) {
+        BitmapDrawable bitmapDrawable;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
+            if (rippleDrawable == null)
+                return;
+            bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
+        } else {
+            bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+        }
+        if (bitmapDrawable == null) {
+            Log.e(TAG, "rotateImageImpl: No bitmap not loaded, do nothing");
+            return;
+        }
+        Bitmap myImg = bitmapDrawable.getBitmap();
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+
+        Bitmap rotated = Bitmap.createBitmap(myImg, 0, 0, myImg.getWidth(), myImg.getHeight(),
+                matrix, true);
+
+        ColorStateList imageColorList =
+                collageActivity.getResources().getColorStateList(R.color.image_colorlist);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setImageDrawable(new RippleDrawable(imageColorList,
+                    new BitmapDrawable(rotated), null));
+        } else {
+            imageView.setImageDrawable(new BitmapDrawable(rotated));
         }
     }
 }

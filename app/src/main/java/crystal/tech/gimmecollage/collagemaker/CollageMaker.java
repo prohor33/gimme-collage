@@ -106,6 +106,8 @@ public class CollageMaker {
 
         ImageStorage.updateImageCountInCollage();
         updateImageDataImpl();
+
+        CollageUtils.getImageActionButtons().hide();
     }
 
     public static void init(Activity collage_activity, View rootView) {
@@ -163,6 +165,9 @@ public class CollageMaker {
                             null,      // no need to use local data
                             0          // flags (not currently used, set to 0)
                     );
+
+                    CollageMaker.getCollageAnimation().dischargeAllSelection();
+
                     return false;
                 }
             });
@@ -345,6 +350,10 @@ public class CollageMaker {
         return collageImage;
     }
 
+    public static CollageAnimation getCollageAnimation() {
+        return getInstance().collageAnimation;
+    }
+
     // private members only ================
 
     private void updateCollageLayoutSize() {
@@ -395,9 +404,20 @@ public class CollageMaker {
     private void onImageClick(View view) {
         int index = imageFLViews.indexOf(view);
         ImageData imageData = ImageStorage.getCollageImage(index);
+
         if (imageData == null) {
             Application.moveRightDrawer(true);
+        } else {
+            // TODO: bug! check if click other!
+            if (CollageUtils.getImageActionButtons().isVisible()) {
+                CollageUtils.getImageActionButtons().hide();
+            } else {
+                CollageUtils.getImageActionButtons().showOnView(view);
+            }
         }
+
+        // TODO: check if selected => deselect
+        // TODO: keep selection state of each image somewhere?
         collageAnimation.animateOnImageClick(view);
     }
 }
