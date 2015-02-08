@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class ImageSourcePicker extends ActionBarActivity
     MenuItem mItemCounter;
     MenuItem mItemConfirm;
     MenuItem mItemRemove;
+    MenuItem mItemLogout;
 
     int mRequestCode;
     boolean mSelectionMode = false;
@@ -99,7 +101,18 @@ public class ImageSourcePicker extends ActionBarActivity
             loadImagesFromGalley();
             updateSelectedFlags();
         } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
-            loadImagesFromInstagram();
+            InstagramAPI.with(new InstagramAPI.Listener() {
+                @Override
+                public void onSuccess() {
+                    loadImagesFromInstagram();
+                }
+
+                @Override
+                public void onFail(String error) {
+                    Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG)
+                            .show();
+                }
+            }).updateSelf();
         }
     }
 
@@ -134,8 +147,8 @@ public class ImageSourcePicker extends ActionBarActivity
     }
 
     private void selectImage(int i) {
-        if(!mSelectionMode)
-            setSelectionMode(true);
+        // If it is the first time we select item, we need to start selection mode.
+        if(!mSelectionMode) setSelectionMode(true);
         // Check if this item, with index i is selected.
         int pos = checkSelected(i);
         // If this image is already in selected list, we remove it.
@@ -145,6 +158,11 @@ public class ImageSourcePicker extends ActionBarActivity
             mSelectedItems.add(mCurrentItems.get(i));
         // Update counter.
         mItemCounter.setTitle(String.valueOf(mSelectedItems.size()));
+
+        // If we deselected all item and selection mode is active, we need to disable it.
+        if(mSelectedItems.isEmpty()) {
+            if(mSelectionMode) setSelectionMode(false);
+        }
     }
 
     public int checkSelected(ComplexImageItem item) {
@@ -189,9 +207,7 @@ public class ImageSourcePicker extends ActionBarActivity
             item.setThumbnail(imageCursor.getString(thumbnail_column_index));
             // Add this item to items.
             mCurrentItems.add(item);
-
             imageCursor.moveToPrevious();
-            //Log.d(TAG, "Image = " + item.getImage() + " Thumbnail = " + item.getThumbnail());
         }
         imageCursor.close();
     }
@@ -211,7 +227,7 @@ public class ImageSourcePicker extends ActionBarActivity
 
             @Override
             public void onFail(String error) {
-
+                Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG).show();
             }
         }).updateImages("self");
     }
@@ -220,6 +236,7 @@ public class ImageSourcePicker extends ActionBarActivity
         for(ComplexImageItem item : mCurrentItems) {
             item.setSelected(checkSelected(item) >= 0);
         }
+        mAdapter.notifyDataSetChanged();
     }
 
     private void setSelectionMode(boolean selection) {
@@ -228,6 +245,13 @@ public class ImageSourcePicker extends ActionBarActivity
         mItemCounter.setVisible(selection);
         mItemConfirm.setVisible(selection);
         getSupportActionBar().setDisplayHomeAsUpEnabled(!selection);
+
+        // item logout is available only for INSTAGRAM
+        if(mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
+            mItemLogout.setVisible(!selection);
+        } else {
+            mItemLogout.setVisible(false);
+        }
 
         if(selection) {
             // Set counter so 0.
@@ -248,6 +272,7 @@ public class ImageSourcePicker extends ActionBarActivity
         mItemRemove = menu.getItem(0);
         mItemCounter = menu.getItem(1);
         mItemConfirm = menu.getItem(2);
+        mItemLogout = menu.getItem(3);
         // Selection mode!
         setSelectionMode(mSelectionMode);
         return true;
@@ -272,6 +297,10 @@ public class ImageSourcePicker extends ActionBarActivity
                 }
 
                 ImageSourcePicker.this.setResult(RESULT_OK);
+                ImageSourcePicker.this.finish();
+                return true;
+            case R.id.action_logout:
+                InstagramAPI.resetAuthentication();
                 ImageSourcePicker.this.finish();
                 return true;
             default:
@@ -315,8 +344,13 @@ public class ImageSourcePicker extends ActionBarActivity
         @Override
         public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
             final ComplexImageItem item = mCurrentItems.get(i);
-            Picasso.with(ImageSourcePicker.this).load(new File(item.getThumbnail()))
-                    .into(viewHolder.imageView);
+            if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
+                Picasso.with(ImageSourcePicker.this).load(new File(item.getThumbnail()))
+                        .into(viewHolder.imageView);
+            } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
+                Picasso.with(ImageSourcePicker.this).load(item.getThumbnail())
+                        .into(viewHolder.imageView);
+            }
             viewHolder.showSelection(item.getSelected());
 
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
