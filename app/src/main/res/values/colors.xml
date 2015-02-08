@@ -2,6 +2,11 @@
 
 <resources>
 
+    <!-- image action buttons color -->
+    <color name="image_action_btn_rotate_left_color">#ff51c0c5</color>
+    <color name="image_action_btn_settings_color">#ffafacae</color>
+    <color name="image_action_btn_accept_color">#ff66d849</color>
+
     <!-- ripple color -->
     <color name="ripple_color">#a79f9de5</color>
 

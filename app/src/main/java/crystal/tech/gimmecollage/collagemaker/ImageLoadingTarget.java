@@ -22,7 +22,7 @@ import crystal.tech.gimmecollage.app.R;
  */
 public class ImageLoadingTarget  implements Target {
     private final String TAG = "ImageLoadingTarget";
-    public String url;
+    public String dataPath;
     private ProgressBar progressBar;
     private ImageView imageView;
     private Activity activity;
@@ -42,17 +42,16 @@ public class ImageLoadingTarget  implements Target {
         if (bitmap != null) {
             onSuccess();
 
-            ColorStateList imageColorlist =
+            ColorStateList imageColorList =
                     activity.getResources().getColorStateList(R.color.image_colorlist);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                imageView.setImageDrawable(new RippleDrawable(imageColorlist,
+                imageView.setImageDrawable(new RippleDrawable(imageColorList,
                         new BitmapDrawable(bitmap), null));
             } else {
                 imageView.setImageDrawable(new BitmapDrawable(bitmap));
             }
         } else {
-//                    loadDefaultMarker(listener);
             Log.e(TAG, "Error on load image: bitmap == null");
             onError();
         }

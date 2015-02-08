@@ -10,7 +10,7 @@
     <dimen name="toolbar_elevation">4dp</dimen>
 
     <!--Collage ImageView-->
-    <dimen name="collage_iv_elevation">15dp</dimen>
+    <dimen name="collage_iv_elevation">10dp</dimen>
 
     <!--Fab-->
     <dimen name="fab_size">78dp</dimen>
@@ -23,4 +23,9 @@
     <dimen name="selector_margin">6dp</dimen>
     <dimen name="stroke_width">1dp</dimen>
     <dimen name="selector_elevation">15dp</dimen>
+
+    <!-- Image action button size -->
+    <dimen name="image_action_btn_size">40dp</dimen>
+    <dimen name="image_action_def_elevation">15dp</dimen>
+    <dimen name="image_action_rl_padding">20dp</dimen>  <!-- anti shadow bug -->
 </resources>

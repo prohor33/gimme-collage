@@ -22,13 +22,17 @@ public class CollageAnimation {
 
     public void animateOnImageClick(final View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            for (int i = 0; i < rlCollage.getChildCount(); i++) {
-                rlCollage.getChildAt(i).animate().translationZ(0);
-            }
-
             final float clickElevation =
                     parentActivity.getResources().getDimension(R.dimen.collage_iv_elevation);
             view.animate().translationZ(clickElevation);
+        }
+    }
+
+    public void dischargeAllImages() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            for (int i = 0; i < rlCollage.getChildCount(); i++) {
+                rlCollage.getChildAt(i).animate().translationZ(0);
+            }
         }
     }
 
@@ -38,5 +42,10 @@ public class CollageAnimation {
                 rlCollage.getChildAt(i).setTranslationZ(0);
             }
         }
+    }
+
+    public void dischargeAllSelection() {
+        CollageUtils.getImageActionButtons().hide();
+        dischargeAllImages();
     }
 }

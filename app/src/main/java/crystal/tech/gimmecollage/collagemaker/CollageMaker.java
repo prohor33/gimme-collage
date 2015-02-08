@@ -47,9 +47,7 @@ public class CollageMaker {
     private CollageAnimation collageAnimation =  new CollageAnimation();
     private View rootView = null;
 
-    // big_frame -> big_rl -> frame layout -> image_view + progress + back_image
-    // this is fls
-    private ArrayList<View> imageFLViews = new ArrayList<>();
+    private ArrayList<ImageViewData> imageViewDatas = new ArrayList<>();
 
     public enum CollageType {
         Grid,
@@ -106,6 +104,8 @@ public class CollageMaker {
 
         ImageStorage.updateImageCountInCollage();
         updateImageDataImpl();
+
+        deselectAllViewsImpl();
     }
 
     public static void init(Activity collage_activity, View rootView) {
@@ -163,6 +163,9 @@ public class CollageMaker {
                             null,      // no need to use local data
                             0          // flags (not currently used, set to 0)
                     );
+
+                    deselectAllViews();
+
                     return false;
                 }
             });
@@ -185,9 +188,9 @@ public class CollageMaker {
         rlCollage.setGestureDetector(onSwipeTouchListener.getGestureDetector());
         rlCollage.setOnTouchListener(onSwipeTouchListener);
 
-        imageFLViews.clear();
+        imageViewDatas.clear();
         for (int i = 0; i < rlCollage.getChildCount(); i++) {
-            imageFLViews.add(rlCollage.getChildAt(i));
+            imageViewDatas.add(new ImageViewData(rlCollage.getChildAt(i), i));
         }
 
         ViewTreeObserver vto = rlCollage.getViewTreeObserver();
@@ -214,13 +217,24 @@ public class CollageMaker {
     }
 
     public int getAllImageViewCount() {
-        return imageFLViews.size();
+        return imageViewDatas.size();
     }
-    public RelativeLayout getImageFL(int index) {
-        return (RelativeLayout) imageFLViews.get(index);
+    public FrameLayout getImageFL(int index) {
+        return (FrameLayout) imageViewDatas.get(index).view;
     }
+
+    public ImageViewData getViewDataByFLView(View v) {
+        int index = getIndexByFLView(v);
+        return imageViewDatas.get(index);
+    }
+
     public int getIndexByFLView(View v) {
-        return imageFLViews.indexOf(v);
+        // TODO: improve data structure to make search faster?
+        for (int i = 0; i < imageViewDatas.size(); i++) {
+            if (imageViewDatas.get(i).view == v)
+                return i;
+        }
+        return -1;
     }
 
     public void updateImageViews() {
@@ -236,22 +250,22 @@ public class CollageMaker {
     }
     private void updateImageDataImpl() {
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            View v = imageFLViews.get(i);
+            View v = imageViewDatas.get(i).view;
             ImageView iv = (ImageView)v.findViewById(R.id.ivMain);
             ImageStorage.fillCollageView(iv, i);
         }
     }
 
     public int getVisibleImageCount() {
-        return Math.min(imageFLViews.size(), getCollageConf().getPhotoCount());
+        return Math.min(imageViewDatas.size(), getCollageConf().getPhotoCount());
     }
 
     public void updateViewPosition(int i) {
-        if (i >= imageFLViews.size()) {
-            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + imageFLViews.size());
+        if (i >= imageViewDatas.size()) {
+            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + imageViewDatas.size());
             return;
         }
-        final View v = imageFLViews.get(i);
+        final View v = imageViewDatas.get(i).view;
 
         PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
@@ -263,7 +277,7 @@ public class CollageMaker {
     }
 
     public void updateViewPosition(View v) {
-        updateViewPosition(imageFLViews.indexOf(v));
+        updateViewPosition(getIndexByFLView(v));
     }
 
     public static void saveCollageOnDisk() {
@@ -312,7 +326,7 @@ public class CollageMaker {
         comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            FrameLayout fl = (FrameLayout) imageFLViews.get(i);
+            FrameLayout fl = (FrameLayout) imageViewDatas.get(i).view;
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 
@@ -345,6 +359,10 @@ public class CollageMaker {
         return collageImage;
     }
 
+    public static CollageAnimation getCollageAnimation() {
+        return getInstance().collageAnimation;
+    }
+
     // private members only ================
 
     private void updateCollageLayoutSize() {
@@ -372,8 +390,8 @@ public class CollageMaker {
     }
 
     private void prepareImages() {
-        for (int i = 0; i < imageFLViews.size(); i++) {
-            View iv = imageFLViews.get(i);
+        for (int i = 0; i < imageViewDatas.size(); i++) {
+            View iv = imageViewDatas.get(i).view;
 
             if (i < getCollageConf().getPhotoCount()) {
                 iv.setVisibility(View.VISIBLE);
@@ -393,12 +411,33 @@ public class CollageMaker {
     }
 
     private void onImageClick(View view) {
-        int index = imageFLViews.indexOf(view);
-        ImageData imageData = ImageStorage.getCollageImage(index);
+        ImageViewData viewData = getViewDataByFLView(view);
+        ImageData imageData = ImageStorage.getCollageImage(viewData.index);
+
         if (imageData == null) {
+            // empty collage view
             Application.moveRightDrawer(true);
+            return;
         }
-        collageAnimation.animateOnImageClick(view);
+
+        if (viewData.getSelected()) {
+            deselectAllViews();
+        } else {
+            deselectAllViews();
+            collageAnimation.animateOnImageClick(view);
+            CollageUtils.getImageActionButtons().showOnView(view);
+            viewData.putSelected(true);
+        }
+    }
+
+    public static void deselectAllViews() {
+        getInstance().deselectAllViewsImpl();
+    }
+    private void deselectAllViewsImpl() {
+        collageAnimation.dischargeAllSelection();
+        for (ImageViewData viewData : imageViewDatas) {
+            viewData.putSelected(false);
+        }
     }
 }
 

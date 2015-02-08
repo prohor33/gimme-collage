@@ -330,7 +330,8 @@ public class ImageSourcePicker extends ActionBarActivity
 
                 for (ComplexImageItem imageItem : mSelectedItems) {
                     ImageStorage.addImageToPull(new ImageData(imageItem.getImage(),
-                            imageItem.getThumbnail(), false));
+                            imageItem.getThumbnail(),
+                            mRequestCode != ImageSourceActivity.GALLERY_REQUEST));
                 }
 
                 ImageSourcePicker.this.setResult(RESULT_OK);

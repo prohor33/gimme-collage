@@ -91,7 +91,7 @@ public class ImageStorage {
         if (i >= pullImages.size())
             return;
         ImageData image = getPullImageByIndex(i);
-        fillView(iv, image, image.fromNetwork);
+        CollageUtils.fillView(iv, image, image.fromNetwork);
     }
 
     public static void fillCollageView(ImageView iv, int i) {
@@ -101,7 +101,7 @@ public class ImageStorage {
         ImageData image = getCollageImageByIndex(i);
         if (image == null)
             return; // not such many photos available
-        fillView(iv, image, image.fromNetwork);
+        CollageUtils.fillView(iv, image, image.fromNetwork);
     }
 
     // return true if some images where moved to collage
@@ -200,52 +200,6 @@ public class ImageStorage {
         collageImages.remove(old_id);
         collageImages.put(new_id, newImage);
         return oldImage;
-    }
-
-    private void fillView(final ImageView iv, ImageData image, boolean from_network) {
-        if (iv.getTag() != null) {
-            // It's already loading
-            ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();
-            if (target.url == image.peviewDataPath)
-                return;
-            // Abort loading to start new one
-            target.cancel();
-            iv.setTag(null);
-        }
-
-        View parent = (View)iv.getParent();
-        iv.setImageDrawable(null);
-        final ProgressBar pb = (ProgressBar)parent.findViewById(R.id.progressBar);
-        if (pb != null)
-            pb.setVisibility(View.VISIBLE);
-
-        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, mainActivity);
-        t.url = image.peviewDataPath;
-        iv.setTag(t);
-
-        // standard gallery thumbnail 320x240 or 240x320
-        int image_view_square = iv.getWidth() * iv.getHeight();
-        View gandParent = (View)iv.getParent().getParent();
-        if (gandParent instanceof FrameLayout) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)gandParent.getLayoutParams();
-            image_view_square = params.width * params.height;
-//                Log.d(TAG, "image_view_square = " + image_view_square);
-        }
-
-        final int max_thumbnail_square = 60000;
-        final boolean load_full_image = image_view_square > max_thumbnail_square;
-
-        if (from_network) {
-            Picasso.with(mainActivity)
-                    .load(load_full_image ? image.dataPath : image.peviewDataPath)
-                    .error(R.drawable.ic_content_problem)
-                    .into(t);
-        } else {
-            Picasso.with(mainActivity)
-                    .load(new File(load_full_image ? image.dataPath : image.peviewDataPath))
-                    .error(R.drawable.ic_content_problem)
-                    .into(t);
-        }
     }
 
     private void moveImagesBetweenPullAndCollage(int count, boolean from_pull_to_collage) {

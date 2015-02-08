@@ -5,6 +5,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+import crystal.tech.gimmecollage.collagemaker.CollageUtils;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 

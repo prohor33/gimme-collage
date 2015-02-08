@@ -4,26 +4,19 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import crystal.tech.gimmecollage.app.R;
-import crystal.tech.gimmecollage.collagemaker.ImageData;
-import crystal.tech.gimmecollage.collagemaker.ImageStorage;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
 /**
  * Created by poliveira on 24/10/2014.
@@ -94,10 +87,30 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.myPrimaryDarkColor));
 
-        /*
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState)
-            mDrawerLayout.openDrawer(this.getView());
-            */
+        ActionBarDrawerToggle drawerToggle
+                = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, null, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                if(drawerView.getId() == getId()) {
+                    super.onDrawerSlide(drawerView, slideOffset);
+                    CollageMaker.deselectAllViews();
+                }
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if(drawerView.getId() == getId())
+                    super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                if(drawerView.getId() == getId())
+                    super.onDrawerOpened(drawerView);
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(drawerToggle);
     }
 
     public void openDrawer() {

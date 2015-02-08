@@ -66,6 +66,13 @@ public class CollageFragment extends Fragment {
         CollageUtils.addCollageTypeSelectorLayout(rootView);
         CollageMaker.initImageViews(rootView);
 
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CollageMaker.deselectAllViews();
+            }
+        });
+
         return rootView;
     }
 
