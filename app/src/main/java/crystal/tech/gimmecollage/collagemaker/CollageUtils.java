@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -318,7 +317,7 @@ public class CollageUtils {
             viewData.finishLoading();
         }
 
-        ImageLoadingTarget target = new ImageLoadingTarget(viewData, mainActivity);
+        ImageLoadingTarget target = new ImageLoadingTarget(viewData, image, mainActivity);
         viewData.startLoading(dataPath, target);
 
         if (from_network) {
@@ -334,40 +333,18 @@ public class CollageUtils {
         }
     }
 
-    public static void rotateImage(ImageView imageView, float angle) {
-        getInstance().rotateImageImpl(imageView, angle);
+    public static void rotateImage(ImageView imageView, ImageData imageData, float angle) {
+        getInstance().rotateImageImpl(imageView, imageData, angle);
     }
-    private void rotateImageImpl(ImageView imageView, float angle) {
-        BitmapDrawable bitmapDrawable;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
-            if (rippleDrawable == null)
-                return;
-            bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
-        } else {
-            bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
-        }
+    private void rotateImageImpl(ImageView imageView, ImageData imageData, float angle) {
+        BitmapDrawable bitmapDrawable = getBMPFromImageViewImpl(imageView);
         if (bitmapDrawable == null) {
             Log.e(TAG, "rotateImageImpl: No bitmap not loaded, do nothing");
             return;
         }
-        Bitmap myImg = bitmapDrawable.getBitmap();
+        imageData.angle += angle;
 
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-
-        Bitmap rotated = Bitmap.createBitmap(myImg, 0, 0, myImg.getWidth(), myImg.getHeight(),
-                matrix, true);
-
-        ColorStateList imageColorList =
-                collageActivity.getResources().getColorStateList(R.color.image_colorlist);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setImageDrawable(new RippleDrawable(imageColorList,
-                    new BitmapDrawable(rotated), null));
-        } else {
-            imageView.setImageDrawable(new BitmapDrawable(rotated));
-        }
+        putBMPIntoImageViewImpl(imageView, imageData, bitmapDrawable.getBitmap());
     }
 
     private boolean isFullImageView(ImageView iv) {
@@ -382,5 +359,43 @@ public class CollageUtils {
 
         final int max_thumbnail_square = 60000;
         return image_view_square > max_thumbnail_square;
+    }
+
+    public static BitmapDrawable getBMPFromImageView(ImageView imageView) {
+        return getInstance().getBMPFromImageViewImpl(imageView);
+    }
+    private BitmapDrawable getBMPFromImageViewImpl(ImageView imageView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
+            if (rippleDrawable == null)
+                return null;
+            return  (BitmapDrawable) rippleDrawable.getDrawable(0);
+        } else {
+            return  (BitmapDrawable) imageView.getDrawable();
+        }
+    }
+
+    public static void putBMPIntoImageView(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+        getInstance().putBMPIntoImageViewImpl(imageView, imageData, bitmap);
+    }
+    private void putBMPIntoImageViewImpl(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+
+        if (imageData.angle != 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(imageData.angle);
+
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                    matrix, true);
+        }
+
+        ColorStateList imageColorList =
+                collageActivity.getResources().getColorStateList(R.color.image_colorlist);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setImageDrawable(new RippleDrawable(imageColorList,
+                    new BitmapDrawable(bitmap), null));
+        } else {
+            imageView.setImageDrawable(new BitmapDrawable(bitmap));
+        }
     }
 }

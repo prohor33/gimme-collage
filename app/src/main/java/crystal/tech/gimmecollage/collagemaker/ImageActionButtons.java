@@ -136,12 +136,14 @@ public class ImageActionButtons {
 
     private void onRotateRight(FrameLayout frameLayout) {
         ImageView iv = (ImageView) frameLayout.findViewById(R.id.ivMain);
-        CollageUtils.rotateImage(iv, 90.0f);
+        int collageIndex = CollageMaker.getIndexByFLView(frameLayout);
+        CollageUtils.rotateImage(iv, ImageStorage.getCollageImage(collageIndex), 90.0f);
     }
 
     private void onRotateLeft(FrameLayout frameLayout) {
         ImageView iv = (ImageView) frameLayout.findViewById(R.id.ivMain);
-        CollageUtils.rotateImage(iv, -90.0f);
+        int collageIndex = CollageMaker.getIndexByFLView(frameLayout);
+        CollageUtils.rotateImage(iv, ImageStorage.getCollageImage(collageIndex), -90.0f);
     }
 
     private void onSettings(View v) {

@@ -25,10 +25,12 @@ public class ImageLoadingTarget  implements Target {
     private ImageViewData viewData;
     private Activity activity;
     private boolean canceled = false;
+    private ImageData imageData;
 
-    ImageLoadingTarget(ImageViewData view_data, Activity context) {
+    ImageLoadingTarget(ImageViewData view_data, ImageData image_data, Activity context) {
         viewData = view_data;
         activity = context;
+        imageData = image_data;
     }
 
     @Override
@@ -38,16 +40,7 @@ public class ImageLoadingTarget  implements Target {
 
         if (bitmap != null) {
             onSuccess();
-
-            ColorStateList imageColorList =
-                    activity.getResources().getColorStateList(R.color.image_colorlist);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                viewData.getImageView().setImageDrawable(new RippleDrawable(imageColorList,
-                        new BitmapDrawable(bitmap), null));
-            } else {
-                viewData.getImageView().setImageDrawable(new BitmapDrawable(bitmap));
-            }
+            CollageUtils.putBMPIntoImageView(viewData.getImageView(), imageData, bitmap);
         } else {
             Log.e(TAG, "Error on load image: bitmap == null");
             onError();

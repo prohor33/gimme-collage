@@ -7,6 +7,7 @@ public class ImageData {
     public String dataPath = "";
     public String previewDataPath = "";
     public boolean fromNetwork = false;
+    public float angle = 0.0f;
 
     public ImageData(String data_path, String preview_data_path, boolean from_network) {
         dataPath = data_path;

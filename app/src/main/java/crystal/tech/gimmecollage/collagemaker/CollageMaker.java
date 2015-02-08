@@ -231,7 +231,10 @@ public class CollageMaker {
         return imageViewDatas.get(index);
     }
 
-    public int getIndexByFLView(View v) {
+    public static int getIndexByFLView(View v) {
+        return getInstance().getIndexByFLViewImpl(v);
+    }
+    private int getIndexByFLViewImpl(View v) {
         // TODO: improve data structure to make search faster?
         for (int i = 0; i < imageViewDatas.size(); i++) {
             if (imageViewDatas.get(i).parentFL == v)
