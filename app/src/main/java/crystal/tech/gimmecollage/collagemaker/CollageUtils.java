@@ -344,7 +344,7 @@ public class CollageUtils {
         }
         imageData.angle += angle;
 
-        putBMPIntoImageViewImpl(imageView, imageData, bitmapDrawable.getBitmap());
+        putRotatedBMPIntoImageView(imageView, angle, bitmapDrawable.getBitmap());
     }
 
     private boolean isFullImageView(ImageView iv) {
@@ -379,10 +379,15 @@ public class CollageUtils {
         getInstance().putBMPIntoImageViewImpl(imageView, imageData, bitmap);
     }
     private void putBMPIntoImageViewImpl(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+        // load from scratch
+        putRotatedBMPIntoImageView(imageView, imageData.angle, bitmap);
+    }
 
-        if (imageData.angle != 0) {
+    // TODO: temporary function
+    private void putRotatedBMPIntoImageView(ImageView imageView, float angle, Bitmap bitmap) {
+        if (angle != 0) {
             Matrix matrix = new Matrix();
-            matrix.postRotate(imageData.angle);
+            matrix.postRotate(angle);
 
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
                     matrix, true);
