@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -31,9 +30,7 @@ import java.io.OutputStream;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
-import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
-import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
 /**
  * Created by prohor on 26/01/15.
@@ -295,42 +292,45 @@ public class CollageUtils {
         return getInstance().imageActionButtons;
     }
 
-    public static void fillView(final ImageView iv, ImageData image, boolean from_network) {
-        getInstance().fillViewImpl(iv, image, from_network);
+    public static void fillView(final ImageView iv, ImageData image, ImageViewData viewData,
+                                boolean from_network) {
+        getInstance().fillViewImpl(iv, image, viewData, from_network);
     }
-    private void fillViewImpl(final ImageView iv, ImageData image, boolean from_network) {
-        boolean loadFullImage = isFullImageView(iv);
+    private void fillViewImpl(final ImageView iv, ImageData image, ImageViewData viewData,
+                              boolean from_network) {
 
-        if (iv.getTag() != null) {
-            // It's already loading
-            ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();
-            if (target.dataPath == image.peviewDataPath)
-                return;
-            // Abort loading to start new one
-            target.cancel();
-            iv.setTag(null);
+        // hack for pull image
+        if (viewData == null) {
+            if (iv.getTag() != null) {
+                viewData = (ImageViewData) iv.getTag();
+            } else {
+                viewData = new ImageViewData(iv);
+                iv.setTag(viewData);
+            }
         }
 
-        View parent = (View)iv.getParent();
-        iv.setImageDrawable(null);
-        final ProgressBar pb = (ProgressBar)parent.findViewById(R.id.progressBar);
-        if (pb != null)
-            pb.setVisibility(View.VISIBLE);
+        boolean loadFullImage = isFullImageView(iv);
+        String dataPath = image.getDataPath(loadFullImage);
 
-        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, mainActivity);
-        t.dataPath = loadFullImage ? image.dataPath : image.peviewDataPath;
-        iv.setTag(t);
+        if (viewData.isLoading()) {
+            if (viewData.isAlreadyLoaded(dataPath))
+                return;
+            viewData.finishLoading();
+        }
+
+        ImageLoadingTarget target = new ImageLoadingTarget(viewData, mainActivity);
+        viewData.startLoading(dataPath, target);
 
         if (from_network) {
             Picasso.with(mainActivity)
-                    .load(loadFullImage ? image.dataPath : image.peviewDataPath)
+                    .load(dataPath)
                     .error(R.drawable.ic_content_problem)
-                    .into(t);
+                    .into(target);
         } else {
             Picasso.with(mainActivity)
-                    .load(new File(loadFullImage ? image.dataPath : image.peviewDataPath))
+                    .load(new File(dataPath))
                     .error(R.drawable.ic_content_problem)
-                    .into(t);
+                    .into(target);
         }
     }
 

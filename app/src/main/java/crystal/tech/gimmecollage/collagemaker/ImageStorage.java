@@ -91,7 +91,7 @@ public class ImageStorage {
         if (i >= pullImages.size())
             return;
         ImageData image = getPullImageByIndex(i);
-        CollageUtils.fillView(iv, image, image.fromNetwork);
+        CollageUtils.fillView(iv, image, null, image.fromNetwork);
     }
 
     public static void fillCollageView(ImageView iv, int i) {
@@ -101,7 +101,8 @@ public class ImageStorage {
         ImageData image = getCollageImageByIndex(i);
         if (image == null)
             return; // not such many photos available
-        CollageUtils.fillView(iv, image, image.fromNetwork);
+        ImageViewData viewData = CollageMaker.getViewDataByFLView(ImageViewData.getParentFLByIV(iv));
+        CollageUtils.fillView(iv, image, viewData, image.fromNetwork);
     }
 
     // return true if some images where moved to collage
