@@ -93,7 +93,7 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 if(drawerView.getId() == getId()) {
                     super.onDrawerSlide(drawerView, slideOffset);
-                    CollageMaker.getCollageAnimation().dischargeAllSelection();
+                    CollageMaker.deselectAllViews();
                 }
             }
 

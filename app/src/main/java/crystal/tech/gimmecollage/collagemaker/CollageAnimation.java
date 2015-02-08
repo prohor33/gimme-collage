@@ -21,8 +21,6 @@ public class CollageAnimation {
     }
 
     public void animateOnImageClick(final View view) {
-        dischargeAllImages();
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final float clickElevation =
                     parentActivity.getResources().getDimension(R.dimen.collage_iv_elevation);

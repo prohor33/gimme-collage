@@ -15,9 +15,14 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -207,7 +212,7 @@ public class CollageUtils {
         ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CollageMaker.getCollageAnimation().dischargeAllSelection();
+                CollageMaker.deselectAllViews();
                 FloatingActionButton mFab1 = (FloatingActionButton) rootView.findViewById(R.id.fabbutton1);
                 mFab1.hide(!mFab1.getHidden());
                 FloatingActionButton mFab2 = (FloatingActionButton) rootView.findViewById(R.id.fabbutton2);
@@ -222,7 +227,7 @@ public class CollageUtils {
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CollageMaker.getCollageAnimation().dischargeAllSelection();
+                CollageMaker.deselectAllViews();
                 CollageMaker.saveCollageOnDisk();
             }
         });
@@ -234,7 +239,7 @@ public class CollageUtils {
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CollageMaker.getCollageAnimation().dischargeAllSelection();
+                CollageMaker.deselectAllViews();
                 CollageMaker.shareCollage();
             }
         });
@@ -290,6 +295,45 @@ public class CollageUtils {
         return getInstance().imageActionButtons;
     }
 
+    public static void fillView(final ImageView iv, ImageData image, boolean from_network) {
+        getInstance().fillViewImpl(iv, image, from_network);
+    }
+    private void fillViewImpl(final ImageView iv, ImageData image, boolean from_network) {
+        boolean loadFullImage = isFullImageView(iv);
+
+        if (iv.getTag() != null) {
+            // It's already loading
+            ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();
+            if (target.dataPath == image.peviewDataPath)
+                return;
+            // Abort loading to start new one
+            target.cancel();
+            iv.setTag(null);
+        }
+
+        View parent = (View)iv.getParent();
+        iv.setImageDrawable(null);
+        final ProgressBar pb = (ProgressBar)parent.findViewById(R.id.progressBar);
+        if (pb != null)
+            pb.setVisibility(View.VISIBLE);
+
+        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, mainActivity);
+        t.dataPath = loadFullImage ? image.dataPath : image.peviewDataPath;
+        iv.setTag(t);
+
+        if (from_network) {
+            Picasso.with(mainActivity)
+                    .load(loadFullImage ? image.dataPath : image.peviewDataPath)
+                    .error(R.drawable.ic_content_problem)
+                    .into(t);
+        } else {
+            Picasso.with(mainActivity)
+                    .load(new File(loadFullImage ? image.dataPath : image.peviewDataPath))
+                    .error(R.drawable.ic_content_problem)
+                    .into(t);
+        }
+    }
+
     public static void rotateImage(ImageView imageView, float angle) {
         getInstance().rotateImageImpl(imageView, angle);
     }
@@ -324,5 +368,19 @@ public class CollageUtils {
         } else {
             imageView.setImageDrawable(new BitmapDrawable(rotated));
         }
+    }
+
+    private boolean isFullImageView(ImageView iv) {
+        // standard gallery thumbnail 320x240 or 240x320
+        int image_view_square = iv.getWidth() * iv.getHeight();
+        View grandParent = (View)iv.getParent().getParent();
+        if (grandParent instanceof FrameLayout) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)grandParent.getLayoutParams();
+            image_view_square = params.width * params.height;
+//                Log.d(TAG, "image_view_square = " + image_view_square);
+        }
+
+        final int max_thumbnail_square = 60000;
+        return image_view_square > max_thumbnail_square;
     }
 }
