@@ -98,25 +98,22 @@ public class InstagramAPI {
         return mSingleton.mStorage.imageInfos;
     }
 
-    public static void updateFollows() {
-        mSingleton.updateFollowsImpl();
-    }
-
     // Public methods.
     // Need method that will handle webview and capture redirect.
     public void startAuthentication(WebView webView) {
+        final Listener listener = mListener;
         Authenticator.Listener authListener = new Authenticator.Listener() {
             @Override
             public void onComplete(String result) {
                 mStorage.accessToken = result;
                 updateSelf();
                 mStorage.storeAccessToken();
-                mListener.onSuccess();
+                listener.onSuccess();
             }
 
             @Override
             public void onError(String error) {
-                mListener.onFail(error);
+                listener.onFail(error);
             }
         };
         mAuthenticator.loadPage(webView, authListener);
@@ -124,6 +121,7 @@ public class InstagramAPI {
 
     // Methods for updating data.
     public void updateSelf() {
+        final Listener listener = mListener;
         Log.d(TAG, "Updating self user info ...");
         new Thread() {
             @Override
@@ -136,12 +134,13 @@ public class InstagramAPI {
                     what = WHAT_ERROR;
                     ex.printStackTrace();
                 }
-                mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, mListener));
+                mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, listener));
             }
         }.start();
     }
 
-    public void updateFollowsImpl() {
+    public void updateFollows() {
+        final Listener listener = mListener;
         Log.d(TAG, "Updating self follows list ...");
         new Thread() {
             @Override
@@ -154,12 +153,13 @@ public class InstagramAPI {
                     what = WHAT_ERROR;
                     ex.printStackTrace();
                 }
-                mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, mListener));
+                mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, listener));
             }
         }.start();
     }
 
     public void updateImages(final String userId) {
+        final Listener listener = mListener;
         Log.d(TAG, "Updating userId = " + userId + " images info ...");
         new Thread() {
             @Override
@@ -172,7 +172,7 @@ public class InstagramAPI {
                     what = WHAT_ERROR;
                     ex.printStackTrace();
                 }
-                mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, mListener));
+                mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, listener));
             }
         }.start();
     }

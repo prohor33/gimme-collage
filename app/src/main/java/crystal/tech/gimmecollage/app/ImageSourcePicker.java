@@ -2,7 +2,6 @@ package crystal.tech.gimmecollage.app;
 
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.drawable.GradientDrawable;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -40,13 +39,17 @@ public class ImageSourcePicker extends ActionBarActivity
     static final String TAG = "ImageSourcePicker";
     static final String STATE_SELECTION_MODE = "selectionMode";
 
+    static final String STATE_SELECTED_SPINNER_INDEX = "selectedSpinnerIndex";
+
     static final String STATE_SELECTED_NUM = "selectedNum";
     static final String STATE_SELECTED_IMAGES = "selectedImages";
     static final String STATE_SELECTED_THUMBNAILS = "selectedThumbnails";
     static final String STATE_SELECTED_SELECTED = "selectedSeleted";
 
     Toolbar mToolbar;
-    RecyclerViewAdapter mAdapter;
+    RecyclerViewAdapter mRecyclerViewAdapter;
+    Spinner mSpinner;
+    ArrayAdapter<String> mSpinnerAdapter;
 
     MenuItem mItemCounter;
     MenuItem mItemConfirm;
@@ -54,9 +57,13 @@ public class ImageSourcePicker extends ActionBarActivity
     MenuItem mItemLogout;
 
     int mRequestCode;
+    // This variables are for RecyclerView
     boolean mSelectionMode = false;
     List<ComplexImageItem> mCurrentItems = new ArrayList<>();
     List<ComplexImageItem> mSelectedItems = new ArrayList<>();
+    // This variables are for Spinner!
+    List<String> mCurrentSpinnerItems = new ArrayList<>();
+    int mSelectedSpinnerIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +75,9 @@ public class ImageSourcePicker extends ActionBarActivity
             // Restore value of members from saved state
             mSelectionMode = savedInstanceState.getBoolean(STATE_SELECTION_MODE);
 
+            mSelectedSpinnerIndex = savedInstanceState.getInt(STATE_SELECTED_SPINNER_INDEX);
+
             int num = savedInstanceState.getInt(STATE_SELECTED_NUM);
-            mSelectedItems.clear();
             for(int i = 0; i < num; i++) {
                 mSelectedItems.add(new ComplexImageItem());
             }
@@ -84,6 +92,7 @@ public class ImageSourcePicker extends ActionBarActivity
         } else {
             // Probably initialize members with default values for a new instance
             mSelectionMode = false;
+            mSelectedSpinnerIndex = 0;
             Log.d(TAG, "onCreate()");
         }
 
@@ -97,14 +106,24 @@ public class ImageSourcePicker extends ActionBarActivity
         // TODO: make choice for gallery or instagram image source.
         mRequestCode = getIntent().getIntExtra("requestCode", 0);
         mCurrentItems.clear();
+        // Fills all views with data.
+        updateSpinnerItems();
+        //updateImageItems();
+    }
+
+    private void updateSpinnerItems() {
+        mCurrentSpinnerItems.add("self");
         if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
-            loadImagesFromGalley();
-            updateSelectedFlags();
+            loadSpinnerItemsFromGallery();
+            mSpinnerAdapter.notifyDataSetChanged();
+            mSpinner.setSelection(mSelectedSpinnerIndex);
         } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
             InstagramAPI.with(new InstagramAPI.Listener() {
                 @Override
                 public void onSuccess() {
-                    loadImagesFromInstagram();
+                    loadSpinnerItemsFromInstagram();
+                    mSpinnerAdapter.notifyDataSetChanged();
+                    mSpinner.setSelection(mSelectedSpinnerIndex);
                 }
 
                 @Override
@@ -112,29 +131,50 @@ public class ImageSourcePicker extends ActionBarActivity
                     Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG)
                             .show();
                 }
-            }).updateSelf();
+            }).updateFollows();
+        }
+    }
+
+    private void updateImageItems() {
+        mCurrentItems.clear();
+        if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
+            loadImagesFromGalley();
+            mRecyclerViewAdapter.notifyDataSetChanged();
+        } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
+            InstagramAPI.with(new InstagramAPI.Listener() {
+                @Override
+                public void onSuccess() {
+                    loadImagesFromInstagram();
+                    mRecyclerViewAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFail(String error) {
+                    Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG)
+                            .show();
+                }
+            }).updateImages(mCurrentSpinnerItems.get(mSelectedSpinnerIndex));
         }
     }
 
     private void setupSpinner() {
-        Spinner spinner = (Spinner) mToolbar.findViewById(R.id.spinner);
+        mSpinner = (Spinner) mToolbar.findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        CharSequence[] spinnerItems = {"One", "Two", "Three"};
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,
-                android.R.layout.simple_spinner_item, spinnerItems);
+        mSpinnerAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, mCurrentSpinnerItems);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        mSpinner.setAdapter(mSpinnerAdapter);
+        mSpinner.setOnItemSelectedListener(this);
     }
 
     private void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mAdapter = new RecyclerViewAdapter();
+        mRecyclerViewAdapter = new RecyclerViewAdapter();
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(mRecyclerViewAdapter);
 
         int spanCount;
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -212,31 +252,28 @@ public class ImageSourcePicker extends ActionBarActivity
         imageCursor.close();
     }
 
-    private void loadImagesFromInstagram() {
-        InstagramAPI.with(new InstagramAPI.Listener() {
-            @Override
-            public void onSuccess() {
-                for(Storage.ImageInfo imageInfo : InstagramAPI.getImages()) {
-                    ComplexImageItem item = new ComplexImageItem();
-                    item.setImage(imageInfo.standard_resolution.url);
-                    item.setThumbnail(imageInfo.thumbnail.url);
-                    mCurrentItems.add(item);
-                }
-                updateSelectedFlags();
-            }
-
-            @Override
-            public void onFail(String error) {
-                Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG).show();
-            }
-        }).updateImages("self");
+    private void loadSpinnerItemsFromGallery() {
+        mCurrentSpinnerItems.add("2015-01-10");
+        mCurrentSpinnerItems.add("2015-02-10");
+        mCurrentSpinnerItems.add("2015-03-10");
     }
 
-    private void updateSelectedFlags() {
+    private void loadImagesFromInstagram() {
+        for(Storage.ImageInfo imageInfo : InstagramAPI.getImages()) {
+            ComplexImageItem item = new ComplexImageItem();
+            item.setImage(imageInfo.standard_resolution.url);
+            item.setThumbnail(imageInfo.thumbnail.url);
+            mCurrentItems.add(item);
+        }
         for(ComplexImageItem item : mCurrentItems) {
             item.setSelected(checkSelected(item) >= 0);
         }
-        mAdapter.notifyDataSetChanged();
+    }
+
+    private void loadSpinnerItemsFromInstagram() {
+        for(Storage.UserInfo userInfo : InstagramAPI.getFollows()) {
+            mCurrentSpinnerItems.add(userInfo.id);
+        }
     }
 
     private void setSelectionMode(boolean selection) {
@@ -261,7 +298,7 @@ public class ImageSourcePicker extends ActionBarActivity
                 item.setSelected(false);
             }
             mSelectedItems.clear();
-            mAdapter.notifyDataSetChanged();
+            mRecyclerViewAdapter.notifyDataSetChanged();
         }
     }
 
@@ -323,6 +360,8 @@ public class ImageSourcePicker extends ActionBarActivity
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
+        mSelectedSpinnerIndex = pos;
+        updateImageItems();
     }
 
     // Spinner nothing selected event.
@@ -399,6 +438,8 @@ public class ImageSourcePicker extends ActionBarActivity
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the current selected items & selectionMode.
         savedInstanceState.putBoolean(STATE_SELECTION_MODE, mSelectionMode);
+
+        savedInstanceState.putInt(STATE_SELECTED_SPINNER_INDEX, mSelectedSpinnerIndex);
 
         savedInstanceState.putInt(STATE_SELECTED_NUM, mSelectedItems.size());
         savedInstanceState.putStringArray(STATE_SELECTED_IMAGES,
