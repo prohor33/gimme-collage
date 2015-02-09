@@ -21,6 +21,5 @@
         android:layout_toRightOf="@+id/imageView"
         android:layout_toEndOf="@+id/imageView"
         android:layout_centerVertical="true"
-        android:textSize="21sp"
-        android:textColor="#FFF"/>
+        android:textSize="21sp"/>
 </RelativeLayout>
