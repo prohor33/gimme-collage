@@ -130,7 +130,7 @@ public class CollageMaker {
 
         for (int i = 0; i < getMaxImageCount(); i++) {
             final FrameLayout flImage = (FrameLayout) activity.getLayoutInflater().inflate(
-                    R.layout.layout_collage_image, null, false);
+                    R.layout.collage_image_item, null, false);
 
             flImage.setOnClickListener(new View.OnClickListener() {
                 @Override

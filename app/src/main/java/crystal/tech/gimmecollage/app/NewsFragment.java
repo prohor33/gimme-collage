@@ -3,17 +3,13 @@ package crystal.tech.gimmecollage.app;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -25,7 +21,6 @@ import android.widget.Toast;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import crystal.tech.gimmecollage.lenta_api.LentaAPI;
@@ -175,7 +170,7 @@ public class NewsFragment extends Fragment {
                     posts.get(position).image_preview : posts.get(position).image;
 
             if (view == null) {  // if it's not recycled, initialize some attributes
-                view = getActivity().getLayoutInflater().inflate(R.layout.layout_lenta_post,
+                view = getActivity().getLayoutInflater().inflate(R.layout.news_post_item,
                         parent, false);
 
                 view.setTag(R.id.imageView, view.findViewById(R.id.imageView));
