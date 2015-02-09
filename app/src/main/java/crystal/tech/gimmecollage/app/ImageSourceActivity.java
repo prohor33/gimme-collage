@@ -135,8 +135,11 @@ public class ImageSourceActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, requestCode + " " + resultCode);
+
         if (requestCode == GALLERY_REQUEST) {
             if (resultCode == RESULT_OK) {
+                Log.d(TAG, "setResult = " + RESULT_OK);
                 ImageSourceActivity.this.setResult(RESULT_OK);
                 ImageSourceActivity.this.finish();
             }

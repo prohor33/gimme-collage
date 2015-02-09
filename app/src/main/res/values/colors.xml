@@ -13,10 +13,11 @@
     <!-- API < 21 RippleView -->
     <color name="prev_sdk_ripple_color">#FFFFFF</color>
 
-    <!--Lena design colors-->
+    <!-- Lena design colors -->
     <color name="design_yellow">#fff74a</color>
     <color name="design_red">#fe2321</color>
-    <color name="design_blue">#0466ff</color>
+    <color name="design_blue">#247ac5</color>
+    <color name="design_gray">#dedede</color>
 
     <!-- Main activity colors -->
     <color name="collage_type_selectors_back">#1a76c1</color>

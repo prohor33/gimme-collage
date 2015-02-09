@@ -7,9 +7,7 @@
 
     <include
         android:id="@+id/toolbar_actionbar"
-        layout="@layout/toolbar_default"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        layout="@layout/toolbar_default"/>
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer"

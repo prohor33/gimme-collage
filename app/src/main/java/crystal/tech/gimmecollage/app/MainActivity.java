@@ -98,14 +98,17 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        Log.d(TAG, requestCode + " " + resultCode);
+
         if (requestCode == ADD_PICTURES_REQUEST) {
-            if (resultCode == RESULT_OK) {
+//            if (resultCode == RESULT_OK) {
+            // ??? if uncomment => go instagram -> back -> gallery -> select photos -> ok -> resultCode == 0 !!!
                 ImageStorage.moveAllImagesFromPullToCollage();
                 CollageMaker.updateImageData();
                 mSimpleDrawerFragment.getAdapter().notifyDataSetChanged();
                 if (ImageStorage.getPullImageCount() == 0)
                     mSimpleDrawerFragment.closeDrawer();
-            }
+//            }
         }
     }
 
