@@ -220,18 +220,24 @@ public class CollageMaker {
         return imageViewDatas.size();
     }
     public FrameLayout getImageFL(int index) {
-        return (FrameLayout) imageViewDatas.get(index).view;
+        return (FrameLayout) imageViewDatas.get(index).parentFL;
     }
 
-    public ImageViewData getViewDataByFLView(View v) {
+    public static ImageViewData getViewDataByFLView(View v) {
+        return getInstance().getViewDataByFLViewImpl(v);
+    }
+    private ImageViewData getViewDataByFLViewImpl(View v) {
         int index = getIndexByFLView(v);
         return imageViewDatas.get(index);
     }
 
-    public int getIndexByFLView(View v) {
+    public static int getIndexByFLView(View v) {
+        return getInstance().getIndexByFLViewImpl(v);
+    }
+    private int getIndexByFLViewImpl(View v) {
         // TODO: improve data structure to make search faster?
         for (int i = 0; i < imageViewDatas.size(); i++) {
-            if (imageViewDatas.get(i).view == v)
+            if (imageViewDatas.get(i).parentFL == v)
                 return i;
         }
         return -1;
@@ -250,7 +256,7 @@ public class CollageMaker {
     }
     private void updateImageDataImpl() {
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            View v = imageViewDatas.get(i).view;
+            View v = imageViewDatas.get(i).parentFL;
             ImageView iv = (ImageView)v.findViewById(R.id.ivMain);
             ImageStorage.fillCollageView(iv, i);
         }
@@ -265,7 +271,7 @@ public class CollageMaker {
             Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + imageViewDatas.size());
             return;
         }
-        final View v = imageViewDatas.get(i).view;
+        final View v = imageViewDatas.get(i).parentFL;
 
         PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
@@ -326,7 +332,7 @@ public class CollageMaker {
         comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            FrameLayout fl = (FrameLayout) imageViewDatas.get(i).view;
+            FrameLayout fl = (FrameLayout) imageViewDatas.get(i).parentFL;
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 
@@ -391,7 +397,7 @@ public class CollageMaker {
 
     private void prepareImages() {
         for (int i = 0; i < imageViewDatas.size(); i++) {
-            View iv = imageViewDatas.get(i).view;
+            View iv = imageViewDatas.get(i).parentFL;
 
             if (i < getCollageConf().getPhotoCount()) {
                 iv.setVisibility(View.VISIBLE);

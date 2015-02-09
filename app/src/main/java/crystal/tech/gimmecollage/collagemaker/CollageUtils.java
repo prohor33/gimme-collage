@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -31,9 +29,7 @@ import java.io.OutputStream;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
-import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
-import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
 /**
  * Created by prohor on 26/01/15.
@@ -295,79 +291,60 @@ public class CollageUtils {
         return getInstance().imageActionButtons;
     }
 
-    public static void fillView(final ImageView iv, ImageData image, boolean from_network) {
-        getInstance().fillViewImpl(iv, image, from_network);
+    public static void fillView(final ImageView iv, ImageData image, ImageViewData viewData,
+                                boolean from_network) {
+        getInstance().fillViewImpl(iv, image, viewData, from_network);
     }
-    private void fillViewImpl(final ImageView iv, ImageData image, boolean from_network) {
-        boolean loadFullImage = isFullImageView(iv);
+    private void fillViewImpl(final ImageView iv, ImageData image, ImageViewData viewData,
+                              boolean from_network) {
 
-        if (iv.getTag() != null) {
-            // It's already loading
-            ImageLoadingTarget target = (ImageLoadingTarget) iv.getTag();
-            if (target.dataPath == image.peviewDataPath)
-                return;
-            // Abort loading to start new one
-            target.cancel();
-            iv.setTag(null);
+        // hack for pull image
+        if (viewData == null) {
+            if (iv.getTag() != null) {
+                viewData = (ImageViewData) iv.getTag();
+            } else {
+                viewData = new ImageViewData(iv);
+                iv.setTag(viewData);
+            }
         }
 
-        View parent = (View)iv.getParent();
-        iv.setImageDrawable(null);
-        final ProgressBar pb = (ProgressBar)parent.findViewById(R.id.progressBar);
-        if (pb != null)
-            pb.setVisibility(View.VISIBLE);
+        boolean loadFullImage = isFullImageView(iv);
+        String dataPath = image.getDataPath(loadFullImage);
 
-        ImageLoadingTarget t = new ImageLoadingTarget(iv, pb, mainActivity);
-        t.dataPath = loadFullImage ? image.dataPath : image.peviewDataPath;
-        iv.setTag(t);
+        if (viewData.isLoading()) {
+            if (viewData.isAlreadyLoaded(dataPath))
+                return;
+            viewData.finishLoading();
+        }
+
+        ImageLoadingTarget target = new ImageLoadingTarget(viewData, image, mainActivity);
+        viewData.startLoading(dataPath, target);
 
         if (from_network) {
             Picasso.with(mainActivity)
-                    .load(loadFullImage ? image.dataPath : image.peviewDataPath)
+                    .load(dataPath)
                     .error(R.drawable.ic_content_problem)
-                    .into(t);
+                    .into(target);
         } else {
             Picasso.with(mainActivity)
-                    .load(new File(loadFullImage ? image.dataPath : image.peviewDataPath))
+                    .load(new File(dataPath))
                     .error(R.drawable.ic_content_problem)
-                    .into(t);
+                    .into(target);
         }
     }
 
-    public static void rotateImage(ImageView imageView, float angle) {
-        getInstance().rotateImageImpl(imageView, angle);
+    public static void rotateImage(ImageView imageView, ImageData imageData, float angle) {
+        getInstance().rotateImageImpl(imageView, imageData, angle);
     }
-    private void rotateImageImpl(ImageView imageView, float angle) {
-        BitmapDrawable bitmapDrawable;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
-            if (rippleDrawable == null)
-                return;
-            bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
-        } else {
-            bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
-        }
+    private void rotateImageImpl(ImageView imageView, ImageData imageData, float angle) {
+        BitmapDrawable bitmapDrawable = getBMPFromImageViewImpl(imageView);
         if (bitmapDrawable == null) {
             Log.e(TAG, "rotateImageImpl: No bitmap not loaded, do nothing");
             return;
         }
-        Bitmap myImg = bitmapDrawable.getBitmap();
+        imageData.angle += angle;
 
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-
-        Bitmap rotated = Bitmap.createBitmap(myImg, 0, 0, myImg.getWidth(), myImg.getHeight(),
-                matrix, true);
-
-        ColorStateList imageColorList =
-                collageActivity.getResources().getColorStateList(R.color.image_colorlist);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setImageDrawable(new RippleDrawable(imageColorList,
-                    new BitmapDrawable(rotated), null));
-        } else {
-            imageView.setImageDrawable(new BitmapDrawable(rotated));
-        }
+        putRotatedBMPIntoImageView(imageView, angle, bitmapDrawable.getBitmap());
     }
 
     private boolean isFullImageView(ImageView iv) {
@@ -382,5 +359,48 @@ public class CollageUtils {
 
         final int max_thumbnail_square = 60000;
         return image_view_square > max_thumbnail_square;
+    }
+
+    public static BitmapDrawable getBMPFromImageView(ImageView imageView) {
+        return getInstance().getBMPFromImageViewImpl(imageView);
+    }
+    private BitmapDrawable getBMPFromImageViewImpl(ImageView imageView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
+            if (rippleDrawable == null)
+                return null;
+            return  (BitmapDrawable) rippleDrawable.getDrawable(0);
+        } else {
+            return  (BitmapDrawable) imageView.getDrawable();
+        }
+    }
+
+    public static void putBMPIntoImageView(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+        getInstance().putBMPIntoImageViewImpl(imageView, imageData, bitmap);
+    }
+    private void putBMPIntoImageViewImpl(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+        // load from scratch
+        putRotatedBMPIntoImageView(imageView, imageData.angle, bitmap);
+    }
+
+    // TODO: temporary function
+    private void putRotatedBMPIntoImageView(ImageView imageView, float angle, Bitmap bitmap) {
+        if (angle != 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(angle);
+
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                    matrix, true);
+        }
+
+        ColorStateList imageColorList =
+                collageActivity.getResources().getColorStateList(R.color.image_colorlist);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setImageDrawable(new RippleDrawable(imageColorList,
+                    new BitmapDrawable(bitmap), null));
+        } else {
+            imageView.setImageDrawable(new BitmapDrawable(bitmap));
+        }
     }
 }

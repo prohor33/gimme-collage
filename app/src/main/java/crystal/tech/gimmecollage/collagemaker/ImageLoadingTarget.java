@@ -9,7 +9,6 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
@@ -22,16 +21,16 @@ import crystal.tech.gimmecollage.app.R;
  */
 public class ImageLoadingTarget  implements Target {
     private final String TAG = "ImageLoadingTarget";
-    public String dataPath;
-    private ProgressBar progressBar;
-    private ImageView imageView;
+
+    private ImageViewData viewData;
     private Activity activity;
     private boolean canceled = false;
+    private ImageData imageData;
 
-    ImageLoadingTarget(ImageView image_view, ProgressBar progress_bar, Activity context) {
-        imageView = image_view;
-        progressBar = progress_bar;
+    ImageLoadingTarget(ImageViewData view_data, ImageData image_data, Activity context) {
+        viewData = view_data;
         activity = context;
+        imageData = image_data;
     }
 
     @Override
@@ -41,16 +40,7 @@ public class ImageLoadingTarget  implements Target {
 
         if (bitmap != null) {
             onSuccess();
-
-            ColorStateList imageColorList =
-                    activity.getResources().getColorStateList(R.color.image_colorlist);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                imageView.setImageDrawable(new RippleDrawable(imageColorList,
-                        new BitmapDrawable(bitmap), null));
-            } else {
-                imageView.setImageDrawable(new BitmapDrawable(bitmap));
-            }
+            CollageUtils.putBMPIntoImageView(viewData.getImageView(), imageData, bitmap);
         } else {
             Log.e(TAG, "Error on load image: bitmap == null");
             onError();
@@ -61,7 +51,7 @@ public class ImageLoadingTarget  implements Target {
     public void onBitmapFailed(Drawable errorDrawable) {
         if (canceled)
             return;
-        imageView.setImageDrawable(errorDrawable);
+        viewData.getImageView().setImageDrawable(errorDrawable);
         onError();
     }
 
@@ -81,8 +71,6 @@ public class ImageLoadingTarget  implements Target {
         onEnd();
     }
     private void onEnd() {
-        if (progressBar != null)
-            progressBar.setVisibility(View.GONE);
-        imageView.setTag(null);
+        viewData.finishLoading();
     }
 }

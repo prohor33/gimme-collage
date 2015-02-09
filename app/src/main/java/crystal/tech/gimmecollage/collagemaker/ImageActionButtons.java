@@ -2,6 +2,7 @@ package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,6 +15,8 @@ import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
  * Created by prohor on 07/02/15.
  */
 public class ImageActionButtons {
+
+    public final String TAG = "ImageActionButtons";
 
     private Activity collageActivity = null;
     private View rootView = null;
@@ -133,20 +136,21 @@ public class ImageActionButtons {
 
     private void onRotateRight(FrameLayout frameLayout) {
         ImageView iv = (ImageView) frameLayout.findViewById(R.id.ivMain);
-        CollageUtils.rotateImage(iv, 90.0f);
+        int collageIndex = CollageMaker.getIndexByFLView(frameLayout);
+        CollageUtils.rotateImage(iv, ImageStorage.getCollageImage(collageIndex), 90.0f);
     }
 
     private void onRotateLeft(FrameLayout frameLayout) {
         ImageView iv = (ImageView) frameLayout.findViewById(R.id.ivMain);
-        CollageUtils.rotateImage(iv, -90.0f);
+        int collageIndex = CollageMaker.getIndexByFLView(frameLayout);
+        CollageUtils.rotateImage(iv, ImageStorage.getCollageImage(collageIndex), -90.0f);
     }
 
     private void onSettings(View v) {
-
+        Log.w(TAG, "onSettings() not implemented yet");
     }
 
     private void onAccept(View v) {
-        hide();
-        CollageMaker.getCollageAnimation().dischargeAllImages();
+        CollageMaker.deselectAllViews();
     }
 }
