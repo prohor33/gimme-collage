@@ -1,5 +1,6 @@
 package crystal.tech.gimmecollage.app;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,7 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,20 +76,32 @@ public class ImageSourceActivity extends ActionBarActivity {
     private void selectImageSource(int i) {
         // Check if image source is login???
         // Open AuthActivity or ImageSourceGallery ??
-        Intent intent;
         switch (i) {
             case 0: // Gallery
-                intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
-                startActivityForResult(intent, GALLERY_REQUEST);
+                startImagePicker(GALLERY_REQUEST);
                 break;
             case 1: // Instagram
                 // Check if instagram is logged.
                 if(!InstagramAPI.isAuthenticated()) {
-                    intent = new Intent(ImageSourceActivity.this, AuthenticationActivity.class);
-                    startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
+                    startImagePicker(INSTAGRAM_AUTH_REQUEST);
                 } else {
-                    intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
-                    startActivityForResult(intent, INSTAGRAM_REQUEST);
+                    // if it is authenticated, then we need to update self info first.
+                    final ProgressDialog dialog = Utils.createProgressDialog(ImageSourceActivity.this);
+                    dialog.show();
+                    InstagramAPI.with(new InstagramAPI.Listener() {
+                        @Override
+                        public void onSuccess() {
+                            dialog.dismiss();
+                            startImagePicker(INSTAGRAM_REQUEST);
+                        }
+
+                        @Override
+                        public void onFail(String error) {
+                            dialog.dismiss();
+                            Toast.makeText(ImageSourceActivity.this, "Error: " + error,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }).updateSelf();
                 }
 
                 /*
@@ -104,6 +120,11 @@ public class ImageSourceActivity extends ActionBarActivity {
                 break;
         }
         Log.d(TAG, "selectImageSource " + i);
+    }
+
+    private void startImagePicker(int requestCode) {
+        Intent intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
+        startActivityForResult(intent, requestCode);
     }
 
     @Override

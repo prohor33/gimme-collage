@@ -1,5 +1,7 @@
 package crystal.tech.gimmecollage.app;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.provider.MediaStore;
@@ -15,10 +17,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -49,7 +54,7 @@ public class ImagePickerActivity extends ActionBarActivity
     Toolbar mToolbar;
     RecyclerViewAdapter mRecyclerViewAdapter;
     Spinner mSpinner;
-    ArrayAdapter<String> mSpinnerAdapter;
+    MySpinnerAdapter mSpinnerAdapter;
 
     MenuItem mItemCounter;
     MenuItem mItemConfirm;
@@ -62,7 +67,7 @@ public class ImagePickerActivity extends ActionBarActivity
     List<ComplexImageItem> mCurrentItems = new ArrayList<>();
     List<ComplexImageItem> mSelectedItems = new ArrayList<>();
     // This variables are for Spinner!
-    List<String> mCurrentSpinnerItems = new ArrayList<>();
+    List<SpinnerItem> mCurrentSpinnerItems = new ArrayList<>();
     int mSelectedSpinnerIndex;
 
     @Override
@@ -112,7 +117,6 @@ public class ImagePickerActivity extends ActionBarActivity
     }
 
     private void updateSpinnerItems() {
-        mCurrentSpinnerItems.add("self");
         if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
             loadSpinnerItemsFromGallery();
             mSpinnerAdapter.notifyDataSetChanged();
@@ -136,34 +140,37 @@ public class ImagePickerActivity extends ActionBarActivity
     }
 
     private void updateImageItems() {
+        final ProgressDialog dialog = Utils.createProgressDialog(this);
+        dialog.show();
         mCurrentItems.clear();
         if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
             loadImagesFromGalley();
             mRecyclerViewAdapter.notifyDataSetChanged();
+            dialog.dismiss();
         } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
             InstagramAPI.with(new InstagramAPI.Listener() {
                 @Override
                 public void onSuccess() {
                     loadImagesFromInstagram();
                     mRecyclerViewAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
                 }
 
                 @Override
                 public void onFail(String error) {
+                    dialog.dismiss();
                     Toast.makeText(ImagePickerActivity.this, "Error : " + error, Toast.LENGTH_LONG)
                             .show();
                 }
-            }).updateImages(mCurrentSpinnerItems.get(mSelectedSpinnerIndex));
+            }).updateImages(mCurrentSpinnerItems.get(mSelectedSpinnerIndex).getId());
         }
     }
 
     private void setupSpinner() {
         mSpinner = (Spinner) mToolbar.findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        mSpinnerAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, mCurrentSpinnerItems);
-        // Specify the layout to use when the list of choices appears
-        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerAdapter = new MySpinnerAdapter(this, R.layout.image_picker_spinner_item,
+                mCurrentSpinnerItems);
         // Apply the adapter to the spinner
         mSpinner.setAdapter(mSpinnerAdapter);
         mSpinner.setOnItemSelectedListener(this);
@@ -253,9 +260,6 @@ public class ImagePickerActivity extends ActionBarActivity
     }
 
     private void loadSpinnerItemsFromGallery() {
-        mCurrentSpinnerItems.add("2015-01-10");
-        mCurrentSpinnerItems.add("2015-02-10");
-        mCurrentSpinnerItems.add("2015-03-10");
     }
 
     private void loadImagesFromInstagram() {
@@ -271,8 +275,15 @@ public class ImagePickerActivity extends ActionBarActivity
     }
 
     private void loadSpinnerItemsFromInstagram() {
+        mCurrentSpinnerItems.add(new SpinnerItem(
+                InstagramAPI.getSelf().getName(),
+                InstagramAPI.getSelf().profile_picture,
+                InstagramAPI.getSelf().id));
         for(Storage.UserInfo userInfo : InstagramAPI.getFollows()) {
-            mCurrentSpinnerItems.add(userInfo.id);
+            mCurrentSpinnerItems.add(new SpinnerItem(
+                    userInfo.getName(),
+                    userInfo.profile_picture,
+                    userInfo.id));
         }
     }
 
@@ -453,5 +464,62 @@ public class ImagePickerActivity extends ActionBarActivity
         Log.d(TAG, "onSaveInstanceState()");
 
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    class SpinnerItem {
+        private String mText;
+        private String mImage;
+        private String mId;
+
+        public SpinnerItem(String text, String image, String id) {
+            mText = text;
+            mImage = image;
+            mId = id;
+        }
+
+        public String getText() { return mText; }
+        public String getImage() { return mImage; }
+        public String getId() { return mId; }
+    }
+
+    class MySpinnerAdapter extends ArrayAdapter<SpinnerItem> {
+        Context mContext;
+        int mViewResourceId;
+        List<SpinnerItem> mSpinnerItems;
+
+        public MySpinnerAdapter(Context context, int viewResourceId, List<SpinnerItem> spinnerItems) {
+            super(context, viewResourceId, spinnerItems);
+            mContext = context;
+            mViewResourceId = viewResourceId;
+            mSpinnerItems = spinnerItems;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView,
+                                    ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        public View getCustomView(int position, View convertView,
+                                  ViewGroup parent) {
+            View view;
+            if (convertView == null) {  // if it's not recycled, initialize some attributes
+                view = getLayoutInflater().inflate(mViewResourceId, parent, false);
+            } else {
+                view = convertView;
+            }
+            TextView textView = (TextView) view.findViewById(R.id.textView);
+            ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+
+            textView.setText(mSpinnerItems.get(position).getText());
+            Picasso.with(mContext).load(mSpinnerItems.get(position).getImage()).into(imageView);
+
+            return view;
+        }
     }
 }

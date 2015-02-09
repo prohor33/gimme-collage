@@ -2,6 +2,7 @@ package crystal.tech.gimmecollage.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
@@ -37,6 +38,14 @@ public class Utils {
                     }
                 });
         builderInner.show();
+    }
+
+    public static ProgressDialog createProgressDialog(Context context) {
+        ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setMessage("Loading...");
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
+        return dialog;
     }
 
 }
