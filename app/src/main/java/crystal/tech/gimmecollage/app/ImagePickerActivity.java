@@ -260,6 +260,7 @@ public class ImagePickerActivity extends ActionBarActivity
     }
 
     private void loadSpinnerItemsFromGallery() {
+        mCurrentSpinnerItems.add(new SpinnerItem("Gallery", "", ""));
     }
 
     private void loadImagesFromInstagram() {
@@ -517,7 +518,9 @@ public class ImagePickerActivity extends ActionBarActivity
             ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
 
             textView.setText(mSpinnerItems.get(position).getText());
-            Picasso.with(mContext).load(mSpinnerItems.get(position).getImage()).into(imageView);
+            if(mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
+                Picasso.with(mContext).load(mSpinnerItems.get(position).getImage()).into(imageView);
+            }
 
             return view;
         }
