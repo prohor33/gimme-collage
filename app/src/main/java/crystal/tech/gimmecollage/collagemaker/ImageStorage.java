@@ -156,6 +156,8 @@ public class ImageStorage {
             return; // nothing to swap
         ImageData image1 = getCollageImage(collageIndex1);
         ImageData image2 = replaceCollageImageByIndex(collageIndex2, image1);
+        if (image2 == null)
+            return; // nothing to replace on
         replaceCollageImageByIndex(collageIndex1, image2);
 
         updateCollage();

@@ -143,6 +143,12 @@ public class CollageMaker {
             iv.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
+                    int index = getIndexByFLView(flImage);
+                    ImageData imageData = ImageStorage.getCollageImage(index);
+                    if (imageData == null)
+                        return false;   // empty image => do not swap
+
+
                     ClipData.Item itemSource =
                             new ClipData.Item(MyDragEventListener.FROM_COLLAGE_DRAG_SOURCE);
                     String[] mimeTypes = new String[1];
