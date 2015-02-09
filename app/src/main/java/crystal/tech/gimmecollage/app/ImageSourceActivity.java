@@ -1,5 +1,6 @@
 package crystal.tech.gimmecollage.app;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,13 +17,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import crystal.tech.gimmecollage.collagemaker.ImageData;
-import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.utility.DividerItemDecoration;
 
@@ -74,20 +76,32 @@ public class ImageSourceActivity extends ActionBarActivity {
     private void selectImageSource(int i) {
         // Check if image source is login???
         // Open AuthActivity or ImageSourceGallery ??
-        Intent intent;
         switch (i) {
             case 0: // Gallery
-                intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
-                startActivityForResult(intent, GALLERY_REQUEST);
+                startImagePicker(GALLERY_REQUEST);
                 break;
             case 1: // Instagram
                 // Check if instagram is logged.
                 if(!InstagramAPI.isAuthenticated()) {
-                    intent = new Intent(ImageSourceActivity.this, AuthenticationActivity.class);
-                    startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
+                    startImagePicker(INSTAGRAM_AUTH_REQUEST);
                 } else {
-                    intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
-                    startActivityForResult(intent, INSTAGRAM_REQUEST);
+                    // if it is authenticated, then we need to update self info first.
+                    final ProgressDialog dialog = Utils.createProgressDialog(ImageSourceActivity.this);
+                    dialog.show();
+                    InstagramAPI.with(new InstagramAPI.Listener() {
+                        @Override
+                        public void onSuccess() {
+                            dialog.dismiss();
+                            startImagePicker(INSTAGRAM_REQUEST);
+                        }
+
+                        @Override
+                        public void onFail(String error) {
+                            dialog.dismiss();
+                            Toast.makeText(ImageSourceActivity.this, "Error: " + error,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }).updateSelf();
                 }
 
                 /*
@@ -108,10 +122,15 @@ public class ImageSourceActivity extends ActionBarActivity {
         Log.d(TAG, "selectImageSource " + i);
     }
 
+    private void startImagePicker(int requestCode) {
+        Intent intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
+        startActivityForResult(intent, requestCode);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.image_source_menu, menu);
+        inflater.inflate(R.menu.image_source, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -150,7 +169,7 @@ public class ImageSourceActivity extends ActionBarActivity {
             }
         } else if (requestCode == INSTAGRAM_AUTH_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Intent intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                Intent intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
                 startActivityForResult(intent, INSTAGRAM_REQUEST);
             }
         }
@@ -184,7 +203,7 @@ public class ImageSourceActivity extends ActionBarActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_image_source_item, viewGroup, false);
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.image_source_item, viewGroup, false);
             return new ViewHolder(v);
         }
 

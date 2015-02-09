@@ -20,6 +20,13 @@ public class Storage {
         public String profile_picture;
         public String full_name;
         public String id;
+
+        public String getName() {
+            if(full_name.isEmpty())
+                return username;
+            else
+                return full_name;
+        }
     }
 
     public static class ImageInfo {
