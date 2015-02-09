@@ -33,10 +33,10 @@ import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
 import crystal.tech.gimmecollage.utility.ComplexImageItem;
 
-public class ImageSourcePicker extends ActionBarActivity
+public class ImagePickerActivity extends ActionBarActivity
         implements AdapterView.OnItemSelectedListener {
 
-    static final String TAG = "ImageSourcePicker";
+    static final String TAG = "ImagePickerActivity";
     static final String STATE_SELECTION_MODE = "selectionMode";
 
     static final String STATE_SELECTED_SPINNER_INDEX = "selectedSpinnerIndex";
@@ -68,7 +68,7 @@ public class ImageSourcePicker extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_source_picker);
+        setContentView(R.layout.activity_image_picker);
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
@@ -128,7 +128,7 @@ public class ImageSourcePicker extends ActionBarActivity
 
                 @Override
                 public void onFail(String error) {
-                    Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG)
+                    Toast.makeText(ImagePickerActivity.this, "Error : " + error, Toast.LENGTH_LONG)
                             .show();
                 }
             }).updateFollows();
@@ -150,7 +150,7 @@ public class ImageSourcePicker extends ActionBarActivity
 
                 @Override
                 public void onFail(String error) {
-                    Toast.makeText(ImageSourcePicker.this, "Error : " + error, Toast.LENGTH_LONG)
+                    Toast.makeText(ImagePickerActivity.this, "Error : " + error, Toast.LENGTH_LONG)
                             .show();
                 }
             }).updateImages(mCurrentSpinnerItems.get(mSelectedSpinnerIndex));
@@ -305,7 +305,7 @@ public class ImageSourcePicker extends ActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_image_source_picker, menu);
+        getMenuInflater().inflate(R.menu.image_picker, menu);
         mItemRemove = menu.getItem(0);
         mItemCounter = menu.getItem(1);
         mItemConfirm = menu.getItem(2);
@@ -334,12 +334,12 @@ public class ImageSourcePicker extends ActionBarActivity
                             mRequestCode != ImageSourceActivity.GALLERY_REQUEST));
                 }
 
-                ImageSourcePicker.this.setResult(RESULT_OK);
-                ImageSourcePicker.this.finish();
+                ImagePickerActivity.this.setResult(RESULT_OK);
+                ImagePickerActivity.this.finish();
                 return true;
             case R.id.action_logout:
                 InstagramAPI.resetAuthentication();
-                ImageSourcePicker.this.finish();
+                ImagePickerActivity.this.finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -377,7 +377,7 @@ public class ImageSourcePicker extends ActionBarActivity
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(
-                    R.layout.image_source_picker_item, viewGroup, false);
+                    R.layout.image_picker_item, viewGroup, false);
             return new ViewHolder(v);
         }
 
@@ -385,10 +385,10 @@ public class ImageSourcePicker extends ActionBarActivity
         public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
             final ComplexImageItem item = mCurrentItems.get(i);
             if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
-                Picasso.with(ImageSourcePicker.this).load(new File(item.getThumbnail()))
+                Picasso.with(ImagePickerActivity.this).load(new File(item.getThumbnail()))
                         .into(viewHolder.imageView);
             } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
-                Picasso.with(ImageSourcePicker.this).load(item.getThumbnail())
+                Picasso.with(ImagePickerActivity.this).load(item.getThumbnail())
                         .into(viewHolder.imageView);
             }
             viewHolder.showSelection(item.getSelected());
@@ -398,7 +398,7 @@ public class ImageSourcePicker extends ActionBarActivity
                 public void onClick(View v) {
                     item.toggle();
                     viewHolder.showSelection(item.getSelected());
-                    ImageSourcePicker.this.selectImage(i);
+                    ImagePickerActivity.this.selectImage(i);
                 }
             });
         }

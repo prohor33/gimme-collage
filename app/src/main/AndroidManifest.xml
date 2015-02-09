@@ -34,33 +34,15 @@
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageFragment" />
-        </activity>
-        <activity
-            android:name=".FriendPicker"
-            android:label="@string/title_activity_friend_picker"
-            android:parentActivityName=".CollageFragment" >
-
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageFragment" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".AuthenticationActivity"
             android:label="@string/title_activity_authentication"
-            android:parentActivityName=".CollageFragment" >
+            android:parentActivityName=".ImageSourceActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageFragment" />
-        </activity>
-        <activity
-            android:name=".GalleryPicker"
-            android:label="@string/title_activity_gallery_picker"
-            android:parentActivityName=".CollageFragment" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CollageFragment" />
+                android:value=".ImageSourceActivity" />
         </activity>
 
         <!-- Activity required to show ad overlays. -->
@@ -80,7 +62,7 @@
         </receiver>
 
         <activity
-            android:name=".ImageSourcePicker"
+            android:name=".ImagePickerActivity"
             android:label="@string/title_activity_image_source_picker"
             android:parentActivityName=".ImageSourceActivity" >
             <meta-data

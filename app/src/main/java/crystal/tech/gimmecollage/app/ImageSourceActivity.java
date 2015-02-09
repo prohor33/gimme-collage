@@ -21,8 +21,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import crystal.tech.gimmecollage.collagemaker.ImageData;
-import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.utility.DividerItemDecoration;
 
@@ -77,7 +75,7 @@ public class ImageSourceActivity extends ActionBarActivity {
         Intent intent;
         switch (i) {
             case 0: // Gallery
-                intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
                 startActivityForResult(intent, GALLERY_REQUEST);
                 break;
             case 1: // Instagram
@@ -86,7 +84,7 @@ public class ImageSourceActivity extends ActionBarActivity {
                     intent = new Intent(ImageSourceActivity.this, AuthenticationActivity.class);
                     startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
                 } else {
-                    intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                    intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
                     startActivityForResult(intent, INSTAGRAM_REQUEST);
                 }
 
@@ -111,7 +109,7 @@ public class ImageSourceActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.image_source_menu, menu);
+        inflater.inflate(R.menu.image_source, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -147,7 +145,7 @@ public class ImageSourceActivity extends ActionBarActivity {
             }
         } else if (requestCode == INSTAGRAM_AUTH_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Intent intent = new Intent(ImageSourceActivity.this, ImageSourcePicker.class);
+                Intent intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
                 startActivityForResult(intent, INSTAGRAM_REQUEST);
             }
         }
@@ -181,7 +179,7 @@ public class ImageSourceActivity extends ActionBarActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_image_source_item, viewGroup, false);
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.image_source_item, viewGroup, false);
             return new ViewHolder(v);
         }
 
