@@ -5,7 +5,7 @@
 
     <item android:id="@+id/action_remove"
         android:title="@string/isp_close"
-        android:icon="@drawable/ic_action_remove"
+        android:icon="@drawable/ic_action_remove_blue"
         app:showAsAction="always"/>
 
     <item android:id="@+id/action_counter"
@@ -14,7 +14,7 @@
 
     <item android:id="@+id/action_confirm"
         android:title="@string/gp_confirm"
-        android:icon="@drawable/ic_action_select"
+        android:icon="@drawable/ic_action_select_blue"
         app:showAsAction="always" />
 
     <item android:id="@+id/action_logout"
