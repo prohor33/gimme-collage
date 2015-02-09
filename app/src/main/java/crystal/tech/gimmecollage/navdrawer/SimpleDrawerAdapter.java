@@ -34,7 +34,7 @@ public class SimpleDrawerAdapter extends RecyclerView.Adapter<SimpleDrawerAdapte
 
     @Override
     public SimpleDrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.simple_drawer_row, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.simple_drawer_row_item, viewGroup, false);
         return new ViewHolder(v);
     }
 

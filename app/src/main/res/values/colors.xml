@@ -7,8 +7,8 @@
     <color name="image_action_btn_settings_color">#ffafacae</color>
     <color name="image_action_btn_accept_color">#ff66d849</color>
 
-    <!-- ripple color -->
-    <color name="ripple_color">#a79f9de5</color>
+    <!-- ripple color (gray) -->
+    <color name="ripple_color">#ffdbdbdb</color>
 
     <!-- API < 21 RippleView -->
     <color name="prev_sdk_ripple_color">#FFFFFF</color>
@@ -51,6 +51,9 @@
 
     <!-- collage image drag and drop selector -->
     <color name="collage_image_drag_sel_clr">#c2b3ffd2</color>
+
+    <!-- simple drawer -->
+    <color name="simple_drawer_ripple_color">#FFFFFF</color>
 
     <!--Do we need this?-->
 
