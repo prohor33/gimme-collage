@@ -311,11 +311,12 @@ public class CollageUtils {
         boolean loadFullImage = isFullImageView(iv);
         String dataPath = image.getDataPath(loadFullImage);
 
-        if (viewData.isLoading()) {
-            if (viewData.isAlreadyLoaded(dataPath))
-                return;
-            viewData.finishLoading();
-        }
+        if (viewData.isAlreadyLoaded(dataPath))
+            return;
+
+        if (viewData.isLoading())
+            viewData.finishLoading();   // should load another instead
+
 
         ImageLoadingTarget target = new ImageLoadingTarget(viewData, image, mainActivity);
         viewData.startLoading(dataPath, target);
