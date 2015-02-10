@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -37,6 +39,7 @@ import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
 import crystal.tech.gimmecollage.utility.ComplexImageItem;
+import crystal.tech.gimmecollage.utility.SimpleAsyncTask;
 
 public class ImagePickerActivity extends ActionBarActivity
         implements AdapterView.OnItemSelectedListener {
@@ -144,9 +147,23 @@ public class ImagePickerActivity extends ActionBarActivity
         dialog.show();
         mCurrentItems.clear();
         if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
-            loadImagesFromGalley();
-            mRecyclerViewAdapter.notifyDataSetChanged();
-            dialog.dismiss();
+            new SimpleAsyncTask(new SimpleAsyncTask.Listener() {
+                @Override
+                public void onSuccess() {
+                    mRecyclerViewAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFail() {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void doInBackground() {
+                    loadImagesFromGalley();
+                }
+            }).execute();
         } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
             InstagramAPI.with(new InstagramAPI.Listener() {
                 @Override
@@ -231,32 +248,50 @@ public class ImagePickerActivity extends ActionBarActivity
     private void loadImagesFromGalley() {
         // Define which columns we need from sql table.
         final String[] columns = {
-                MediaStore.Images.Media.DATA
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_ADDED
         };
 
         Cursor imageCursor = getContentResolver().query(
-                MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns,
                 null,
                 null,
-                null); // we sort results by ?name?
+                MediaStore.Images.Media.DATE_ADDED);
 
-        int image_column_index = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
-        int thumbnail_column_index = imageCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+        int ci_data = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
+        int ci_id = imageCursor.getColumnIndex(MediaStore.Images.Media._ID);
 
         imageCursor.moveToLast();
         for (int i = 0; i < imageCursor.getCount(); i++) {
             // Create new item.
             ComplexImageItem item = new ComplexImageItem();
             // Set image path.
-            item.setImage(imageCursor.getString(image_column_index));
+            item.setImage(imageCursor.getString(ci_data));
+            // Sei id.
+            item.setId(imageCursor.getLong(ci_id));
             // Set thumbnail path.
-            item.setThumbnail(imageCursor.getString(thumbnail_column_index));
+            item.setThumbnail(getThumbnailPath(item.getId()));
             // Add this item to items.
             mCurrentItems.add(item);
             imageCursor.moveToPrevious();
         }
         imageCursor.close();
+    }
+
+    private String getThumbnailPath(long imageId) {
+        Cursor cursor = MediaStore.Images.Thumbnails.queryMiniThumbnail(
+                getContentResolver(), imageId,
+                MediaStore.Images.Thumbnails.MINI_KIND,
+                null );
+        if( cursor != null && cursor.getCount() > 0 ) {
+            cursor.moveToFirst();//**EDIT**
+            String path = cursor.getString( cursor.getColumnIndex( MediaStore.Images.Thumbnails.DATA ) );
+            cursor.close();
+            return path;
+        }
+        return "";
     }
 
     private void loadSpinnerItemsFromGallery() {
@@ -397,19 +432,25 @@ public class ImagePickerActivity extends ActionBarActivity
         public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
             final ComplexImageItem item = mCurrentItems.get(i);
             if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
-                Picasso.with(ImagePickerActivity.this).load(new File(item.getThumbnail()))
-                        .into(viewHolder.imageView);
+                if(!item.getThumbnail().isEmpty()) {
+                    Picasso.with(ImagePickerActivity.this).load(new File(item.getThumbnail()))
+                            .into(viewHolder.imageView);
+                } else {
+                    viewHolder.imageView.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(
+                            getContentResolver(), item.getId(),
+                            MediaStore.Images.Thumbnails.MINI_KIND, null ));
+                }
             } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
                 Picasso.with(ImagePickerActivity.this).load(item.getThumbnail())
                         .into(viewHolder.imageView);
             }
-            viewHolder.showSelection(item.getSelected());
+            viewHolder.showSelection(item.isSelected());
 
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     item.toggle();
-                    viewHolder.showSelection(item.getSelected());
+                    viewHolder.showSelection(item.isSelected());
                     ImagePickerActivity.this.selectImage(i);
                 }
             });

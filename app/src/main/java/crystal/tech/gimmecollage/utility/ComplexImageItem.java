@@ -6,28 +6,53 @@ import java.util.List;
  * Created by Dmitry on 05.02.2015.
  */
 public class ComplexImageItem {
-    private String mImage;
-    private String mThumbnail;
-    private boolean mSelected = false;
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    private String image;
+    private String thumbnail;
+    private long id;
+    private boolean selected;
 
     public ComplexImageItem() {}
 
-    public void setImage(String image) { mImage = image; }
-    public void setThumbnail(String thumbnail) { mThumbnail = thumbnail; }
-    public void setSelected(boolean selected) { mSelected = selected; }
-
-    public String getImage() { return mImage; }
-    public String getThumbnail() { return mThumbnail; }
-    public boolean getSelected() { return mSelected; }
-
     public void toggle() {
-        mSelected = !mSelected;
+        this.selected = !this.selected;
     }
 
     public static String[] GenerateImagesArray(List<ComplexImageItem> list) {
         String[] array = new String[list.size()];
         for(int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i).mImage;
+            array[i] = list.get(i).image;
         }
         return array;
     }
@@ -41,7 +66,7 @@ public class ComplexImageItem {
     public static String[] GenerateThumbnailsArray(List<ComplexImageItem> list) {
         String[] array = new String[list.size()];
         for(int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i).mThumbnail;
+            array[i] = list.get(i).thumbnail;
         }
         return array;
     }
@@ -55,7 +80,7 @@ public class ComplexImageItem {
     public static boolean[] GenerateSelectedArray(List<ComplexImageItem> list) {
         boolean[] array = new boolean[list.size()];
         for(int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i).mSelected;
+            array[i] = list.get(i).selected;
         }
         return array;
     }
