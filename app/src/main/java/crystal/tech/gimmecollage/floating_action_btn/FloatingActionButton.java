@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -120,6 +121,15 @@ public class FloatingActionButton extends Button {
                         setX(mPosHidden.x);
                         setY(mPosHidden.y);
                     }
+                }
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    // scale bitmap
+                    double img_part = 0.43;
+                    int size_x = (int) (getWidth() * img_part);
+                    int size_y = (int) (getHeight() * img_part);
+                    if (size_x != 0 && size_y != 0)
+                        mBitmap = Bitmap.createScaledBitmap(mBitmap, size_x, size_y, false);
                 }
             }
 

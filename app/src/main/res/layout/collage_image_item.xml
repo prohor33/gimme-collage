@@ -18,7 +18,7 @@
 
     <crystal.tech.gimmecollage.app.view.RippleView
         android:id="@+id/rippleView"
-        ripple:rv_color="#a5733bff"
+        ripple:rv_color="@color/design_gray"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
             <ImageView

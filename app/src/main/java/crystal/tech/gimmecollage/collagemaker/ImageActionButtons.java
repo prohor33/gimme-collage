@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
+import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
 /**
  * Created by prohor on 07/02/15.
@@ -22,10 +23,10 @@ public class ImageActionButtons {
     private View rootView = null;
     private GestureRelativeLayout rlCollage = null;
     private RelativeLayout floatingBtnsRL = null;
-    private View buttonTR = null;
-    private View buttonTL = null;
-    private View buttonBR = null;
-    private View buttonBL = null;
+    private FloatingActionButton buttonTR = null;
+    private FloatingActionButton buttonTL = null;
+    private FloatingActionButton buttonBR = null;
+    private FloatingActionButton buttonBL = null;
     private FrameLayout selectedFL = null;
     private boolean isVisible = false;
 
@@ -37,10 +38,10 @@ public class ImageActionButtons {
 
         final float defaultElevation =
                 collageActivity.getResources().getDimension(R.dimen.image_action_def_elevation);
-        buttonTR = floatingBtnsRL.findViewById(R.id.image_action_rotate_right_btn);
-        buttonTL = floatingBtnsRL.findViewById(R.id.image_action_rotate_left_btn);
-        buttonBR = floatingBtnsRL.findViewById(R.id.image_action_accept_btn);
-        buttonBL = floatingBtnsRL.findViewById(R.id.image_action_settings_btn);
+        buttonTR = (FloatingActionButton) floatingBtnsRL.findViewById(R.id.image_action_rotate_right_btn);
+        buttonTL = (FloatingActionButton) floatingBtnsRL.findViewById(R.id.image_action_rotate_left_btn);
+        buttonBR = (FloatingActionButton) floatingBtnsRL.findViewById(R.id.image_action_accept_btn);
+        buttonBL = (FloatingActionButton) floatingBtnsRL.findViewById(R.id.image_action_settings_btn);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             buttonTR.setElevation(defaultElevation);
@@ -73,6 +74,17 @@ public class ImageActionButtons {
                 onSettings(view);
             }
         });
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            buttonTR.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_rotate_left_color));
+            buttonTR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_image_rotate_right));
+            buttonTL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_rotate_left_color));
+            buttonTL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_image_rotate_left));
+            buttonBR.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_accept_color));
+            buttonBR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_select_smaller));
+            buttonBL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_settings_color));
+            buttonBL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_settings));
+        }
     }
 
 //    pass FL view here
