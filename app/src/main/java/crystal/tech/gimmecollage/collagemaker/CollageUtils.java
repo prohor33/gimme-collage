@@ -269,6 +269,7 @@ public class CollageUtils {
                     (CollageTypeSelectorImageView) collageActivity.getLayoutInflater().inflate(
                             R.layout.collage_type_selector_item, llTemplates, false);
             ivSelector.putIndex(i);
+            // changing size inside
             CollageMaker.getInstance().DrawCollageTypeSelector(ivSelector, i, selector_size);
 
             ivSelector.setOnClickListener(new View.OnClickListener() {

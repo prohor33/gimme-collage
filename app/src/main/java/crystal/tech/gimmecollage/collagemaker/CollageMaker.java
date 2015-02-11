@@ -6,8 +6,8 @@ import android.content.ClipDescription;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.RippleDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.util.Log;
@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class CollageMaker {
     private CollageType eType = CollageType.Grid;
     private Map<CollageType, CollageConfig> mCollages;
     private GestureRelativeLayout rlCollage = null;
-    private int collageWidth;   // relative layout width
+    private Point collageSize = new Point();    // relative layout size
     private Activity parentActivity = null;
     private MainActivity mainActivity = null;
     private CollageAnimation collageAnimation =  new CollageAnimation();
@@ -50,7 +51,9 @@ public class CollageMaker {
     private ArrayList<ImageViewData> imageViewDatas = new ArrayList<>();
 
     public enum CollageType {
+        Polygons1,
         Grid,
+        Polygons2,
         CenterWithGridAround,
         Test1,
         Test2,
@@ -65,7 +68,7 @@ public class CollageMaker {
     }
 
     private CollageMaker() {
-        eType = CollageType.Grid; // by default
+        eType = CollageType.Polygons1; // by default
         mCollages = new HashMap<>();
         for (CollageType type : CollageType.values()) {
             mCollages.put(type, new CollageConfig(type));
@@ -98,6 +101,7 @@ public class CollageMaker {
 
     public void changeCollageType(CollageType type) {
         eType = type;
+        updateCollageLayoutSize();
         updateImageViews();
         CollageUtils.getInstance().updateCollageTypeSelectors();
         collageAnimation.onChangeCollageType();
@@ -281,10 +285,10 @@ public class CollageMaker {
 
         PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
-        params.height = (int) (collageWidth * pPhotoPos.getSize());
-        params.width = (int) (collageWidth * pPhotoPos.getSize());
-        params.leftMargin = (int) (collageWidth * pPhotoPos.getX());
-        params.topMargin = (int) (collageWidth * pPhotoPos.getY());
+        params.width = (int) (collageSize.x * pPhotoPos.size.x);
+        params.height = (int) (collageSize.y * pPhotoPos.size.y);
+        params.leftMargin = (int) (collageSize.x * pPhotoPos.p.x);
+        params.topMargin = (int) (collageSize.y * pPhotoPos.p.y);
         v.setLayoutParams(params);
     }
 
@@ -311,18 +315,28 @@ public class CollageMaker {
     }
 
     public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
-                                        int index, int size) {
+                                        int index, int selector_height) {
         if (index < 0 || index >= mCollages.size())
             return;
-        final int selector_padding = size / 20;
-        size -= selector_padding * 2;
         CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
+        float aspectRatio = config.getCollageAspectRatio();
+        Point size = new Point((int)(selector_height / aspectRatio), selector_height);
+
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) ivSelector.getLayoutParams();
+        layoutParams.width = size.x;
+        layoutParams.height = size.y;
+        ivSelector.setLayoutParams(layoutParams);
+
+        final int selector_padding = size.y / 20;
+        size.x -= selector_padding * 2;
+        size.y -= selector_padding * 2;
         for (int i = 0; i < config.getPhotoCount(); i++) {
             PhotoPosition photo_pos = config.getPhotoPos(i);
-            int s_x = (int)(size * photo_pos.getX()) + selector_padding;
-            int s_y = (int)(size * photo_pos.getY()) + selector_padding;
-            int e_x = s_x + (int)(size * photo_pos.getSize());
-            int e_y = s_y + (int)(size * photo_pos.getSize());
+            int s_x = (int)(size.x * photo_pos.p.x) + selector_padding;
+            int s_y = (int)(size.y * photo_pos.p.y) + selector_padding;
+            int e_x = s_x + (int)(size.x * photo_pos.size.x);
+            int e_y = s_y + (int)(size.y * photo_pos.size.y);
             ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, s_y, e_x, s_y));
             ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, s_y, e_x, e_y));
             ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, e_y, s_x, e_y));
@@ -331,9 +345,11 @@ public class CollageMaker {
     }
 
     public Bitmap GenerateCollageImage() {
-        final int target_size = 1024;
-        Bitmap collageImage = Bitmap.createBitmap(target_size,
-                target_size, Bitmap.Config.ARGB_8888);
+        float aspect_ratio = getCollageConf().getCollageAspectRatio();
+        final int bmp_pxl_size = 1024;
+        final Point target_size = new Point(bmp_pxl_size, (int)(bmp_pxl_size * aspect_ratio));
+        Bitmap collageImage = Bitmap.createBitmap(target_size.x,
+                target_size.y, Bitmap.Config.ARGB_8888);
         Canvas comboCanvas = new Canvas(collageImage);
         comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
 
@@ -348,13 +364,26 @@ public class CollageMaker {
                 continue;
             }
             Bitmap bitmap = bitmapDrawable.getBitmap();
-            final int square_size = Math.min(bitmap.getHeight(), bitmap.getWidth());
+            Point place_size = new Point((int)(target_size.x * photoPos.size.x),
+                    (int)(target_size.y * photoPos.size.y));
+            float place_aspect = (float)place_size.y / place_size.x;
+            float image_aspect = (float)bitmap.getHeight() / bitmap.getWidth();
+
+            Point img_t_size = new Point();
+            if (place_aspect > image_aspect) {
+                img_t_size.x = (int)(bitmap.getHeight() / place_aspect);
+                img_t_size.y = bitmap.getHeight();
+            } else {
+                img_t_size.x = bitmap.getWidth();
+                img_t_size.y = (int)(bitmap.getWidth() * place_aspect);
+            }
+
             // crop square in center
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap, square_size, square_size);
-            int size = (int)(target_size * photoPos.getSize());
-            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, size, size, true),
-                    target_size * photoPos.getX(),
-                    target_size * photoPos.getY(),
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, img_t_size.x, img_t_size.y);
+
+            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, place_size.x, place_size.y, true),
+                    target_size.x * photoPos.p.x,
+                    target_size.y * photoPos.p.y,
                     new Paint(Paint.FILTER_BITMAP_FLAG));
         }
 
@@ -370,26 +399,25 @@ public class CollageMaker {
     // private members only ================
 
     private void updateCollageLayoutSize() {
-        float aspect_ratio = 1.0f;  // height / width   TODO: grab from config
+        float aspect_ratio = getCollageConf().getCollageAspectRatio();
 
         FrameLayout parent = (FrameLayout) rlCollage.getParent();
 
-        int collageHeight;
         int max_width = parent.getWidth();
         int max_height = parent.getHeight();
         if (max_height > aspect_ratio * max_width) {
-            collageWidth = max_width;
-            collageHeight = (int)(aspect_ratio * max_width);
+            collageSize.x = max_width;
+            collageSize.y = (int)(aspect_ratio * max_width);
         } else {
-            collageHeight = max_height;
-            collageWidth = (int)(max_height / aspect_ratio);
+            collageSize.y = max_height;
+            collageSize.x = (int)(max_height / aspect_ratio);
         }
 
         FrameLayout.LayoutParams layoutParams =
                 (FrameLayout.LayoutParams) rlCollage.getLayoutParams();
 
-        layoutParams.width = collageWidth;
-        layoutParams.height = collageHeight;
+        layoutParams.width = collageSize.x;
+        layoutParams.height = collageSize.y;
         rlCollage.setLayoutParams(layoutParams);
     }
 

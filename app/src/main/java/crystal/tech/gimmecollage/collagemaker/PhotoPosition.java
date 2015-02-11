@@ -1,35 +1,28 @@
 package crystal.tech.gimmecollage.collagemaker;
 
+import android.graphics.Point;
+import android.graphics.PointF;
+
 /**
  * Created by prohor on 05/10/14.
  */
 
 public class PhotoPosition {
     public PhotoPosition(float x, float y, float size) {
-        this.m_dX = x;
-        this.m_dY = y;
-        this.m_dSize = size;
-        m_dAngle = 0;  // by default
+        this(x, y, size, size, 0);
     }
-    public PhotoPosition(float x, float y, float size, float angle) {
-        this(x, y, size);
-        this.m_dAngle = angle;
+    public PhotoPosition(float x, float y, float size_x, float size_y) {
+        this(x, y, size_x, size_y, 0);
     }
-    public float getSize() {
-        return m_dSize;
-    }
-    public float getX() {
-        return m_dX;
-    }
-    public float getY() {
-        return m_dY;
-    }
-    public float getAngle() {
-        return m_dAngle;
+    public PhotoPosition(float x, float y, float size_x, float size_y, float angle) {
+        p.x = x;
+        p.y = y;
+        size.x = size_x;
+        size.y = size_y;
+        this.angle = angle;
     }
 
-    private float m_dX;
-    private float m_dY;
-    private float m_dSize;
-    private float m_dAngle;
+    public PointF p = new PointF();
+    public PointF size = new PointF();
+    public float angle;
 }
