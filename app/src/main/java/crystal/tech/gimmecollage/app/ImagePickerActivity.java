@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -19,12 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +37,8 @@ import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.instagram_api.Storage;
 import crystal.tech.gimmecollage.utility.ComplexImageItem;
+import crystal.tech.gimmecollage.utility.ImageLoader;
+import crystal.tech.gimmecollage.utility.SimpleAsyncListener;
 import crystal.tech.gimmecollage.utility.SimpleAsyncTask;
 
 public class ImagePickerActivity extends ActionBarActivity
@@ -147,7 +147,7 @@ public class ImagePickerActivity extends ActionBarActivity
         dialog.show();
         mCurrentItems.clear();
         if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
-            new SimpleAsyncTask(new SimpleAsyncTask.Listener() {
+            new SimpleAsyncTask(new SimpleAsyncListener() {
                 @Override
                 public void onSuccess() {
                     mRecyclerViewAdapter.notifyDataSetChanged();
@@ -155,7 +155,7 @@ public class ImagePickerActivity extends ActionBarActivity
                 }
 
                 @Override
-                public void onFail() {
+                public void onError(String error) {
                     dialog.dismiss();
                 }
 
@@ -271,27 +271,11 @@ public class ImagePickerActivity extends ActionBarActivity
             item.setImage(imageCursor.getString(ci_data));
             // Sei id.
             item.setId(imageCursor.getLong(ci_id));
-            // Set thumbnail path.
-            item.setThumbnail(getThumbnailPath(item.getId()));
             // Add this item to items.
             mCurrentItems.add(item);
             imageCursor.moveToPrevious();
         }
         imageCursor.close();
-    }
-
-    private String getThumbnailPath(long imageId) {
-        Cursor cursor = MediaStore.Images.Thumbnails.queryMiniThumbnail(
-                getContentResolver(), imageId,
-                MediaStore.Images.Thumbnails.MINI_KIND,
-                null );
-        if( cursor != null && cursor.getCount() > 0 ) {
-            cursor.moveToFirst();//**EDIT**
-            String path = cursor.getString( cursor.getColumnIndex( MediaStore.Images.Thumbnails.DATA ) );
-            cursor.close();
-            return path;
-        }
-        return "";
     }
 
     private void loadSpinnerItemsFromGallery() {
@@ -419,7 +403,10 @@ public class ImagePickerActivity extends ActionBarActivity
 
     // Adapter, which manages data for RecyclerView class.
     class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-        public RecyclerViewAdapter() {}
+        public RecyclerViewAdapter() {
+            mImageLoader = new ImageLoader(ImagePickerActivity.this);
+        }
+        private ImageLoader mImageLoader;
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -432,14 +419,7 @@ public class ImagePickerActivity extends ActionBarActivity
         public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
             final ComplexImageItem item = mCurrentItems.get(i);
             if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
-                if(!item.getThumbnail().isEmpty()) {
-                    Picasso.with(ImagePickerActivity.this).load(new File(item.getThumbnail()))
-                            .into(viewHolder.imageView);
-                } else {
-                    viewHolder.imageView.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(
-                            getContentResolver(), item.getId(),
-                            MediaStore.Images.Thumbnails.MINI_KIND, null ));
-                }
+                mImageLoader.loadThumbnail(item.getId(), viewHolder.imageView);
             } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
                 Picasso.with(ImagePickerActivity.this).load(item.getThumbnail())
                         .into(viewHolder.imageView);
