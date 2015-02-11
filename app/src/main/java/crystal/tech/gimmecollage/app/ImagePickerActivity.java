@@ -162,6 +162,7 @@ public class ImagePickerActivity extends ActionBarActivity
                 @Override
                 public void doInBackground() {
                     loadImagesFromGalley();
+                    updateSelectedFlags();
                 }
             }).execute();
         } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {
@@ -169,6 +170,7 @@ public class ImagePickerActivity extends ActionBarActivity
                 @Override
                 public void onSuccess() {
                     loadImagesFromInstagram();
+                    updateSelectedFlags();
                     mRecyclerViewAdapter.notifyDataSetChanged();
                     dialog.dismiss();
                 }
@@ -180,6 +182,17 @@ public class ImagePickerActivity extends ActionBarActivity
                             .show();
                 }
             }).updateImages(mCurrentSpinnerItems.get(mSelectedSpinnerIndex).getId());
+        }
+    }
+
+    private void updateSelectedFlags() {
+        for(ComplexImageItem item : mCurrentItems) {
+            // Check if same image with path is in mSelectedItems.
+            if(checkSelected(item) >= 0) {
+                item.setSelected(true);
+            } else {
+                item.setSelected(false);
+            }
         }
     }
 
@@ -325,11 +338,16 @@ public class ImagePickerActivity extends ActionBarActivity
             // Set counter so 0.
             mItemCounter.setTitle(String.valueOf(mSelectedItems.size()));
         } else {
+            boolean requireNotifiction = false;
             for(ComplexImageItem item : mCurrentItems) {
+                if(!requireNotifiction && item.isSelected())
+                    requireNotifiction = true;
                 item.setSelected(false);
             }
             mSelectedItems.clear();
-            mRecyclerViewAdapter.notifyDataSetChanged();
+            if(requireNotifiction) {
+                mRecyclerViewAdapter.notifyDataSetChanged();
+            }
         }
     }
 
