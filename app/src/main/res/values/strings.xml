@@ -13,6 +13,7 @@
     <!-- CollageActivity strings -->
     <string name="action_main_share">Share</string>
     <string name="action_main_save">Save</string>
+    <string name="action_main_trash">Clear All</string>
 
     <!-- LoginActivity strings -->
     <string name="source_instagram_name">Instagram</string>

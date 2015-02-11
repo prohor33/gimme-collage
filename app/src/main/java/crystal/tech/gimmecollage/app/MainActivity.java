@@ -79,20 +79,22 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
 //        }
         // Handle action buttons
         switch(item.getItemId()) {
-//            case R.id.action_websearch:
-//                // create intent to perform web search for this planet
-//                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-//                intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-//                // catch event that there's no activity to handle intent
-//                if (intent.resolveActivity(getPackageManager()) != null) {
-//                    startActivity(intent);
-//                } else {
-//                    Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-//                }
-//                return true;
+            case R.id.action_share:
+                CollageMaker.deselectAllViews();
+                CollageMaker.shareCollage();
+                break;
+            case R.id.action_save:
+                CollageMaker.deselectAllViews();
+                CollageMaker.saveCollageOnDisk();
+                break;
+            case R.id.action_trash:
+                CollageMaker.deselectAllViews();
+                ImageStorage.ClearAll();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     @Override

@@ -12,7 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_toLeftOf="@+id/scrollView"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@+id/fabTrashLayout"
         android:layout_margin="15dp"
         >
 
@@ -85,6 +85,28 @@
             android:color="#ff5278b2"
             />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fabTrashLayout"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/fab_margin"
+        android:gravity="left"
+        android:clipToPadding="false"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true">
+
+        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
+            android:id="@+id/fabbutton_trash"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:layout_gravity="bottom|left"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:background="@drawable/fab_trash_ripple"
+            android:color="#ff5278b2"
+            android:visibility="visible"/>
+    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/image_action_buttons_rl"

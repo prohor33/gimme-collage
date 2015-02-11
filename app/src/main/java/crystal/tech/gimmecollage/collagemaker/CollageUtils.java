@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.internal.cl;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -240,6 +241,17 @@ public class CollageUtils {
             public void onClick(View view) {
                 CollageMaker.deselectAllViews();
                 CollageMaker.shareCollage();
+            }
+        });
+
+        FloatingActionButton trash_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton_trash);
+        trash_fab.setColor(collageActivity.getResources().getColor(R.color.fab_trash_color));
+        trash_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_trash));
+        trash_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CollageMaker.deselectAllViews();
+                ImageStorage.ClearAll();
             }
         });
     }

@@ -99,8 +99,10 @@ public class ImageStorage {
     }
     private void fillCollageViewImpl(ImageView iv, int i) {
         ImageData image = getCollageImageByIndex(i);
-        if (image == null)
-            return; // not such many photos available
+        if (image == null) {
+            iv.setImageDrawable(null);
+            return; // not so many photos available
+        }
         ImageViewData viewData = CollageMaker.getViewDataByFLView(ImageViewData.getParentFLByIV(iv));
         CollageUtils.fillView(iv, image, viewData, image.fromNetwork);
     }
@@ -161,6 +163,19 @@ public class ImageStorage {
         replaceCollageImageByIndex(collageIndex1, image2);
 
         updateCollage();
+    }
+
+    public static void ClearAll() {
+        getInstance().ClearAllImpl();
+    }
+    private void ClearAllImpl() {
+        Log.d(TAG, "Clear all");
+        collageImages.clear();
+        collageImagesOrder.clear();
+        pullImages.clear();
+        pullImagesOrder.clear();
+        updateCollage();
+        updatePull();
     }
 
     // private members only ==========

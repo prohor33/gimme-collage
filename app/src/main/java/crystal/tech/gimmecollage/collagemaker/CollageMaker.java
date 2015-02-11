@@ -343,8 +343,8 @@ public class CollageMaker {
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 
             BitmapDrawable bitmapDrawable = CollageUtils.getBMPFromImageView(iv);
-            if (bitmapDrawable == null) {
-                Log.e(TAG, "BuildCollage: No bitmap not loaded, leave blank");
+            if (bitmapDrawable == null || bitmapDrawable.getBitmap() == null) {
+                Log.d(TAG, "BuildCollage: No bitmap not loaded, leave blank");
                 continue;
             }
             Bitmap bitmap = bitmapDrawable.getBitmap();

@@ -14,7 +14,7 @@
 
     <!--Fab-->
     <dimen name="fab_size">78dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">10dp</dimen>
     <dimen name="fab_image_margin">8dp</dimen>
     <dimen name="fab_elevation">15dp</dimen>
 

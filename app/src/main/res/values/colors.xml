@@ -37,14 +37,12 @@
 
     <color name="selected_gray">#ffdbdbdb</color>
 
-    <!-- Action button color -->
-    <color name="action_btn_clr">#ff4081</color>
-
     <!-- Android style -->
     <color name="android_green">#A4C639</color>
 
     <!--fabs-->
     <color name="fab_ripple_color">#ffffffff</color>
+    <color name="fab_trash_color">#ff9f9f9f</color>
 
     <!-- collage type selector-->
     <color name="collage_selector_ripple_clr">#ffffffff</color>
