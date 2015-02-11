@@ -30,6 +30,7 @@ import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
+import crystal.tech.gimmecollage.utility.ImageLoader;
 
 /**
  * Created by prohor on 26/01/15.
@@ -45,6 +46,7 @@ public class CollageUtils {
     private View rootView = null;
     private ProgressDialog progressDialog = null;
     private ImageActionButtons imageActionButtons = new ImageActionButtons();
+    private ImageLoader imageLoader = null;
 
     public static synchronized CollageUtils getInstance() {
         if (instance == null) {
@@ -59,6 +61,7 @@ public class CollageUtils {
         getInstance().rootView = root_view;
         getInstance().mainActivity = main_activity;
         getInstance().imageActionButtons.init(collage_activity, root_view);
+        getInstance().imageLoader = new ImageLoader(main_activity);
     }
 
     public interface FileSaveCallback {
@@ -298,39 +301,43 @@ public class CollageUtils {
     private void fillViewImpl(final ImageView iv, ImageData image, ImageViewData viewData,
                               boolean from_network) {
 
-        // hack for pull image
-        if (viewData == null) {
-            if (iv.getTag() != null) {
-                viewData = (ImageViewData) iv.getTag();
-            } else {
-                viewData = new ImageViewData(iv);
-                iv.setTag(viewData);
-            }
-        }
+//        // hack for pull image
+//        if (viewData == null) {
+//            if (iv.getTag() != null) {
+//                viewData = (ImageViewData) iv.getTag();
+//            } else {
+//                viewData = new ImageViewData(iv);
+//                iv.setTag(viewData);
+//            }
+//        }
 
+        // from instagram preview is really small
         boolean loadFullImage = isFullImageView(iv);
         String dataPath = image.getDataPath(loadFullImage);
 
-        if (viewData.isAlreadyLoaded(dataPath))
-            return;
+//        if (viewData.isAlreadyLoaded(dataPath))
+//            return;
 
-        if (viewData.isLoading())
-            viewData.finishLoading();   // should load another instead
+//        if (viewData.isLoading())
+//            viewData.finishLoading();   // should load another instead
 
 
-        ImageLoadingTarget target = new ImageLoadingTarget(viewData, image, mainActivity);
-        viewData.startLoading(dataPath, target);
+//        ImageLoadingTarget target = new ImageLoadingTarget(viewData, image, mainActivity);
+//        viewData.startLoading(dataPath, target);
 
         if (from_network) {
             Picasso.with(mainActivity)
                     .load(dataPath)
                     .error(R.drawable.ic_content_problem)
-                    .into(target);
+                    .into(iv);
+//                    .into(target);
         } else {
-            Picasso.with(mainActivity)
-                    .load(new File(dataPath))
-                    .error(R.drawable.ic_content_problem)
-                    .into(target);
+//            Picasso.with(mainActivity)
+//                    .load(new File(dataPath))
+//                    .error(R.drawable.ic_content_problem)
+//                    .into(target);
+
+            imageLoader.loadThumbnail(image.id, iv);
         }
     }
 
@@ -366,14 +373,14 @@ public class CollageUtils {
         return getInstance().getBMPFromImageViewImpl(imageView);
     }
     private BitmapDrawable getBMPFromImageViewImpl(ImageView imageView) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
-            if (rippleDrawable == null)
-                return null;
-            return  (BitmapDrawable) rippleDrawable.getDrawable(0);
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
+//            if (rippleDrawable == null)
+//                return null;
+//            return  (BitmapDrawable) rippleDrawable.getDrawable(0);
+//        } else {
             return  (BitmapDrawable) imageView.getDrawable();
-        }
+//        }
     }
 
     public static void putBMPIntoImageView(ImageView imageView, ImageData imageData, Bitmap bitmap) {
@@ -397,11 +404,11 @@ public class CollageUtils {
         ColorStateList imageColorList =
                 collageActivity.getResources().getColorStateList(R.color.image_colorlist);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setImageDrawable(new RippleDrawable(imageColorList,
-                    new BitmapDrawable(bitmap), null));
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            imageView.setImageDrawable(new RippleDrawable(imageColorList,
+//                    new BitmapDrawable(bitmap), null));
+//        } else {
             imageView.setImageDrawable(new BitmapDrawable(bitmap));
-        }
+//        }
     }
 }

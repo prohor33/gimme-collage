@@ -128,7 +128,7 @@ public class FloatingActionButton extends Button {
                     double img_part = 0.43;
                     int size_x = (int) (getWidth() * img_part);
                     int size_y = (int) (getHeight() * img_part);
-                    if (size_x != 0 && size_y != 0)
+                    if (size_x != 0 && size_y != 0 && mBitmap != null)
                         mBitmap = Bitmap.createScaledBitmap(mBitmap, size_x, size_y, false);
                 }
             }

@@ -8,15 +8,19 @@ public class ImageData {
     public String previewDataPath = "";
     public boolean fromNetwork = false;
     public float angle = 0.0f;
+    public long id;
 
-    public ImageData(String data_path, String preview_data_path, boolean from_network) {
-        dataPath = data_path;
-        previewDataPath = preview_data_path;
+    public ImageData(String data_path, String preview_data_path, long id_tmp, boolean from_network) {
+        if (data_path != null)
+            dataPath = data_path;
+        if (preview_data_path != null)
+            previewDataPath = preview_data_path;
         fromNetwork = from_network;
+        id = id_tmp;
     }
-    public ImageData(String data_path, boolean from_network) {
-        this(data_path, data_path, from_network);
-    }
+//    public ImageData(String data_path, boolean from_network) {
+//        this(data_path, data_path, from_network);
+//    }
 
     public String getDataPath(boolean fullImage) {
         if (!dataPath.isEmpty() && !previewDataPath.isEmpty())

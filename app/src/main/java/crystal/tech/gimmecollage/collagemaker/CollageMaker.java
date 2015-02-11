@@ -338,19 +338,11 @@ public class CollageMaker {
         comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            FrameLayout fl = (FrameLayout) imageViewDatas.get(i).parentFL;
+            FrameLayout fl = imageViewDatas.get(i).parentFL;
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
 
-            BitmapDrawable bitmapDrawable = null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                RippleDrawable rippleDrawable = (RippleDrawable) iv.getDrawable();
-                if (rippleDrawable == null)
-                    continue;
-                bitmapDrawable = (BitmapDrawable) rippleDrawable.getDrawable(0);
-            } else {
-                bitmapDrawable = (BitmapDrawable) iv.getDrawable();
-            }
+            BitmapDrawable bitmapDrawable = CollageUtils.getBMPFromImageView(iv);
             if (bitmapDrawable == null) {
                 Log.e(TAG, "BuildCollage: No bitmap not loaded, leave blank");
                 continue;
