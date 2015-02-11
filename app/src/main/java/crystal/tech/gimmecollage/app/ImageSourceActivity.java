@@ -83,7 +83,8 @@ public class ImageSourceActivity extends ActionBarActivity {
             case 1: // Instagram
                 // Check if instagram is logged.
                 if(!InstagramAPI.isAuthenticated()) {
-                    startImagePicker(INSTAGRAM_AUTH_REQUEST);
+                    Intent intent = new Intent(ImageSourceActivity.this, AuthenticationActivity.class);
+                    startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
                 } else {
                     // if it is authenticated, then we need to update self info first.
                     final ProgressDialog dialog = Utils.createProgressDialog(ImageSourceActivity.this);
@@ -93,28 +94,19 @@ public class ImageSourceActivity extends ActionBarActivity {
                         public void onSuccess() {
                             dialog.dismiss();
                             startImagePicker(INSTAGRAM_REQUEST);
+                            Log.d(TAG, "onSuccess");
                         }
 
                         @Override
                         public void onFail(String error) {
                             dialog.dismiss();
+                            Log.d(TAG, "onFail");
                             Toast.makeText(ImageSourceActivity.this, "Error: " + error,
                                     Toast.LENGTH_LONG).show();
+                            InstagramAPI.resetAuthentication();
                         }
                     }).updateSelf();
                 }
-
-                /*
-                // TODO: remove, it's for debug
-                ImageStorage.addImageToPull(new ImageData("http://optipng.sourceforge.net/pngtech/img/lena.png", true));
-                ImageStorage.addImageToPull(new ImageData("http://2.bp.blogspot.com/-ot4eLEDWAjs/Uk9fzDJlQCI/AAAAAAAAKsU/UfUhYvEvAz4/s1600/Recherche-image-b%C3%A9b%C3%A9-80.jpg", true));
-                ImageStorage.addImageToPull(new ImageData("http://www.bearingscity.am/gallery/img/demopage/image-3.jpg", true));
-                ImageStorage.addImageToPull(new ImageData("http://technologie-f-mauriac.jimdo.com/app/download/8664189394/bmp_oiseau004.bmp?t=1395577376", true));
-
-                ImageSourceActivity.this.setResult(RESULT_OK);
-                ImageSourceActivity.this.finish();
-                */
-
                 break;
             default:
                 break;

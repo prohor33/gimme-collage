@@ -204,7 +204,7 @@ public class CollageUtils {
     private void addFloatingActionButtonsImpl(final View rootView) {
         final FloatingActionButton ok_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton0);
         ok_fab.setColor(collageActivity.getResources().getColor(R.color.design_blue));
-        ok_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_accept));
+        ok_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_select));
         ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -311,11 +311,12 @@ public class CollageUtils {
         boolean loadFullImage = isFullImageView(iv);
         String dataPath = image.getDataPath(loadFullImage);
 
-        if (viewData.isLoading()) {
-            if (viewData.isAlreadyLoaded(dataPath))
-                return;
-            viewData.finishLoading();
-        }
+        if (viewData.isAlreadyLoaded(dataPath))
+            return;
+
+        if (viewData.isLoading())
+            viewData.finishLoading();   // should load another instead
+
 
         ImageLoadingTarget target = new ImageLoadingTarget(viewData, image, mainActivity);
         viewData.startLoading(dataPath, target);
