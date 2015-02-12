@@ -12,12 +12,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import crystal.tech.gimmecollage.app.R;
@@ -90,7 +88,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
         mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.myPrimaryDarkColor));
+                getResources().getColor(R.color.drawer_dark_color));
 
         mActionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override

@@ -1,36 +1,32 @@
 package crystal.tech.gimmecollage.app;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import crystal.tech.gimmecollage.ads.Ads;
-import crystal.tech.gimmecollage.analytics.LocalStatistics;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
-import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
 import crystal.tech.gimmecollage.navdrawer.NavigationItem;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 
-public class MainActivity extends ActionBarActivity implements NavigationDrawerCallbacks, SimpleDrawerCallbacks {
+public class MainActivity extends ActionBarActivity implements
+        NavigationDrawerCallbacks,
+        SimpleDrawerCallbacks,
+        SettingsFragment.OnSettingsFragmentIteractionListener {
 
     private static final String TAG = "MainActivity";
 
@@ -49,9 +45,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
-        navigationItems.add(new NavigationItem("item 1", getResources().getDrawable(R.drawable.ic_action_select)));
-        navigationItems.add(new NavigationItem("item 2", getResources().getDrawable(R.drawable.ic_action_select)));
-        navigationItems.add(new NavigationItem("item 3", getResources().getDrawable(R.drawable.ic_action_select)));
+        navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_collage),
+                getResources().getDrawable(R.drawable.ic_image_colllage)));
+        navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_settings),
+                getResources().getDrawable(R.drawable.ic_image_settings_applications)));
+        navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_report),
+                getResources().getDrawable(R.drawable.ic_image_mail)));
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_drawer_left);
@@ -125,7 +124,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
                 startFragment(new CollageFragment().newInstance("", ""));
                 break;
             case 1:
-                startFragment(new NewsFragment().newInstance("", ""));
+                startFragment(new SettingsFragment().newInstance("", ""));
                 break;
             default:
                 Log.e(TAG, "Wrong position of navigation drawer!");
@@ -164,5 +163,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerC
 
     public SimpleDrawerFragment getRightDrawer() {
         return mSimpleDrawerFragment;
+    }
+
+    public void onSettingsIteraction(Uri uri) {
+
     }
 }

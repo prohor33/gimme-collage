@@ -85,7 +85,7 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
     public void setup(DrawerLayout drawerLayout) {
         mDrawerLayout = drawerLayout;
         mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.myPrimaryDarkColor));
+                getResources().getColor(R.color.drawer_dark_color));
 
         ActionBarDrawerToggle drawerToggle
                 = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, null, R.string.drawer_open, R.string.drawer_close) {
