@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/toolbar_actionbar"
-        layout="@layout/toolbar_default"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <!--
-    <android.support.v7.widget.RecyclerView
+    <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recyclerView"/>
-    -->
+        android:layout_height="fill_parent"
+        android:src="@drawable/ic_image_source_back"
+        android:scaleType = "centerCrop"
+        />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_below="@+id/toolbar_actionbar"
+    <RelativeLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <!-- android:background="@color/myDrawerBackground" -->
-</RelativeLayout>
+        <include
+            android:id="@+id/toolbar_actionbar"
+            layout="@layout/toolbar_default"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!--
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerView"/>
+        -->
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_below="@+id/toolbar_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- android:background="@color/myDrawerBackground" -->
+        </RelativeLayout>
+</FrameLayout>

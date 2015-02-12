@@ -21,5 +21,6 @@
         android:layout_toRightOf="@+id/imageView"
         android:layout_toEndOf="@+id/imageView"
         android:layout_centerVertical="true"
+        android:textColor="@color/toolbar_text"
         android:textSize="21sp"/>
 </RelativeLayout>
