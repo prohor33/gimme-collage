@@ -23,6 +23,9 @@
         <!--<item name="android:navigationBarColor">@color/design_blue</item>-->
 
         <item name="android:itemTextAppearance">@style/AppMenuTextAppearance</item>
+
+        <!-- for RecycleView divider (eg in SourcePickerActivity) -->
+        <item name="android:listDivider">@drawable/list_divider</item>
     </style>
 
 
