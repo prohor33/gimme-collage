@@ -9,11 +9,11 @@
              (but not Toolbar) background.
               We specify the same color for the toolbar background in
               toolbar.xml.. -->
-        <item name="colorPrimary">@color/design_gray</item>
+        <item name="colorPrimary">@color/toolbar_back</item>
 
         <!-- colorPrimaryDark is used for the status bar (with the
              battery, clock, etc). -->
-        <item name="colorPrimaryDark">@color/design_gray</item>
+        <item name="colorPrimaryDark">@color/status_bar_back</item>
 
         <!-- colorAccent is used as the default value for
              colorControlActivated which is used to tint widgets. -->
@@ -30,7 +30,7 @@
     <style name="AppToolbar" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- android:textColorPrimary is the  color of the title text
              in the Toolbar, in the Theme.AppCompat theme:  -->
-        <item name="android:textColorPrimary">@color/abc_primary_text_material_light</item>
+        <item name="android:textColorPrimary">@color/toolbar_text</item>
 
         <!-- android:textColorPrimaryInverse is the  color of the title
              text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
@@ -43,19 +43,18 @@
               when running on API 21, but not on older versions of
               Android, so this is only necessary to support older
               Android versions.-->
-        <item name="actionMenuTextColor">@color/abc_primary_text_material_light</item>
+        <item name="actionMenuTextColor">@color/toolbar_item_text</item>
         <!-- android:textColorSecondary is the color of the menu
              overflow icon (three vertical dots) -->
-        <item name="android:textColorSecondary">@color/design_blue</item>
+        <item name="android:textColorSecondary">@color/design_light_blue</item>
 
         <!-- This would set the toolbar's background color,
               but setting this also changes the popup menu's background,
               even if we define popupTheme for our <Toolbar> -->
-         <item name="android:background">@color/design_gray</item>
+         <item name="android:background">@color/toolbar_back</item>
     </style>
 
     <style name="AppMenuTextAppearance" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
-        <item name="android:textColor">@color/menu_text_color</item>
+        <item name="android:textColor">@color/toolbar_item_text</item>
     </style>
-
 </resources>

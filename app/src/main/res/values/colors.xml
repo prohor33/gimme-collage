@@ -16,13 +16,17 @@
     <!-- Lena design colors -->
     <color name="design_yellow">#fff74a</color>
     <color name="design_red">#fe2321</color>
-    <color name="design_blue">#247ac5</color>
-    <color name="design_gray">#dedede</color>
-    <color name="menu_text_color">#666666</color>
+    <color name="design_blue">#2196f3</color>
+    <color name="design_light_blue">#90caf9</color>
+    <color name="toolbar_back">#607d8b</color>
+    <color name="toolbar_text">#ffffff</color>
+    <color name="toolbar_item_text">#ffffff</color>
+    <!--<color name="toolbar_item_back">#b0bec5</color> --> <!-- can't use it -->
+    <color name="status_bar_back">#455a64</color>
 
     <!-- Main activity colors -->
-    <color name="collage_type_selectors_back">#1a76c1</color>
-    <color name="collage_type_selector_back">#ff93bcff</color>
+    <color name="collage_type_selectors_back">#607d8b</color>
+    <color name="collage_type_selector_back">#90caf9</color>
     <color name="collage_type_selector">#ff0a0c0a</color>
     <color name="collage_type_selector_pushed">#ffe9ebe9</color>
 
@@ -37,12 +41,9 @@
 
     <color name="selected_gray">#ffdbdbdb</color>
 
-    <!-- Android style -->
-    <color name="android_green">#A4C639</color>
-
     <!--fabs-->
     <color name="fab_ripple_color">#ffffffff</color>
-    <color name="fab_trash_color">#ff9f9f9f</color>
+    <color name="fab_trash_color">#757575</color>
 
     <!-- collage type selector-->
     <color name="collage_selector_ripple_clr">#ffffffff</color>
