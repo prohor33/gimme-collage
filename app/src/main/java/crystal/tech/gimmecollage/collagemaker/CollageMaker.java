@@ -360,7 +360,7 @@ public class CollageMaker {
 
             BitmapDrawable bitmapDrawable = CollageUtils.getBMPFromImageView(iv);
             if (bitmapDrawable == null || bitmapDrawable.getBitmap() == null) {
-                Log.d(TAG, "BuildCollage: No bitmap not loaded, leave blank");
+                Log.d(TAG, "BuildCollage: No bitmap are loaded, leave blank");
                 continue;
             }
             Bitmap bitmap = bitmapDrawable.getBitmap();
