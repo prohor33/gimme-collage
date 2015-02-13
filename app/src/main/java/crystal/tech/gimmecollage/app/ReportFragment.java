@@ -1,18 +1,21 @@
 package crystal.tech.gimmecollage.app;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-public class SettingsFragment extends Fragment {
+public class ReportFragment extends Fragment {
 
-    private static final String TAG = "SettingsFragment";
+    private static final String TAG = "ReportFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,7 +26,7 @@ public class SettingsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnSettingsFragmentInteractionListener mListener;
+    private OnReportFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -34,8 +37,8 @@ public class SettingsFragment extends Fragment {
      * @return A new instance of fragment NewsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SettingsFragment newInstance(String param1, String param2) {
-        SettingsFragment fragment = new SettingsFragment();
+    public static ReportFragment newInstance(String param1, String param2) {
+        ReportFragment fragment = new ReportFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -43,7 +46,7 @@ public class SettingsFragment extends Fragment {
         return fragment;
     }
 
-    public SettingsFragment() {
+    public ReportFragment() {
         // Required empty public constructor
     }
 
@@ -60,22 +63,38 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
-        CheckBox checkBoxDisableActionButtons = (CheckBox) rootView.findViewById(R.id.checkboxDisableActionButtons);
-        checkBoxDisableActionButtons.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        final View rootView = inflater.inflate(R.layout.fragment_report, container, false);
+        final EditText editTextReport = (EditText) rootView.findViewById(R.id.editTextReport);
+
+        Button reportButton = (Button) rootView.findViewById(R.id.buttonReport);
+        reportButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                // TODO: to implement
+            public void onClick(View view) {
+                String text = editTextReport.getText().toString();
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", getString(R.string.report_email_address), null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.report_mail_subject));
+                emailIntent.putExtra(Intent.EXTRA_TEXT, text);
+                startActivity(Intent.createChooser(emailIntent, "Send email..."));
+
+                Toast.makeText(getActivity(), getString(R.string.report_toast_message),
+                        Toast.LENGTH_LONG).show();
             }
         });
 
         return rootView;
     }
 
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // can't know what resultCode will be
+//
+//    }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onSettingsInteraction(uri);
+            mListener.onReportInteraction(uri);
         }
     }
 
@@ -83,10 +102,10 @@ public class SettingsFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnSettingsFragmentInteractionListener) activity;
+            mListener = (OnReportFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnReportFragmentIteractionListener");
         }
     }
 
@@ -106,9 +125,9 @@ public class SettingsFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnSettingsFragmentInteractionListener {
+    public interface OnReportFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onSettingsInteraction(Uri uri);
+        public void onReportInteraction(Uri uri);
     }
 
 }

@@ -26,7 +26,8 @@ import crystal.tech.gimmecollage.navdrawer.SimpleDrawerFragment;
 public class MainActivity extends ActionBarActivity implements
         NavigationDrawerCallbacks,
         SimpleDrawerCallbacks,
-        SettingsFragment.OnSettingsFragmentIteractionListener {
+        SettingsFragment.OnSettingsFragmentInteractionListener,
+        ReportFragment.OnReportFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
 
@@ -46,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements
 
         List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_collage),
-                getResources().getDrawable(R.drawable.ic_image_colllage)));
+                getResources().getDrawable(R.drawable.ic_image_collage)));
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_settings),
                 getResources().getDrawable(R.drawable.ic_image_settings_applications)));
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_report),
@@ -126,6 +127,9 @@ public class MainActivity extends ActionBarActivity implements
             case 1:
                 startFragment(new SettingsFragment().newInstance("", ""));
                 break;
+            case 2:
+                startFragment(new ReportFragment().newInstance("", ""));
+                break;
             default:
                 Log.e(TAG, "Wrong position of navigation drawer!");
                 break;
@@ -165,7 +169,9 @@ public class MainActivity extends ActionBarActivity implements
         return mSimpleDrawerFragment;
     }
 
-    public void onSettingsIteraction(Uri uri) {
+    public void onSettingsInteraction(Uri uri) {
+    }
 
+    public void onReportInteraction(Uri uri) {
     }
 }

@@ -101,4 +101,19 @@
     <string name="title_activity_image_source_picker">ImageSourcePicker</string>
     <string name="image_source_gallery">Gallery</string>
     <string name="image_source_instagram">Instagram</string>
+
+    <!-- Report fragment -->
+    <string name="report_button_report">Report</string>
+    <string name="report_text_hint">Please, describe your issue here</string>
+    <string name="report_email_address">crystaltechapps@gmail.com</string>
+    <string name="report_mail_subject">GimmeCollage Bug Report</string>
+    <string name="report_toast_message">Thank you for report!</string>
+    <string name="report_recommendation_text">Feel free to report any issue you may face with\
+        our app. You can just send your opinion or suggestion as well.\n\n\
+        Your Gimme Collage™ team.
+    </string>
+    <string name="report_copyrights">Copyright © 2014-2015 CRYSTAL TECH™\nAll Rights Reserved.</string>
+
+    <!-- Settings fragment -->
+    <string name="settings_disable_action_buttons">Disable image action  buttons</string>
 </resources>
