@@ -6,12 +6,14 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -305,7 +308,7 @@ public class CollageMaker {
                 R.string.ga_event_action_save_via_fab,
                 R.string.ga_event_label_save_via_fab);
 
-        CollageUtils.getInstance().saveCollageOnDisk();
+        CollageUtils.getInstance().buildCollage(false);
     }
 
     public static void shareCollage() {
@@ -314,7 +317,7 @@ public class CollageMaker {
                 R.string.ga_event_action_share_via_fab,
                 R.string.ga_event_label_share_via_fab);
 
-        CollageUtils.getInstance().shareCollage();
+        CollageUtils.getInstance().buildCollage(true);
     }
 
     public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
@@ -348,33 +351,6 @@ public class CollageMaker {
     }
 
     public Bitmap GenerateCollageImage() {
-        if (ImageStorage.getCollageImageCount() == 0) {
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            //Add images button clicked
-                            Utils.spawnAddImagesActivity(mainActivity);
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            //No button clicked
-                            break;
-                    }
-                }
-            };
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
-            builder.setMessage(mainActivity.getString(R.string.main_activity_dialog_no_images)).
-                    setPositiveButton(mainActivity.getString(R.string.main_activity_dialog_add_images),
-                            dialogClickListener)
-                    .setNegativeButton(mainActivity.getString(R.string.main_activity_dialog_no),
-                            dialogClickListener).show();
-
-            return null;
-        }
-
         float aspect_ratio = getCollageConf().getCollageAspectRatio();
         final int bmp_pxl_size = 1024;
         final Point target_size = new Point(bmp_pxl_size, (int)(bmp_pxl_size * aspect_ratio));
@@ -387,6 +363,9 @@ public class CollageMaker {
             FrameLayout fl = imageViewDatas.get(i).parentFL;
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
+            ImageData imageData = ImageStorage.getCollageImage(i);
+            if (imageData == null)
+                continue;
 
             BitmapDrawable bitmapDrawable = CollageUtils.getBMPFromImageView(iv);
             if (bitmapDrawable == null || bitmapDrawable.getBitmap() == null) {
@@ -394,6 +373,20 @@ public class CollageMaker {
                 continue;
             }
             Bitmap bitmap = bitmapDrawable.getBitmap();
+
+            if (!imageData.fromNetwork) {
+                // gallery
+                if (CollageUtils.isFullImageView(iv)) {
+                    // reload image with better quality
+                    File imgFile = new  File(imageData.dataPath);
+                    if(imgFile.exists()) {
+                        bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        bitmap = CollageUtils.applyDataToBitmap(imageData, bitmap);
+                        Log.d(TAG, "Load image with better quality");
+                    }
+                }
+            }
+
             Point place_size = new Point((int)(target_size.x * photoPos.size.x),
                     (int)(target_size.y * photoPos.size.y));
             float place_aspect = (float)place_size.y / place_size.x;

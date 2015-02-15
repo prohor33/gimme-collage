@@ -6,11 +6,10 @@ import android.os.AsyncTask;
 /**
  * Created by Dmitry on 10.02.2015.
  */
-public class SimpleAsyncTask extends AsyncTask<Void, Void, Void> {
+public class SimpleAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
     private SimpleAsyncListener mSimpleAsyncListener;
     private String mErrorString;
-    private boolean mErrorMet;
     private ProgressDialog mProgressDialog;
 
     public SimpleAsyncTask(SimpleAsyncListener simpleAsyncListener) {
@@ -19,21 +18,19 @@ public class SimpleAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
-        mSimpleAsyncListener.doInBackground();
-        return null;
+    protected Boolean doInBackground(Void... params) {
+        return mSimpleAsyncListener.doInBackground();
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mErrorMet = false;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        if(!mErrorMet) {
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+        if(result) {
             mSimpleAsyncListener.onSuccess();
         } else {
             mSimpleAsyncListener.onError(mErrorString);

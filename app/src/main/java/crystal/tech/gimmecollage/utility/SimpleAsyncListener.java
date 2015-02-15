@@ -6,5 +6,5 @@ package crystal.tech.gimmecollage.utility;
 public interface SimpleAsyncListener {
     void onSuccess();
     void onError(String error);
-    void doInBackground();
+    Boolean doInBackground();
 }

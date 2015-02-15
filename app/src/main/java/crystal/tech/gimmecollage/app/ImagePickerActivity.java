@@ -160,9 +160,10 @@ public class ImagePickerActivity extends ActionBarActivity
                 }
 
                 @Override
-                public void doInBackground() {
+                public Boolean doInBackground() {
                     loadImagesFromGalley();
                     updateSelectedFlags();
+                    return true;
                 }
             }).execute();
         } else if (mRequestCode == ImageSourceActivity.INSTAGRAM_REQUEST) {

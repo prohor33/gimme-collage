@@ -1,7 +1,9 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -9,7 +11,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -20,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.internal.cl;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -29,9 +29,12 @@ import java.io.OutputStream;
 
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.app.Utils;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 import crystal.tech.gimmecollage.utility.ImageLoader;
+import crystal.tech.gimmecollage.utility.SimpleAsyncListener;
+import crystal.tech.gimmecollage.utility.SimpleAsyncTask;
 
 /**
  * Created by prohor on 26/01/15.
@@ -65,92 +68,105 @@ public class CollageUtils {
         getInstance().imageLoader = new ImageLoader(main_activity);
     }
 
-    public interface FileSaveCallback {
-        void onSuccess(File file_result);
+    public void buildCollage(final boolean share) {
+        if (ImageStorage.getCollageImageCount() == 0) {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Add images button clicked
+                            Utils.spawnAddImagesActivity(mainActivity);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };
 
-        void onError();
+            AlertDialog.Builder builder = new AlertDialog.Builder(collageActivity);
+            builder.setMessage(mainActivity.getString(R.string.main_activity_dialog_no_images)).
+                    setPositiveButton(mainActivity.getString(R.string.main_activity_dialog_add_images),
+                            dialogClickListener)
+                    .setNegativeButton(mainActivity.getString(R.string.main_activity_dialog_no),
+                            dialogClickListener).show();
 
-        public static class EmptyFileSaveCallback implements FileSaveCallback {
-
-            @Override public void onSuccess(File file_result) {
-            }
-
-            @Override public void onError() {
-            }
+            return;
         }
-    }
 
-    public void shareCollage() {
         if (progressDialog == null)
             progressDialog = new ProgressDialog(collageActivity);
-        progressDialog.setTitle("Just a second");
-        progressDialog.setMessage("Generating collage for you...");
+        progressDialog.setTitle(
+                collageActivity.getString(R.string.main_activity_progress_just_a_second));
+        progressDialog.setMessage(
+                collageActivity.getString(share ?
+                        R.string.main_activity_progress_generating_collage :
+                        R.string.main_activity_progress_saving_collage));
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
-        // Save file on disk and open share dialog
-        new SaveFileTask().with(new FileSaveCallback() {
+        new SimpleAsyncTask(new SimpleAsyncListener() {
+            File file;
+
             @Override
-            public void onSuccess(File file_result) {
-                openShareDialog(file_result);
+            public void onSuccess() {
+                try {
+                    if (progressDialog != null && progressDialog.isShowing())
+                        progressDialog.dismiss();
+                } catch (final IllegalArgumentException e) {
+                    // Handle or log or ignore
+                } catch (final Exception e) {
+                    // Handle or log or ignore
+                } finally {
+                    progressDialog = null;
+                }
+
+            if (share) {
+                    openShareDialog(file);
+                } else {
+                    String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                    extStorageDirectory += "/" + file.getName();
+                    Toast.makeText(collageActivity,
+                            collageActivity.getString(R.string.main_activity_toast_collage_saved_to)
+                                    + extStorageDirectory,
+                            Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
-            public void onError() {
-
+            public void onError(String error) {
+                if (progressDialog != null)
+                    progressDialog.dismiss();
             }
-        }).execute(imgCollage);
-    }
 
-    private class SaveFileTask extends AsyncTask<Bitmap, Void, File> {
+            @Override
+            public Boolean doInBackground() {
+                Bitmap bmpImage = CollageMaker.getInstance().GenerateCollageImage();
+                if (bmpImage == null)
+                    return false;
 
-        FileSaveCallback callback = null;
-
-        public SaveFileTask with(FileSaveCallback cb) {
-            callback = cb;
-            return this;
-        }
-
-        protected File doInBackground(Bitmap... bmpImages) {
-            Bitmap bmpImage = bmpImages[0];
-            Log.v(TAG, "Start to save a file");
-
-            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            OutputStream outStream = null;
-            String temp = new String("collage");
-            File file = new File(extStorageDirectory, temp + ".png");
-            if (file.exists()) {
-                file.delete();
+                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                OutputStream outStream;
+                String temp = new String("collage");
                 file = new File(extStorageDirectory, temp + ".png");
-            }
+                if (file.exists()) {
+                    file.delete();
+                    file = new File(extStorageDirectory, temp + ".png");
+                }
 
-            try {
-                outStream = new FileOutputStream(file);
-                bmpImage.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                outStream.flush();
-                outStream.close();
-            } catch (Exception e) {
-                Log.v(TAG, "Error saving file: " + e.toString());
-                return null;
+                try {
+                    outStream = new FileOutputStream(file);
+                    bmpImage.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.flush();
+                    outStream.close();
+                } catch (Exception e) {
+                    Log.v(TAG, "Error saving file: " + e.toString());
+                    return false;
+                }
+                return true;
             }
-            return file;
-        }
-
-        protected void onPostExecute(File fileResult) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            if (fileResult == null) {
-                Log.v(TAG, "Error saving file");
-                if (callback != null)
-                    callback.onError();
-            } else {
-                Log.v(TAG, "File successfully saved");
-                if (callback != null)
-                    callback.onSuccess(fileResult);
-            }
-        }
+        }).execute();
     }
 
     private void openShareDialog(File fileResult) {
@@ -161,38 +177,14 @@ public class CollageUtils {
 
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("image/png");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Little candy");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                collageActivity.getString(R.string.main_activity_collage_mail_subject));
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                "Look! I have nice photo collage here, special for you!\nVia GimmeCollage");
+                collageActivity.getString(R.string.main_activity_collage_mail_text));
 
         sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileResult));
-        collageActivity.startActivity(Intent.createChooser(sharingIntent, "Share via"));
-    }
-
-    public void saveCollageOnDisk() {
-        if (progressDialog == null)
-            progressDialog = new ProgressDialog(collageActivity);
-        progressDialog.setTitle("Just a second");
-        progressDialog.setMessage("Saving collage...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        Bitmap imgCollage = CollageMaker.getInstance().GenerateCollageImage();
-        // Save file on disk and open share dialog
-        new SaveFileTask().with(new FileSaveCallback() {
-            @Override
-            public void onSuccess(File file_result) {
-                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-                extStorageDirectory += "/" + file_result.getName();
-                Toast.makeText(collageActivity, "Collage saved to " + extStorageDirectory,
-                        Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        }).execute(imgCollage);
+        collageActivity.startActivity(Intent.createChooser(sharingIntent,
+                collageActivity.getString(R.string.main_activity_share_chooser)));
     }
 
     public static void putFabCollapsed(boolean x) {
@@ -364,10 +356,10 @@ public class CollageUtils {
         }
         imageData.angle += angle;
 
-        putRotatedBMPIntoImageView(imageView, angle, bitmapDrawable.getBitmap());
+        putBMPIntoImageViewImpl(rotateBitmap(bitmapDrawable.getBitmap(), angle), imageView);
     }
 
-    private boolean isFullImageView(ImageView iv) {
+    public static boolean isFullImageView(ImageView iv) {
         // standard gallery thumbnail 320x240 or 240x320
         int image_view_square = iv.getWidth() * iv.getHeight();
         View grandParent = (View)iv.getParent().getParent();
@@ -395,24 +387,38 @@ public class CollageUtils {
         }
     }
 
-    public static void putBMPIntoImageView(ImageView imageView, ImageData imageData, Bitmap bitmap) {
-        getInstance().putBMPIntoImageViewImpl(imageView, imageData, bitmap);
+    public static void applyBMPIntoImageView(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+        getInstance().applyBMPIntoImageViewImpl(imageView, imageData, bitmap);
     }
-    private void putBMPIntoImageViewImpl(ImageView imageView, ImageData imageData, Bitmap bitmap) {
+    private void applyBMPIntoImageViewImpl(ImageView imageView, ImageData imageData, Bitmap bitmap) {
         // load from scratch
-        putRotatedBMPIntoImageView(imageView, imageData.angle, bitmap);
+        bitmap = applyDataToBitmapImpl(imageData, bitmap);
+        putBMPIntoImageViewImpl(bitmap, imageView);
     }
 
-    // TODO: temporary function
-    private void putRotatedBMPIntoImageView(ImageView imageView, float angle, Bitmap bitmap) {
+    public static Bitmap applyDataToBitmap(ImageData imageData, Bitmap bitmap) {
+        return getInstance().applyDataToBitmapImpl(imageData, bitmap);
+    }
+    private Bitmap applyDataToBitmapImpl(ImageData imageData, Bitmap bitmap) {
+        bitmap = rotateBitmap(bitmap, imageData.angle);
+
+        // plus something else...
+
+        return bitmap;
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap, float angle) {
         if (angle != 0) {
             Matrix matrix = new Matrix();
             matrix.postRotate(angle);
 
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
                     matrix, true);
         }
+        return bitmap;
+    }
 
+    private void putBMPIntoImageViewImpl(Bitmap bitmap, ImageView imageView) {
         ColorStateList imageColorList =
                 collageActivity.getResources().getColorStateList(R.color.image_colorlist);
 
