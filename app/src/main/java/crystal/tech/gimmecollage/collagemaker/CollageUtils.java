@@ -405,7 +405,6 @@ public class CollageUtils {
 
     // TODO: temporary function
     private void putRotatedBMPIntoImageView(ImageView imageView, float angle, Bitmap bitmap) {
-        Log.d(TAG, "putRotatedBMPIntoImageView");
         if (angle != 0) {
             Matrix matrix = new Matrix();
             matrix.postRotate(angle);

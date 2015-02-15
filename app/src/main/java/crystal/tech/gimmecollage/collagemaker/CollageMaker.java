@@ -1,8 +1,10 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -26,6 +28,7 @@ import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.Application;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.app.Utils;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.utility.OnSwipeTouchListener;
@@ -345,6 +348,33 @@ public class CollageMaker {
     }
 
     public Bitmap GenerateCollageImage() {
+        if (ImageStorage.getCollageImageCount() == 0) {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Add images button clicked
+                            Utils.spawnAddImagesActivity(mainActivity);
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
+            builder.setMessage(mainActivity.getString(R.string.main_activity_dialog_no_images)).
+                    setPositiveButton(mainActivity.getString(R.string.main_activity_dialog_add_images),
+                            dialogClickListener)
+                    .setNegativeButton(mainActivity.getString(R.string.main_activity_dialog_no),
+                            dialogClickListener).show();
+
+            return null;
+        }
+
         float aspect_ratio = getCollageConf().getCollageAspectRatio();
         final int bmp_pxl_size = 1024;
         final Point target_size = new Point(bmp_pxl_size, (int)(bmp_pxl_size * aspect_ratio));

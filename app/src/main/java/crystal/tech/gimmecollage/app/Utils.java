@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,6 +17,8 @@ import android.view.Display;
  * Created by prohor on 08/10/14.
  */
 public class Utils {
+    public static final int ADD_PICTURES_REQUEST = 1;  // The request code
+
     public static boolean checkInternetConnection(Activity activity) {
         ConnectivityManager cm =
                 (ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -48,4 +51,9 @@ public class Utils {
         return dialog;
     }
 
+    public static void spawnAddImagesActivity(Activity activity) {
+        // Spawn ImageSourceActivity.
+        Intent intent = new Intent(activity, ImageSourceActivity.class);
+        activity.startActivityForResult(intent, ADD_PICTURES_REQUEST);
+    }
 }

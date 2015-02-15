@@ -34,7 +34,6 @@ public class MainActivity extends ActionBarActivity implements
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private SimpleDrawerFragment mSimpleDrawerFragment;
-    static final int ADD_PICTURES_REQUEST = 1;  // The request code
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +104,7 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.d(TAG, requestCode + " " + resultCode);
 
-        if (requestCode == ADD_PICTURES_REQUEST) {
+        if (requestCode == Utils.ADD_PICTURES_REQUEST) {
 //            if (resultCode == RESULT_OK) {
             // ??? if uncomment => go instagram -> back -> gallery -> select photos -> ok -> resultCode == 0 !!!
                 ImageStorage.moveAllImagesFromPullToCollage();
@@ -147,9 +146,7 @@ public class MainActivity extends ActionBarActivity implements
     /* Callback for SimpleDrawerFragments. */
     @Override
     public void onSimpleDrawerAddImage() {
-        // Spawn ImageSourceActivity.
-        Intent intent = new Intent(MainActivity.this, ImageSourceActivity.class);
-        startActivityForResult(intent, ADD_PICTURES_REQUEST);
+        Utils.spawnAddImagesActivity(MainActivity.this);
     }
 
     /* Replace R.id.container for presented fragment. */

@@ -67,6 +67,10 @@ public class ImageStorage {
         return getInstance().pullImages.size();
     }
 
+    public static int getCollageImageCount() {
+        return getInstance().collageImages.size();
+    }
+
     public static ImageData getPullImage(int i) {
         return getInstance().getPullImageByIndex(i);
     }

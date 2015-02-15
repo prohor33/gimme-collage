@@ -10,6 +10,11 @@
     <string name="desc">description</string>
     <string name="title_activity_authentication">AuthenticationActivity</string>
 
+    <!-- Main Activity -->
+    <string name="main_activity_dialog_no_images">No images for collage. Would you like to add some?</string>
+    <string name="main_activity_dialog_add_images">Add images</string>
+    <string name="main_activity_dialog_no">No</string>
+
     <!-- CollageActivity strings -->
     <string name="action_main_share">Share</string>
     <string name="action_main_save">Save</string>

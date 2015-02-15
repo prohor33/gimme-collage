@@ -129,11 +129,9 @@ public class ImageLoader {
                 if (this == bitmapDownloaderTask) {
                     if (target != null) {
                         // have target (used for collage and pull)
-                        Log.d(TAG, "onBitmapLoaded");
                         target.onBitmapLoaded(bitmap, null);
                     } else {
                         imageView.setImageBitmap(bitmap);
-                        Log.d(TAG, "setImageBitmap");
                     }
                 }
             }
