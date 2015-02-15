@@ -7,7 +7,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Target;
 
 import java.lang.ref.WeakReference;
 
@@ -16,24 +19,12 @@ import java.lang.ref.WeakReference;
  */
 public class ImageLoader {
 
+    private final String TAG = "ImageLoader";
     private Context mContext;
+
     public ImageLoader(Context context) {
         mContext = context;
     }
-
-    /*
-    private static ImageLoader mSingleton;
-
-    public static ImageLoader with(Context context) {
-        if(mSingleton == null) {
-            mSingleton = new ImageLoader();
-            if (mSingleton.mContext == null) {
-                mSingleton.mContext = context;
-            }
-        }
-        return mSingleton;
-    }
-    */
 
     /**
      * Loads a thumbnail bitmap for an image in android system with specified Id.
@@ -41,9 +32,13 @@ public class ImageLoader {
      * @param imageView
      */
     public void loadThumbnail(long origId, ImageView imageView) {
+        loadThumbnail(origId, imageView, null);
+    }
+
+    public void loadThumbnail(long origId, ImageView imageView, Target target) {
         if (cancelPotentialDownload(origId, imageView)) {
-            BitmapDownloaderTask task = new BitmapDownloaderTask(imageView);
-            DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
+            BitmapDownloaderTask task = new BitmapDownloaderTask(imageView, target);
+            DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task, target);
             imageView.setImageDrawable(downloadedDrawable);
             imageView.setMinimumHeight(156);
             task.execute(origId);
@@ -101,9 +96,11 @@ public class ImageLoader {
     class BitmapDownloaderTask extends AsyncTask<Long, Void, Bitmap> {
         private long origId;
         private final WeakReference<ImageView> imageViewReference;
+        private Target target;
 
-        public BitmapDownloaderTask(ImageView imageView) {
+        public BitmapDownloaderTask(ImageView imageView, Target t) {
             imageViewReference = new WeakReference<ImageView>(imageView);
+            target = t;
         }
 
         /**
@@ -130,7 +127,14 @@ public class ImageLoader {
                 // Change bitmap only if this process is still associated with it
                 // Or if we don't use any bitmap to task association (NO_DOWNLOADED_DRAWABLE mode)
                 if (this == bitmapDownloaderTask) {
-                    imageView.setImageBitmap(bitmap);
+                    if (target != null) {
+                        // have target (used for collage and pull)
+                        Log.d(TAG, "onBitmapLoaded");
+                        target.onBitmapLoaded(bitmap, null);
+                    } else {
+                        imageView.setImageBitmap(bitmap);
+                        Log.d(TAG, "setImageBitmap");
+                    }
                 }
             }
         }
@@ -147,7 +151,7 @@ public class ImageLoader {
     static class DownloadedDrawable extends ColorDrawable {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskReference;
 
-        public DownloadedDrawable(BitmapDownloaderTask bitmapDownloaderTask) {
+        public DownloadedDrawable(BitmapDownloaderTask bitmapDownloaderTask, Target target) {
             super(Color.WHITE);
             bitmapDownloaderTaskReference =
                     new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
