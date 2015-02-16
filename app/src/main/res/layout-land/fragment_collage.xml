@@ -108,51 +108,7 @@
             android:visibility="visible"/>
     </FrameLayout>
 
-    <RelativeLayout
+    <include
         android:id="@+id/image_action_buttons_rl"
-        android:visibility="gone"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:clipToPadding="false"
-        android:paddingLeft="@dimen/image_action_rl_padding"
-        android:paddingTop="@dimen/image_action_rl_padding"
-        android:paddingBottom="@dimen/image_action_rl_padding">
-
-        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-            android:id="@+id/image_action_rotate_right_btn"
-            android:layout_width="@dimen/image_action_btn_size"
-            android:layout_height="@dimen/image_action_btn_size"
-            android:background="@drawable/image_action_btn_rotate_right_ripple"
-            android:color="#ff5278b2"
-            />
-
-        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-            android:id="@+id/image_action_rotate_left_btn"
-            android:layout_width="@dimen/image_action_btn_size"
-            android:layout_height="@dimen/image_action_btn_size"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:background="@drawable/image_action_btn_rotate_left_ripple"
-            android:color="#ff5278b2"
-            />
-
-        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-            android:id="@+id/image_action_accept_btn"
-            android:layout_width="@dimen/image_action_btn_size"
-            android:layout_height="@dimen/image_action_btn_size"
-            android:background="@drawable/image_action_btn_accept_ripple"
-            android:color="#ff5278b2"
-            />
-
-        <crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton
-            android:id="@+id/image_action_settings_btn"
-            android:layout_width="@dimen/image_action_btn_size"
-            android:layout_height="@dimen/image_action_btn_size"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:background="@drawable/image_action_btn_settings_ripple"
-            android:color="#ff5278b2"
-            />
-
-    </RelativeLayout>
+        layout="@layout/collage_action_buttons"/>
 </RelativeLayout>

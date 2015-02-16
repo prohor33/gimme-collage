@@ -3,6 +3,8 @@ package crystal.tech.gimmecollage.app.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,6 +25,11 @@ public class CollageTypeSelectorImageView extends ImageView {
 
     static public class Line {
         float startX, startY, stopX, stopY;
+
+        public Line(PointF s, PointF e) {
+            this(s.x, s.y, e.x, e.y);
+        }
+
         public Line(float startX, float startY, float stopX, float stopY) {
             this.startX = startX;
             this.startY = startY;

@@ -8,8 +8,10 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
@@ -21,6 +23,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.google.android.gms.internal.ma;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -57,6 +61,7 @@ public class CollageMaker {
     private ArrayList<ImageViewData> imageViewDatas = new ArrayList<>();
 
     public enum CollageType {
+        WithAngles1,
         Polygons1,
         Grid,
         Polygons2,
@@ -289,13 +294,29 @@ public class CollageMaker {
         }
         final View v = imageViewDatas.get(i).parentFL;
 
-        PhotoPosition pPhotoPos = getCollageConf().getPhotoPos(i);
+        PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
+        PointF p = new PointF(collageSize.x * photoPos.p.x, collageSize.y * photoPos.p.y);
+        Point size = new Point((int) (collageSize.x * photoPos.size.x),
+                (int) (collageSize.y * photoPos.size.y));
+        PointF center = new PointF();
+        center.set(p);
+        center.offset(size.x / 2, size.y / 2);
+
+        Matrix transform = new Matrix();
+        transform.setRotate(photoPos.angle, p.x, p.y);
+        PointF new_center = CollageUtils.applyMatrix(center, transform);
+        Point start = new Point((int) (p.x + (new_center.x - center.x)),
+                (int) (p.y + (new_center.y - center.y)));
+
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
-        params.width = (int) (collageSize.x * pPhotoPos.size.x);
-        params.height = (int) (collageSize.y * pPhotoPos.size.y);
-        params.leftMargin = (int) (collageSize.x * pPhotoPos.p.x);
-        params.topMargin = (int) (collageSize.y * pPhotoPos.p.y);
+        params.width = size.x;
+        params.height = size.y;
+        params.leftMargin = start.x;
+        params.topMargin = start.y;
+        params.rightMargin = collageSize.x - start.x - size.x;
+        params.bottomMargin = collageSize.y - start.y - size.y;
         v.setLayoutParams(params);
+        v.setRotation(photoPos.angle);
     }
 
     public void updateViewPosition(View v) {
@@ -326,27 +347,51 @@ public class CollageMaker {
             return;
         CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
         float aspectRatio = config.getCollageAspectRatio();
-        Point size = new Point((int)(selector_height / aspectRatio), selector_height);
+        Point sel_size = new Point((int)(selector_height / aspectRatio), selector_height);
 
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) ivSelector.getLayoutParams();
-        layoutParams.width = size.x;
-        layoutParams.height = size.y;
+        layoutParams.width = sel_size.x;
+        layoutParams.height = sel_size.y;
         ivSelector.setLayoutParams(layoutParams);
 
-        final int selector_padding = size.y / 20;
-        size.x -= selector_padding * 2;
-        size.y -= selector_padding * 2;
+        final int selector_padding = sel_size.y / 20;
+        sel_size.x -= selector_padding * 2;
+        sel_size.y -= selector_padding * 2;
+        Matrix transform = new Matrix();
         for (int i = 0; i < config.getPhotoCount(); i++) {
             PhotoPosition photo_pos = config.getPhotoPos(i);
-            int s_x = (int)(size.x * photo_pos.p.x) + selector_padding;
-            int s_y = (int)(size.y * photo_pos.p.y) + selector_padding;
-            int e_x = s_x + (int)(size.x * photo_pos.size.x);
-            int e_y = s_y + (int)(size.y * photo_pos.size.y);
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, s_y, e_x, s_y));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, s_y, e_x, e_y));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(e_x, e_y, s_x, e_y));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(s_x, e_y, s_x, s_y));
+
+            PointF p = new PointF();
+            p.set(photo_pos.p);
+            p.x *= sel_size.x;
+            p.y *= sel_size.y;
+            PointF size = new PointF();
+            size.set(photo_pos.size);
+            size.x *= sel_size.x;
+            size.y *= sel_size.y;
+
+            // rotate point
+            transform.setRotate(photo_pos.angle, p.x, p.y);
+            PointF p1 = CollageUtils.applyMatrix(p, transform);
+            PointF p2 = CollageUtils.applyMatrix(new PointF(p.x + size.x, p.y), transform);
+            PointF p3 = CollageUtils.applyMatrix(new PointF(p.x + size.x,
+                    p.y + size.y), transform);
+            PointF p4 = CollageUtils.applyMatrix(new PointF(p.x, p.y + size.y), transform);
+
+            p1.x += selector_padding;
+            p1.y += selector_padding;
+            p2.x += selector_padding;
+            p2.y += selector_padding;
+            p3.x += selector_padding;
+            p3.y += selector_padding;
+            p4.x += selector_padding;
+            p4.y += selector_padding;
+
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p1, p2));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p2, p3));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p3, p4));
+            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p4, p1));
         }
     }
 
@@ -404,10 +449,12 @@ public class CollageMaker {
             // crop square in center
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, img_t_size.x, img_t_size.y);
 
+            PointF p = new PointF(target_size.x * photoPos.p.x, target_size.y * photoPos.p.y);
+            Matrix transform = new Matrix();
+            transform.setTranslate(p.x, p.y);
+            transform.postRotate(photoPos.angle, p.x, p.y);
             comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, place_size.x, place_size.y, true),
-                    target_size.x * photoPos.p.x,
-                    target_size.y * photoPos.p.y,
-                    new Paint(Paint.FILTER_BITMAP_FLAG));
+                    transform, new Paint(Paint.FILTER_BITMAP_FLAG));
         }
 
         Log.v(TAG, "Collage is successfully generated!");

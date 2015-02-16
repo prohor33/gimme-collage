@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
@@ -429,4 +431,26 @@ public class CollageUtils {
             imageView.setImageDrawable(new BitmapDrawable(bitmap));
         }
     }
+
+    public static PointF applyMatrix(PointF p, Matrix transform) {
+        // Create new float[] to hold the rotated coordinates
+        float[] pts = new float[2];
+
+        // Initialize the array with our Coordinate
+        pts[0] = p.x;
+        pts[1] = p.y;
+
+        // Use the Matrix to map the points
+        transform.mapPoints(pts);
+
+        // NOTE: pts will be changed by transform.mapPoints call
+        // after the call, pts will hold the new cooridnates
+
+        // Now, create a new Point from our new coordinates
+        PointF newPoint = new PointF(pts[0], pts[1]);
+
+        // Return the new point
+        return newPoint;
+    }
+
 }

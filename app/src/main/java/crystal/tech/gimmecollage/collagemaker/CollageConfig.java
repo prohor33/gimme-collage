@@ -125,7 +125,16 @@ public class CollageConfig {
                 m_vPhotoPos.add(new PhotoPosition(2 * d_x + size2_x, 2 * d_y + size1_y, size1_x, size2_y));
                 break;
             }
-
+            case WithAngles1: {
+                collageAspectRatio = 1.2f;
+                float s_x = 0.6f;
+                float s_y = s_x / collageAspectRatio;
+                m_vPhotoPos.add(new PhotoPosition(0.3f, 0.1f, s_x, s_y, 35.0f));
+                m_vPhotoPos.add(new PhotoPosition(0.4f, 0.1f, s_x, s_y, -25.0f));
+                m_vPhotoPos.add(new PhotoPosition(0.3f, 0.55f, s_x, s_y, 25.0f));
+                m_vPhotoPos.add(new PhotoPosition(0.4f, 0.55f, s_x, s_y, -30.0f));
+                break;
+            }
             default: {
                 Log.v(TAG, "Error: wrong collage type");
                 break;

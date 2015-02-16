@@ -26,6 +26,6 @@
 
     <!-- Image action button size -->
     <dimen name="image_action_btn_size">40dp</dimen>
-    <dimen name="image_action_def_elevation">15dp</dimen>
-    <dimen name="image_action_rl_padding">20dp</dimen>  <!-- anti shadow bug -->
+    <dimen name="image_action_def_elevation">5dp</dimen>    <!-- bug here, but need 15dp -->
+    <dimen name="image_action_rl_padding">0dp</dimen>  <!-- anti shadow bug, should be 20dp -->
 </resources>

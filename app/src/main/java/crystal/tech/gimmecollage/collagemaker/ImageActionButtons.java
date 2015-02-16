@@ -109,18 +109,6 @@ public class ImageActionButtons {
         floatingBtnsRL.setLayoutParams(parentLParams);
         floatingBtnsRL.setVisibility(View.VISIBLE);
 
-        RelativeLayout.LayoutParams btnTRParams =
-                (RelativeLayout.LayoutParams) buttonTR.getLayoutParams();
-        btnTRParams.leftMargin =  parentLParams.width - 2 * fl_padding - buttons_size;
-        btnTRParams.topMargin = 0;
-        buttonTR.setLayoutParams(btnTRParams);
-
-        RelativeLayout.LayoutParams btnBRParams =
-                (RelativeLayout.LayoutParams) buttonBR.getLayoutParams();
-        btnBRParams.leftMargin = parentLParams.width - 2 * fl_padding - buttons_size;
-        btnBRParams.topMargin = parentLParams.height - 2 * fl_padding - buttons_size;
-        buttonBR.setLayoutParams(btnBRParams);
-
         animateAppearance(buttonTR);
         animateAppearance(buttonTL);
         animateAppearance(buttonBR);
