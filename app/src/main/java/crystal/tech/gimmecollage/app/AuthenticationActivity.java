@@ -1,14 +1,8 @@
 package crystal.tech.gimmecollage.app;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,8 +23,9 @@ public class AuthenticationActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         CookieSyncManager.createInstance(this);
         CookieManager cookieManager = CookieManager.getInstance();
@@ -40,14 +35,17 @@ public class AuthenticationActivity extends ActionBarActivity {
         InstagramAPI.Listener authListener = new InstagramAPI.Listener() {
             @Override
             public void onSuccess() {
-                Toast.makeText(AuthenticationActivity.this, "Success", Toast.LENGTH_LONG).show();
+                Toast.makeText(AuthenticationActivity.this, "Authentication successful",
+                        Toast.LENGTH_SHORT).show();
                 AuthenticationActivity.this.setResult(RESULT_OK);
                 AuthenticationActivity.this.finish();
             }
 
             @Override
             public void onFail(String error) {
-                Toast.makeText(AuthenticationActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Error: " + error);
+                Utils.checkAndNotifyConnection(AuthenticationActivity.this);
+                AuthenticationActivity.this.finish();
             }
         };
 

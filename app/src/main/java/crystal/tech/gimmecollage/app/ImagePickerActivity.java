@@ -138,8 +138,9 @@ public class ImagePickerActivity extends ActionBarActivity
 
                 @Override
                 public void onFail(String error) {
-                    Toast.makeText(ImagePickerActivity.this, "Error : " + error, Toast.LENGTH_LONG)
-                            .show();
+                    Log.e(TAG, error);
+                    Utils.checkAndNotifyConnection(ImagePickerActivity.this);
+                    ImagePickerActivity.this.finish();
                 }
             }).updateFollows();
         }
@@ -159,6 +160,7 @@ public class ImagePickerActivity extends ActionBarActivity
 
                 @Override
                 public void onError(String error) {
+                    mRecyclerViewAdapter.notifyDataSetChanged();
                     dialog.dismiss();
                 }
 
@@ -181,9 +183,10 @@ public class ImagePickerActivity extends ActionBarActivity
 
                 @Override
                 public void onFail(String error) {
+                    mRecyclerViewAdapter.notifyDataSetChanged();
                     dialog.dismiss();
-                    Toast.makeText(ImagePickerActivity.this, "Error : " + error, Toast.LENGTH_LONG)
-                            .show();
+                    Log.e(TAG, error);
+                    Utils.checkAndNotifyConnection(ImagePickerActivity.this);
                 }
             }).updateImages(mCurrentSpinnerItems.get(mSelectedSpinnerIndex).getId());
         }

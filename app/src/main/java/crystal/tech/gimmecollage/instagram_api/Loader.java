@@ -40,7 +40,7 @@ class Loader {
     }
 
     private String fetchSomeData(String strURL, String requestMethod) throws IOException {
-        Log.d(InstagramAPI.getTag() + "." + TAG, "Request: " + strURL);
+        //Log.d(InstagramAPI.getTag() + "." + TAG, "Request: " + strURL);
         String contentAsString;
 
         URL url = new URL(strURL);
@@ -52,11 +52,11 @@ class Loader {
         // Starts the query
         urlConnection.connect();
         int response = urlConnection.getResponseCode();
-        Log.d(InstagramAPI.getTag() + "." + TAG, "The response is: " + response);
+        //Log.d(InstagramAPI.getTag() + "." + TAG, "The response is: " + response);
         // Convert the InputStream into a string
         contentAsString = streamToString(urlConnection.getInputStream());
 
-        Log.d(InstagramAPI.getTag() + "." + TAG, "Answer: " + contentAsString);
+        //Log.d(InstagramAPI.getTag() + "." + TAG, "Answer: " + contentAsString);
         return contentAsString;
     }
 

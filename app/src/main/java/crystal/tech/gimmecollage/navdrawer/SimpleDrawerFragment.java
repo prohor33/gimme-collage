@@ -86,33 +86,6 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
         mDrawerLayout = drawerLayout;
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.drawer_dark_color));
-
-        /*
-        ActionBarDrawerToggle drawerToggle
-                = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, null, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                if(drawerView.getId() == getId()) {
-                    super.onDrawerSlide(drawerView, slideOffset);
-                    CollageMaker.deselectAllViews();
-                }
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                if(drawerView.getId() == getId())
-                    super.onDrawerClosed(drawerView);
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                if(drawerView.getId() == getId())
-                    super.onDrawerOpened(drawerView);
-            }
-        };
-
-        mDrawerLayout.setDrawerListener(drawerToggle);
-        */
     }
 
     public void openDrawer() {

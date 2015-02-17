@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
+import android.widget.Toast;
 
 /**
  * Created by prohor on 08/10/14.
@@ -24,6 +25,16 @@ public class Utils {
                 (ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public static void notifyNoConnection(Context context) {
+        Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
+    }
+
+    public static boolean checkAndNotifyConnection(Activity activity) {
+        boolean connected = checkInternetConnection(activity);
+        if(!connected) notifyNoConnection(activity);
+        return connected;
     }
 
     public static void showAlertNoConnection(Activity activity) {

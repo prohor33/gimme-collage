@@ -102,7 +102,6 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
                 if(!slideStarted) {
                     slideStarted = true;
                     CollageMaker.deselectAllViews();
-
                 }
             }
 
@@ -132,7 +131,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
             }
         };
 
-        if (mUserLearnedDrawer && !mFromSavedInstanceState)
+        if (!mUserLearnedDrawer && !mFromSavedInstanceState)
             mDrawerLayout.openDrawer(mFragmentContainerView);
 
         mDrawerLayout.post(new Runnable() {

@@ -84,8 +84,10 @@ public class ImageSourceActivity extends ActionBarActivity {
             case 1: // Instagram
                 // Check if instagram is logged.
                 if(!InstagramAPI.isAuthenticated()) {
-                    startActivityForResult(new Intent(ImageSourceActivity.this,
-                                    AuthenticationActivity.class), INSTAGRAM_AUTH_REQUEST);
+                    if(Utils.checkAndNotifyConnection(this)) {
+                        startActivityForResult(new Intent(ImageSourceActivity.this,
+                                AuthenticationActivity.class), INSTAGRAM_AUTH_REQUEST);
+                    }
                 } else {
                     // if it is authenticated, then we need to update self info first.
                     final ProgressDialog dialog = Utils.createProgressDialog(ImageSourceActivity.this);
@@ -102,10 +104,13 @@ public class ImageSourceActivity extends ActionBarActivity {
                         @Override
                         public void onFail(String error) {
                             dialog.dismiss();
-                            Log.d(TAG, "onFail");
-                            Toast.makeText(ImageSourceActivity.this, "Error: " + error,
-                                    Toast.LENGTH_LONG).show();
-                            InstagramAPI.resetAuthentication();
+                            Log.e(TAG, "Error: " + error);
+                            if(Utils.checkAndNotifyConnection(ImageSourceActivity.this)) {
+                                Toast.makeText(ImageSourceActivity.this,
+                                        "Wrong access token, please try again.",
+                                        Toast.LENGTH_LONG).show();
+                                InstagramAPI.resetAuthentication();
+                            }
                         }
                     }).updateSelf();
                 }
