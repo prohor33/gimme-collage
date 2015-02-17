@@ -51,11 +51,7 @@ public class AuthenticationActivity extends ActionBarActivity {
             }
         };
 
-        if (Utils.checkInternetConnection(this)) {
-            InstagramAPI.with(authListener).startAuthentication(webView);
-        } else {
-            Utils.showAlertNoConnection(this);
-        }
+        InstagramAPI.with(authListener).startAuthentication(webView);
     }
 
 

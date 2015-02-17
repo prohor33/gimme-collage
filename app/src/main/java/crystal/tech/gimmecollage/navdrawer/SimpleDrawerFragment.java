@@ -87,6 +87,7 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.drawer_dark_color));
 
+        /*
         ActionBarDrawerToggle drawerToggle
                 = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, null, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -111,6 +112,7 @@ public class SimpleDrawerFragment extends Fragment implements SimpleDrawerCallba
         };
 
         mDrawerLayout.setDrawerListener(drawerToggle);
+        */
     }
 
     public void openDrawer() {

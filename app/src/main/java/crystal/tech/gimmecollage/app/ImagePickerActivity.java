@@ -109,14 +109,17 @@ public class ImagePickerActivity extends ActionBarActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        mRequestCode = getIntent().getIntExtra("requestCode", 0);
+
         setupSpinner();
         setupRecyclerView();
-        // TODO: make choice for gallery or instagram image source.
-        mRequestCode = getIntent().getIntExtra("requestCode", 0);
-        mCurrentItems.clear();
-        // Fills all views with data.
-        updateSpinnerItems();
-        //updateImageItems();
+        if(mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
+            mToolbar.setTitle("Gallery");
+            mSpinner.setVisibility(View.INVISIBLE);
+            updateImageItems();
+        } else {
+            updateSpinnerItems();
+        }
     }
 
     private void updateSpinnerItems() {

@@ -78,13 +78,14 @@ public class ImageSourceActivity extends ActionBarActivity {
         // Open AuthActivity or ImageSourceGallery ??
         switch (i) {
             case 0: // Gallery
-                startImagePicker(GALLERY_REQUEST);
+                startActivityForResult(new Intent(ImageSourceActivity.this,
+                        ImagePickerActivity.class), GALLERY_REQUEST);
                 break;
             case 1: // Instagram
                 // Check if instagram is logged.
                 if(!InstagramAPI.isAuthenticated()) {
-                    Intent intent = new Intent(ImageSourceActivity.this, AuthenticationActivity.class);
-                    startActivityForResult(intent, INSTAGRAM_AUTH_REQUEST);
+                    startActivityForResult(new Intent(ImageSourceActivity.this,
+                                    AuthenticationActivity.class), INSTAGRAM_AUTH_REQUEST);
                 } else {
                     // if it is authenticated, then we need to update self info first.
                     final ProgressDialog dialog = Utils.createProgressDialog(ImageSourceActivity.this);
@@ -93,7 +94,8 @@ public class ImageSourceActivity extends ActionBarActivity {
                         @Override
                         public void onSuccess() {
                             dialog.dismiss();
-                            startImagePicker(INSTAGRAM_REQUEST);
+                            startActivityForResult(new Intent(ImageSourceActivity.this,
+                                    ImagePickerActivity.class), INSTAGRAM_REQUEST);
                             Log.d(TAG, "onSuccess");
                         }
 
@@ -112,11 +114,6 @@ public class ImageSourceActivity extends ActionBarActivity {
                 break;
         }
         Log.d(TAG, "selectImageSource " + i);
-    }
-
-    private void startImagePicker(int requestCode) {
-        Intent intent = new Intent(ImageSourceActivity.this, ImagePickerActivity.class);
-        startActivityForResult(intent, requestCode);
     }
 
     @Override

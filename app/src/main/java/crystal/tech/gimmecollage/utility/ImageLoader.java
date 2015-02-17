@@ -1,6 +1,7 @@
 package crystal.tech.gimmecollage.utility;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,8 +11,10 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 /**
@@ -96,11 +99,15 @@ public class ImageLoader {
     class BitmapDownloaderTask extends AsyncTask<Long, Void, Bitmap> {
         private long origId;
         private final WeakReference<ImageView> imageViewReference;
-        private Target target;
+        private final WeakReference<Target> targetReference;
+        private boolean targetOriented;
+        private String thumbnailPath;
 
-        public BitmapDownloaderTask(ImageView imageView, Target t) {
+        public BitmapDownloaderTask(ImageView imageView, Target target) {
             imageViewReference = new WeakReference<ImageView>(imageView);
-            target = t;
+            targetReference = new WeakReference<Target>(target);
+            targetOriented = target != null;
+            thumbnailPath = null;
         }
 
         /**
@@ -109,6 +116,10 @@ public class ImageLoader {
         @Override
         protected Bitmap doInBackground(Long... params) {
             origId = params[0];
+            thumbnailPath = getThumbnailPath(origId);
+            if(thumbnailPath != null) {
+                return null;
+            }
             return downloadBitmap(origId);
         }
 
@@ -121,21 +132,54 @@ public class ImageLoader {
                 bitmap = null;
             }
 
-            if (imageViewReference != null) {
-                ImageView imageView = imageViewReference.get();
+            ImageView imageView = imageViewReference.get();
+            if(imageView != null) {
                 BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
-                // Change bitmap only if this process is still associated with it
-                // Or if we don't use any bitmap to task association (NO_DOWNLOADED_DRAWABLE mode)
                 if (this == bitmapDownloaderTask) {
-                    if (target != null) {
+                    if(targetOriented) {
                         // have target (used for collage and pull)
-                        target.onBitmapLoaded(bitmap, null);
+                        Target target = targetReference.get();
+                        if(thumbnailPath == null) {
+                            target.onBitmapLoaded(bitmap, null);
+                        } else {
+                            Picasso.with(mContext).load(new File(thumbnailPath)).into(target);
+                        }
                     } else {
-                        imageView.setImageBitmap(bitmap);
+                        if(thumbnailPath == null) {
+                            imageView.setImageBitmap(bitmap);
+                        } else {
+                            Picasso.with(mContext).load(new File(thumbnailPath)).into(imageView);
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Method for getting image thumbnail uri.
+     */
+    String getThumbnailPath(long imageId) {
+        String path = null;
+        Cursor cursor = MediaStore.Images.Thumbnails.queryMiniThumbnail(
+                mContext.getContentResolver(),
+                imageId,
+                MediaStore.Images.Thumbnails.MINI_KIND,
+                new String[]{MediaStore.Images.Thumbnails.DATA});
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                // There are thumbnail in system.
+                cursor.moveToFirst();
+                int column_index = cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+                path = cursor.getString(column_index);
+                if (!(new File(path).exists())) {
+                    Log.e(TAG, "Path doesn't exist: " + path);
+                    path = null;
+                }
+            }
+            cursor.close();
+        }
+        return path;
     }
 
 
@@ -150,7 +194,7 @@ public class ImageLoader {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskReference;
 
         public DownloadedDrawable(BitmapDownloaderTask bitmapDownloaderTask, Target target) {
-            super(Color.WHITE);
+            super(Color.TRANSPARENT);
             bitmapDownloaderTaskReference =
                     new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
         }
@@ -159,4 +203,5 @@ public class ImageLoader {
             return bitmapDownloaderTaskReference.get();
         }
     }
+
 }

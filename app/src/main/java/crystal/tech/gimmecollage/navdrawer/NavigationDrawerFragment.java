@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import crystal.tech.gimmecollage.app.R;
+import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
 /**
  * Created by poliveira on 24/10/2014.
@@ -91,10 +92,18 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
                 getResources().getColor(R.color.drawer_dark_color));
 
         mActionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+            private boolean slideStarted = false;
+
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 if(drawerView.getId() == getId())
                     super.onDrawerSlide(drawerView, slideOffset);
+
+                if(!slideStarted) {
+                    slideStarted = true;
+                    CollageMaker.deselectAllViews();
+
+                }
             }
 
             @Override
@@ -104,6 +113,8 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
 
                 if (!isAdded()) return;
                 getActivity().invalidateOptionsMenu();
+
+                slideStarted = false;
             }
 
             @Override
@@ -121,7 +132,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
             }
         };
 
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState)
+        if (mUserLearnedDrawer && !mFromSavedInstanceState)
             mDrawerLayout.openDrawer(mFragmentContainerView);
 
         mDrawerLayout.post(new Runnable() {
