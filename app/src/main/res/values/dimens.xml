@@ -26,6 +26,11 @@
 
     <!-- Image action button size -->
     <dimen name="image_action_btn_size">40dp</dimen>
-    <dimen name="image_action_def_elevation">5dp</dimen>    <!-- bug here, but need 15dp -->
+    <dimen name="image_action_def_elevation">0dp</dimen>    <!-- bug here, but need 15dp -->
     <dimen name="image_action_rl_padding">0dp</dimen>  <!-- anti shadow bug, should be 20dp -->
+
+    <!-- color picker dialog -->
+    <dimen name="color_picker_dialog_item_size">60dp</dimen>
+    <dimen name="color_picker_dialog_item_space">4dp</dimen>
+    <dimen name="color_picker_dialog_grid_view_margin">10dp</dimen>
 </resources>

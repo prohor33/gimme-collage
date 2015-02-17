@@ -5,5 +5,5 @@
             <solid android:color="@color/image_action_btn_rotate_left_color" />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_image_rotate_right" android:id="@+id/additional_image" />
+    <item android:drawable="@drawable/ic_action_btn_rotate_right" android:id="@+id/additional_image" />
 </layer-list>

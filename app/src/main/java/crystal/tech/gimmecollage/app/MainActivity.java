@@ -46,11 +46,11 @@ public class MainActivity extends ActionBarActivity implements
 
         List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_collage),
-                getResources().getDrawable(R.drawable.ic_image_collage)));
+                getResources().getDrawable(R.drawable.ic_nav_drawer_collage)));
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_settings),
-                getResources().getDrawable(R.drawable.ic_image_settings_applications)));
+                getResources().getDrawable(R.drawable.ic_nav_drawer_settings)));
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_report),
-                getResources().getDrawable(R.drawable.ic_image_mail)));
+                getResources().getDrawable(R.drawable.ic_nav_drawer_report)));
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_drawer_left);

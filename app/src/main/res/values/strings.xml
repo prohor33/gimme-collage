@@ -18,10 +18,13 @@
     <string name="main_activity_progress_saving_collage">Saving collage...</string>
     <string name="main_activity_toast_collage_saved_to">Collage saved to </string>
     <string name="main_activity_collage_mail_subject">Little candy</string>
-    <string name="main_activity_collage_mail_text">Look! I have a nice photo collage here, \
-        special for you!\n\n
-        #gimmecollage</string>
+    <string name="main_activity_collage_mail_text">\n#gimmecollage</string>
     <string name="main_activity_share_chooser">Share via</string>
+
+    <!-- Color picker dialog -->
+    <string name="color_picker_dialog_select">Ok</string>
+    <string name="color_picker_dialog_cancel">Cancel</string>
+    <string name="color_picker_dialog_title">Select background color</string>
 
     <!-- CollageActivity strings -->
     <string name="action_main_share">Share</string>

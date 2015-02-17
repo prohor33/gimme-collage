@@ -5,5 +5,5 @@
             <solid android:color="@color/fab_trash_color" />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_action_trash" android:id="@+id/additional_image" />
+    <item android:drawable="@drawable/ic_fab_trash" android:id="@+id/additional_image" />
 </layer-list>

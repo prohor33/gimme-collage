@@ -1,8 +1,8 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
+import crystal.tech.gimmecollage.utility.ColorPickerDialogFragment;
 
 /**
  * Created by prohor on 07/02/15.
@@ -77,13 +78,13 @@ public class ImageActionButtons {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             buttonTR.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_rotate_left_color));
-            buttonTR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_image_rotate_right));
+            buttonTR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_rotate_right));
             buttonTL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_rotate_left_color));
-            buttonTL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_image_rotate_left));
+            buttonTL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_button_rotate_left));
             buttonBR.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_accept_color));
-            buttonBR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_select_smaller));
+            buttonBR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_ok));
             buttonBL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_settings_color));
-            buttonBL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_settings));
+            buttonBL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_palette));
         }
     }
 
@@ -147,7 +148,13 @@ public class ImageActionButtons {
     }
 
     private void onSettings(View v) {
-        Log.w(TAG, "onSettings() not implemented yet");
+//        Log.w(TAG, "onSettings() not implemented yet");
+
+        // for debug
+        FragmentManager fm = collageActivity.getFragmentManager();
+        ColorPickerDialogFragment colorPickerDialog = new ColorPickerDialogFragment();
+        colorPickerDialog.show(fm, TAG);
+
     }
 
     private void onAccept(View v) {
