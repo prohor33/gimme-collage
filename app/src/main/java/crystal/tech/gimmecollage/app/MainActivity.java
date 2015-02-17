@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+import crystal.tech.gimmecollage.collagemaker.CollageUtils;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
@@ -88,6 +89,9 @@ public class MainActivity extends ActionBarActivity implements
             case R.id.action_save:
                 CollageMaker.deselectAllViews();
                 CollageMaker.saveCollageOnDisk();
+                break;
+            case R.id.action_pick_collage_background_color:
+                CollageUtils.showColorPickerDialog();
                 break;
             case R.id.action_trash:
                 CollageMaker.deselectAllViews();

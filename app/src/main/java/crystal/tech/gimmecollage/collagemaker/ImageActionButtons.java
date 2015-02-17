@@ -148,13 +148,7 @@ public class ImageActionButtons {
     }
 
     private void onSettings(View v) {
-//        Log.w(TAG, "onSettings() not implemented yet");
-
-        // for debug
-        FragmentManager fm = collageActivity.getFragmentManager();
-        ColorPickerDialogFragment colorPickerDialog = new ColorPickerDialogFragment();
-        colorPickerDialog.show(fm, TAG);
-
+        CollageUtils.showColorPickerDialog();
     }
 
     private void onAccept(View v) {

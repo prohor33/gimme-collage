@@ -2,6 +2,7 @@ package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.Utils;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
+import crystal.tech.gimmecollage.utility.ColorPickerDialogFragment;
 import crystal.tech.gimmecollage.utility.ImageLoader;
 import crystal.tech.gimmecollage.utility.SimpleAsyncListener;
 import crystal.tech.gimmecollage.utility.SimpleAsyncTask;
@@ -450,6 +452,12 @@ public class CollageUtils {
 
         // Return the new point
         return newPoint;
+    }
+
+    public static void showColorPickerDialog() {
+        FragmentManager fm = getInstance().mainActivity.getFragmentManager();
+        ColorPickerDialogFragment colorPickerDialog = new ColorPickerDialogFragment();
+        colorPickerDialog.show(fm, "ColorPickerDialogTAG");
     }
 
 }
