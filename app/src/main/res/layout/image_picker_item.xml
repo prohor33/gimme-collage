@@ -14,13 +14,13 @@
         android:layout_height="match_parent"
         android:id="@+id/imageSelectBackground"
         android:alpha="0.5"
-        android:src="@color/black"/>
+        android:src="@color/white"/>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageSelect"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_fab_ok" />
+        android:layout_gravity="start|top"
+        android:src="@drawable/ic_image_picker_select" />
 
 </FrameLayout>
