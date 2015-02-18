@@ -532,6 +532,9 @@ public class CollageMaker {
             return;
         }
 
+        if (CollageUtils.getImageActionButtons().getDisabled())
+            CollageUtils.getImageActionButtons().onRotateLeft((FrameLayout) view);
+
         if (viewData.getSelected()) {
             deselectAllViews();
         } else {

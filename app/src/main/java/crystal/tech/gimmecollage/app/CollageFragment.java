@@ -3,7 +3,9 @@ package crystal.tech.gimmecollage.app;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +16,6 @@ import android.view.ViewGroup;
 import crystal.tech.gimmecollage.ads.Ads;
 import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.collagemaker.CollageUtils;
-import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
 
 import java.io.File;
 
@@ -65,6 +66,12 @@ public class CollageFragment extends Fragment {
         CollageUtils.addFloatingActionButtons(rootView);
         CollageUtils.addCollageTypeSelectorLayout(rootView);
         CollageMaker.initImageViews(rootView);
+
+        // reading settings
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean disable_image_action_buttons =
+                sharedPref.getBoolean("pref_key_disable_image_action_buttons", false);
+        CollageUtils.getImageActionButtons().putDisabled(disable_image_action_buttons);
 
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
