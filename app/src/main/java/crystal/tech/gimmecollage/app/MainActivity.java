@@ -35,6 +35,7 @@ public class MainActivity extends ActionBarActivity implements
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private SimpleDrawerFragment mSimpleDrawerFragment;
+    private boolean mOptionsMenuVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class MainActivity extends ActionBarActivity implements
                 .findFragmentById(R.id.fragment_drawer_right);
         mSimpleDrawerFragment.setup((DrawerLayout) findViewById(R.id.drawer));
 
+        mOptionsMenuVisible = true;
         Application.startMainActivity(MainActivity.this);
     }
 
@@ -74,6 +76,18 @@ public class MainActivity extends ActionBarActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        setMenuItemsVisible(menu, mOptionsMenuVisible);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void setMenuItemsVisible(Menu menu, boolean visible) {
+        for(int i = 0; i < menu.size(); i++) {
+            menu.getItem(i).setVisible(visible);
+        }
     }
 
     @Override
@@ -128,12 +142,18 @@ public class MainActivity extends ActionBarActivity implements
     public void onNavigationDrawerItemSelected(int position) {
         switch (position) {
             case 0:
+                mOptionsMenuVisible = true;
+                invalidateOptionsMenu();
                 startFragment(new CollageFragment().newInstance("", ""));
                 break;
             case 1:
+                mOptionsMenuVisible = false;
+                invalidateOptionsMenu();
                 startFragment(new SettingsFragment());
                 break;
             case 2:
+                mOptionsMenuVisible = false;
+                invalidateOptionsMenu();
                 startFragment(new ReportFragment().newInstance("", ""));
                 break;
             default:
@@ -157,7 +177,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     /* Replace R.id.container for presented fragment. */
-    public void startFragment(Fragment fragment) {
+    private void startFragment(Fragment fragment) {
         getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
     }
 
