@@ -64,6 +64,12 @@ public class CollageMaker {
     private int backgroundColor = R.color.color_picker_dialog_item0;
 
     public enum CollageType {
+        FiveRectanglesTwoSidesAngle,
+        FourRectanglesTwoSidesAngle,
+        FourRectanglesAndSquare,
+        FourSquaresAndRomb,
+        FourSquareTilt,
+        FiveSquares,
         WithAngles1,
         Polygons1,
         Grid,
