@@ -128,5 +128,6 @@
     <string name="report_copyrights">Copyright © 2014-2015 CRYSTAL TECH™\nAll Rights Reserved.</string>
 
     <!-- Settings fragment -->
-    <string name="settings_disable_action_buttons">Disable image action  buttons</string>
+    <string name="pref_action_buttons_title">Disable buttons</string>
+    <string name="pref_action_buttons_summary">Disable image action buttons</string>
 </resources>

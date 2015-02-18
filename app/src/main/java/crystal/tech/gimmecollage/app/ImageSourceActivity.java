@@ -132,8 +132,10 @@ public class ImageSourceActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action buttons
         switch(item.getItemId()) {
+            /*
             case R.id.action_settings:
                 break;
+                */
             default:
                 break;
         }
