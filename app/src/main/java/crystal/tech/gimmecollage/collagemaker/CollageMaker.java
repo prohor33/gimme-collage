@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -343,13 +344,20 @@ public class CollageMaker {
         CollageUtils.getInstance().buildCollage(true);
     }
 
-    public void DrawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
-                                        int index, int selector_height) {
+    public void drawCollageTypeSelector(CollageTypeSelectorImageView ivSelector,
+                                        int index, int selector_size) {
         if (index < 0 || index >= mCollages.size())
             return;
         CollageConfig config = getCollageConf(CollageMaker.CollageType.values()[index]);
         float aspectRatio = config.getCollageAspectRatio();
-        Point sel_size = new Point((int)(selector_height / aspectRatio), selector_height);
+        Point sel_size;
+        if (mainActivity.getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT) {
+            sel_size = new Point((int)(selector_size / aspectRatio), selector_size);
+        } else {
+            sel_size = new Point(selector_size, (int) (selector_size * aspectRatio));
+        }
+
 
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) ivSelector.getLayoutParams();

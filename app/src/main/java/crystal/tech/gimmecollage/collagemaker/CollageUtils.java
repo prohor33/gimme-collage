@@ -265,7 +265,7 @@ public class CollageUtils {
                             R.layout.collage_type_selector_item, llTemplates, false);
             ivSelector.putIndex(i);
             // changing size inside
-            CollageMaker.getInstance().DrawCollageTypeSelector(ivSelector, i, selector_size);
+            CollageMaker.getInstance().drawCollageTypeSelector(ivSelector, i, selector_size);
 
             ivSelector.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
