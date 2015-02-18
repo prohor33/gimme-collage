@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -381,12 +382,26 @@ public class CollageUtils {
     }
     private BitmapDrawable getBMPFromImageViewImpl(ImageView imageView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            RippleDrawable rippleDrawable = (RippleDrawable) imageView.getDrawable();
+            Drawable drawable = imageView.getDrawable();
+            RippleDrawable rippleDrawable;
+
+            if (drawable instanceof RippleDrawable) {
+                rippleDrawable = (RippleDrawable) drawable;
+            } else {
+                return null;
+            }
+
             if (rippleDrawable == null)
                 return null;
             return  (BitmapDrawable) rippleDrawable.getDrawable(0);
         } else {
-            return  (BitmapDrawable) imageView.getDrawable();
+            Drawable drawable = imageView.getDrawable();
+
+            if (drawable instanceof BitmapDrawable) {
+                return (BitmapDrawable) drawable;
+            } else {
+                return null;
+            }
         }
     }
 
