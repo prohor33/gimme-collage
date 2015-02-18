@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
+import crystal.tech.gimmecollage.collagemaker.CollageUtils;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerCallbacks;
 import crystal.tech.gimmecollage.navdrawer.NavigationDrawerFragment;
@@ -49,11 +50,11 @@ public class MainActivity extends ActionBarActivity implements
 
         List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_collage),
-                getResources().getDrawable(R.drawable.ic_image_collage)));
+                getResources().getDrawable(R.drawable.ic_nav_drawer_collage)));
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_settings),
-                getResources().getDrawable(R.drawable.ic_image_settings_applications)));
+                getResources().getDrawable(R.drawable.ic_nav_drawer_settings)));
         navigationItems.add(new NavigationItem(getResources().getString(R.string.drawer_item_report),
-                getResources().getDrawable(R.drawable.ic_image_mail)));
+                getResources().getDrawable(R.drawable.ic_nav_drawer_report)));
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_drawer_left);
@@ -91,6 +92,9 @@ public class MainActivity extends ActionBarActivity implements
             case R.id.action_save:
                 CollageMaker.deselectAllViews();
                 CollageMaker.saveCollageOnDisk();
+                break;
+            case R.id.action_pick_collage_background_color:
+                CollageUtils.showColorPickerDialog();
                 break;
             case R.id.action_trash:
                 CollageMaker.deselectAllViews();

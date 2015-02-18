@@ -7,7 +7,7 @@
                     <solid android:color="@color/design_blue" />
                 </shape>
             </item>
-            <item android:drawable="@drawable/ic_action_select_smaller" android:id="@+id/additional_image" />
+            <item android:drawable="@drawable/ic_action_btn_ok" android:id="@+id/additional_image" />
         </layer-list>
     </item>
 </ripple>

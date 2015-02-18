@@ -7,7 +7,7 @@
                     <solid android:color="@color/image_action_btn_rotate_left_color" />
                 </shape>
             </item>
-            <item android:drawable="@drawable/ic_image_rotate_left" android:id="@+id/additional_image" />
+            <item android:drawable="@drawable/ic_action_button_rotate_left" android:id="@+id/additional_image" />
         </layer-list>
     </item>
 </ripple>

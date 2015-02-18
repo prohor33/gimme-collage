@@ -35,7 +35,7 @@
     <color name="drawer_background_color">#ffffff</color>
     <color name="drawer_selected_gray">#ffeaeaea</color>
 
-    <!--fabs-->
+    <!-- fabs -->
     <color name="fab_ripple_color">#ffffffff</color>
     <color name="fab_trash_color">#757575</color>
 
@@ -47,6 +47,20 @@
 
     <!-- simple drawer -->
     <color name="simple_drawer_ripple_color">#FFFFFF</color>
+
+    <!-- color picker dialog -->
+    <color name="color_picker_dialog_item0">#FFFFFF</color>
+    <color name="color_picker_dialog_item1">#ff02b002</color>
+    <color name="color_picker_dialog_item2">#ff06c4bb</color>
+    <color name="color_picker_dialog_item3">#ff000cc5</color>
+    <color name="color_picker_dialog_item4">#ffdb00ff</color>
+    <color name="color_picker_dialog_item5">#ff6e0035</color>
+    <color name="color_picker_dialog_item6">#ffab1900</color>
+    <color name="color_picker_dialog_item7">#ffe66514</color>
+    <color name="color_picker_dialog_item8">#ffffda00</color>
+    <color name="color_picker_dialog_item9">#ff82ffc0</color>
+    <color name="color_picker_dialog_item10">#ff67676a</color>
+    <color name="color_picker_dialog_item11">#ff000000</color>
 
 
     <!-- Common -->

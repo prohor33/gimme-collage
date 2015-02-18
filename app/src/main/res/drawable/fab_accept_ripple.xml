@@ -5,5 +5,5 @@
             <solid android:color="@color/design_blue" />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_action_select" android:id="@+id/additional_image" />
+    <item android:drawable="@drawable/ic_fab_ok" android:id="@+id/additional_image" />
 </layer-list>

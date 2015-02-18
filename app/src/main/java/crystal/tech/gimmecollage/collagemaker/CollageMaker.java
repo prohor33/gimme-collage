@@ -13,6 +13,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Looper;
@@ -57,8 +59,8 @@ public class CollageMaker {
     private MainActivity mainActivity = null;
     private CollageAnimation collageAnimation =  new CollageAnimation();
     private View rootView = null;
-
     private ArrayList<ImageViewData> imageViewDatas = new ArrayList<>();
+    private int backgroundColor = R.color.color_picker_dialog_item0;
 
     public enum CollageType {
         WithAngles1,
@@ -402,7 +404,7 @@ public class CollageMaker {
         Bitmap collageImage = Bitmap.createBitmap(target_size.x,
                 target_size.y, Bitmap.Config.ARGB_8888);
         Canvas comboCanvas = new Canvas(collageImage);
-        comboCanvas.drawColor(parentActivity.getResources().getColor(R.color.white));
+        comboCanvas.drawColor(parentActivity.getResources().getColor(backgroundColor));
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
             FrameLayout fl = imageViewDatas.get(i).parentFL;
@@ -464,6 +466,14 @@ public class CollageMaker {
 
     public static CollageAnimation getCollageAnimation() {
         return getInstance().collageAnimation;
+    }
+
+    public static void putBackgroundColor(int id) {
+        getInstance().backgroundColor = id;
+        getInstance().updateBackgroundColor();
+    }
+    public static int getBackgroundColor() {
+        return getInstance().backgroundColor;
     }
 
     // private members only ================
@@ -540,6 +550,12 @@ public class CollageMaker {
         for (ImageViewData viewData : imageViewDatas) {
             viewData.putSelected(false);
         }
+    }
+
+    private void updateBackgroundColor() {
+        GradientDrawable gradientDrawable = (GradientDrawable)rlCollage.getBackground();
+        gradientDrawable.setColor(parentActivity.getResources().getColor(backgroundColor));
+//                parentActivity.getResources().getColor(backgroundColor));
     }
 }
 

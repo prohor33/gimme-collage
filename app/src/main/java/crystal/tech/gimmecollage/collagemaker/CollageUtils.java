@@ -2,13 +2,13 @@ package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -34,6 +34,7 @@ import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.Utils;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
+import crystal.tech.gimmecollage.utility.ColorPickerDialogFragment;
 import crystal.tech.gimmecollage.utility.ImageLoader;
 import crystal.tech.gimmecollage.utility.SimpleAsyncListener;
 import crystal.tech.gimmecollage.utility.SimpleAsyncTask;
@@ -202,7 +203,7 @@ public class CollageUtils {
     private void addFloatingActionButtonsImpl(final View rootView) {
         final FloatingActionButton ok_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton0);
         ok_fab.setColor(collageActivity.getResources().getColor(R.color.design_blue));
-        ok_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_select));
+        ok_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_fab_ok));
         ok_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -217,7 +218,7 @@ public class CollageUtils {
         FloatingActionButton save_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton1);
         save_fab.setParentFAB(ok_fab);
         save_fab.setColor(collageActivity.getResources().getColor(R.color.design_yellow));    // maroon
-        save_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_save));
+        save_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_fab_save));
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -229,7 +230,7 @@ public class CollageUtils {
         FloatingActionButton share_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton2);
         share_fab.setParentFAB(ok_fab);
         share_fab.setColor(collageActivity.getResources().getColor(R.color.design_red));
-        share_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_share));
+        share_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_fab_share));
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -240,7 +241,7 @@ public class CollageUtils {
 
         FloatingActionButton trash_fab = (FloatingActionButton)rootView.findViewById(R.id.fabbutton_trash);
         trash_fab.setColor(collageActivity.getResources().getColor(R.color.fab_trash_color));
-        trash_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_trash));
+        trash_fab.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_fab_trash));
         trash_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -340,7 +341,7 @@ public class CollageUtils {
         if (from_network) {
             Picasso.with(mainActivity)
                     .load(dataPath)
-                    .error(R.drawable.ic_content_problem)
+                    .error(R.drawable.ic_load_failed)
                     .into(target);
         } else {
             imageLoader.loadThumbnail(image.id, iv, target);
@@ -451,6 +452,12 @@ public class CollageUtils {
 
         // Return the new point
         return newPoint;
+    }
+
+    public static void showColorPickerDialog() {
+        FragmentManager fm = getInstance().mainActivity.getFragmentManager();
+        ColorPickerDialogFragment colorPickerDialog = new ColorPickerDialogFragment();
+        colorPickerDialog.show(fm, "ColorPickerDialogTAG");
     }
 
 }

@@ -11,9 +11,14 @@
         app:showAsAction="never"
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="101"/>
+    <item android:id="@+id/action_pick_collage_background_color"
+        android:title="@string/action_main_pick_collage_background_color"
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_menu_view"
+        android:orderInCategory="102"/>
     <item android:id="@+id/action_trash"
         android:title="@string/action_main_trash"
         app:showAsAction="never"
         android:icon="@android:drawable/ic_menu_delete"
-        android:orderInCategory="102"/>
+        android:orderInCategory="103"/>
 </menu>

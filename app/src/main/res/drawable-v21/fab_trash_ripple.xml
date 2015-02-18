@@ -12,7 +12,7 @@
                 android:bottom="@dimen/fab_image_margin"
                 android:left="@dimen/fab_image_margin"
                 android:right="@dimen/fab_image_margin"
-                android:drawable="@drawable/ic_action_trash" android:id="@+id/additional_image" />
+                android:drawable="@drawable/ic_fab_trash" android:id="@+id/additional_image" />
         </layer-list>
     </item>
 </ripple>

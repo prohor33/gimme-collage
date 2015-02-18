@@ -17,8 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,7 +67,7 @@ public class ImageSourceActivity extends ActionBarActivity {
     private void populateImageSourceItems(List<ImageSourceItem> items) {
         items.clear();
 
-        items.add(new ImageSourceItem(R.string.image_source_gallery, R.drawable.ic_gallery));
+        items.add(new ImageSourceItem(R.string.image_source_gallery, R.drawable.ic_source_picker_gallery));
         items.add(new ImageSourceItem(R.string.image_source_instagram, R.drawable.ic_instagram));
     }
 

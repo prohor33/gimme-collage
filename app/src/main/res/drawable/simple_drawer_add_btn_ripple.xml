@@ -5,5 +5,5 @@
             <solid android:color="@color/design_blue" />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_content_add_white" />
+    <item android:drawable="@drawable/ic_pull_add_image" />
 </layer-list>
