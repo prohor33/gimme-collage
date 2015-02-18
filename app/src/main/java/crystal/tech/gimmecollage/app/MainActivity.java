@@ -142,18 +142,12 @@ public class MainActivity extends ActionBarActivity implements
     public void onNavigationDrawerItemSelected(int position) {
         switch (position) {
             case 0:
-                mOptionsMenuVisible = true;
-                invalidateOptionsMenu();
                 startFragment(new CollageFragment().newInstance("", ""));
                 break;
             case 1:
-                mOptionsMenuVisible = false;
-                invalidateOptionsMenu();
                 startFragment(new SettingsFragment());
                 break;
             case 2:
-                mOptionsMenuVisible = false;
-                invalidateOptionsMenu();
                 startFragment(new ReportFragment().newInstance("", ""));
                 break;
             default:
@@ -194,5 +188,10 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void onReportInteraction(Uri uri) {
+    }
+
+    public void putOptionsMenuVisibility(boolean visible) {
+        mOptionsMenuVisible = visible;
+        invalidateOptionsMenu();
     }
 }

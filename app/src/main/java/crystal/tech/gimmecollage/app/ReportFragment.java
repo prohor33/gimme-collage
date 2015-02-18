@@ -57,6 +57,10 @@ public class ReportFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        // hide options menu
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.putOptionsMenuVisibility(false);
     }
 
     @Override

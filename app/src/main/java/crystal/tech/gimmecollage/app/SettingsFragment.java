@@ -11,6 +11,10 @@ public class SettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // hide options menu
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.putOptionsMenuVisibility(false);
+
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
     }

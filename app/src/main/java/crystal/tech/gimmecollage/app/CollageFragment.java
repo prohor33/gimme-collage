@@ -62,6 +62,10 @@ public class CollageFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_collage,
                 container, false);
 
+        // show options menu
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.putOptionsMenuVisibility(true);
+
         CollageMaker.init(getActivity(), rootView);
         CollageUtils.addFloatingActionButtons(rootView);
         CollageUtils.addCollageTypeSelectorLayout(rootView);
