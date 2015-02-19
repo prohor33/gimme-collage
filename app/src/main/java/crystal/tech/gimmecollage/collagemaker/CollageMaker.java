@@ -157,6 +157,12 @@ public class CollageMaker {
             });
             final ImageView iv =(ImageView) flImage.findViewById(R.id.ivMain);
             iv.setOnDragListener(new MyDragEventListener());
+
+            // bugfix #46
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2)
+                iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+
             iv.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
