@@ -167,7 +167,7 @@ public class CollageConfig {
                         0.5f + padding - small_slash, size, size, angle));
                 break;
             }
-            case FourSquaresAndRomb: {
+            case FourSquaresAndRhombus: {
                 // add color padding
                 collageAspectRatio = 1.0f;
                 float padding = 0.02f;

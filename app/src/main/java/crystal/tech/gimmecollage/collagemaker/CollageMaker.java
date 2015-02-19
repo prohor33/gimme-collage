@@ -1,10 +1,8 @@
 package crystal.tech.gimmecollage.collagemaker;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,10 +13,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -26,8 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import com.google.android.gms.internal.ma;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +32,6 @@ import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.Application;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
-import crystal.tech.gimmecollage.app.Utils;
 import crystal.tech.gimmecollage.app.view.CollageTypeSelectorImageView;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.utility.OnSwipeTouchListener;
@@ -60,14 +53,14 @@ public class CollageMaker {
     private MainActivity mainActivity = null;
     private CollageAnimation collageAnimation =  new CollageAnimation();
     private View rootView = null;
-    private ArrayList<ImageViewData> imageViewDatas = new ArrayList<>();
+    private ArrayList<ImageViewData> imageViewsData = new ArrayList<>();
     private int backgroundColor = R.color.color_picker_dialog_item0;
 
     public enum CollageType {
         FiveRectanglesTwoSidesAngle,
         FourRectanglesTwoSidesAngle,
         FourRectanglesAndSquare,
-        FourSquaresAndRomb,
+        FourSquaresAndRhombus,
         FourSquareTilt,
         FiveSquares,
         WithAngles1,
@@ -218,9 +211,9 @@ public class CollageMaker {
         rlCollage.setGestureDetector(onSwipeTouchListener.getGestureDetector());
         rlCollage.setOnTouchListener(onSwipeTouchListener);
 
-        imageViewDatas.clear();
+        imageViewsData.clear();
         for (int i = 0; i < rlCollage.getChildCount(); i++) {
-            imageViewDatas.add(new ImageViewData(rlCollage.getChildAt(i), i));
+            imageViewsData.add(new ImageViewData(rlCollage.getChildAt(i), i));
         }
 
         ViewTreeObserver vto = rlCollage.getViewTreeObserver();
@@ -247,10 +240,10 @@ public class CollageMaker {
     }
 
     public int getAllImageViewCount() {
-        return imageViewDatas.size();
+        return imageViewsData.size();
     }
     public FrameLayout getImageFL(int index) {
-        return (FrameLayout) imageViewDatas.get(index).parentFL;
+        return (FrameLayout) imageViewsData.get(index).parentFL;
     }
 
     public static ImageViewData getViewDataByFLView(View v) {
@@ -258,7 +251,7 @@ public class CollageMaker {
     }
     private ImageViewData getViewDataByFLViewImpl(View v) {
         int index = getIndexByFLView(v);
-        return imageViewDatas.get(index);
+        return imageViewsData.get(index);
     }
 
     public static int getIndexByFLView(View v) {
@@ -266,8 +259,8 @@ public class CollageMaker {
     }
     private int getIndexByFLViewImpl(View v) {
         // TODO: improve data structure to make search faster?
-        for (int i = 0; i < imageViewDatas.size(); i++) {
-            if (imageViewDatas.get(i).parentFL == v)
+        for (int i = 0; i < imageViewsData.size(); i++) {
+            if (imageViewsData.get(i).parentFL == v)
                 return i;
         }
         return -1;
@@ -286,22 +279,22 @@ public class CollageMaker {
     }
     private void updateImageDataImpl() {
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            View v = imageViewDatas.get(i).parentFL;
+            View v = imageViewsData.get(i).parentFL;
             ImageView iv = (ImageView)v.findViewById(R.id.ivMain);
             ImageStorage.fillCollageView(iv, i);
         }
     }
 
     public int getVisibleImageCount() {
-        return Math.min(imageViewDatas.size(), getCollageConf().getPhotoCount());
+        return Math.min(imageViewsData.size(), getCollageConf().getPhotoCount());
     }
 
     public void updateViewPosition(int i) {
-        if (i >= imageViewDatas.size()) {
-            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + imageViewDatas.size());
+        if (i >= imageViewsData.size()) {
+            Log.e(TAG, "Error: updateViewPosition: i = " + i + "size = " + imageViewsData.size());
             return;
         }
-        final View v = imageViewDatas.get(i).parentFL;
+        final View v = imageViewsData.get(i).parentFL;
 
         PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
         PointF p = new PointF(collageSize.x * photoPos.p.x, collageSize.y * photoPos.p.y);
@@ -421,7 +414,7 @@ public class CollageMaker {
         comboCanvas.drawColor(parentActivity.getResources().getColor(backgroundColor));
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
-            FrameLayout fl = imageViewDatas.get(i).parentFL;
+            FrameLayout fl = imageViewsData.get(i).parentFL;
             ImageView iv = (ImageView) fl.findViewById(R.id.ivMain);
             PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
             ImageData imageData = ImageStorage.getCollageImage(i);
@@ -490,6 +483,15 @@ public class CollageMaker {
         return getInstance().backgroundColor;
     }
 
+    public static void clearViewsData() {
+        getInstance().clearViewsDataImpl();
+    }
+    private void clearViewsDataImpl() {
+        for (ImageViewData data : imageViewsData) {
+            data.clearView();
+        }
+    }
+
     // private members only ================
 
     private void updateCollageLayoutSize() {
@@ -516,8 +518,8 @@ public class CollageMaker {
     }
 
     private void prepareImages() {
-        for (int i = 0; i < imageViewDatas.size(); i++) {
-            View iv = imageViewDatas.get(i).parentFL;
+        for (int i = 0; i < imageViewsData.size(); i++) {
+            View iv = imageViewsData.get(i).parentFL;
 
             if (i < getCollageConf().getPhotoCount()) {
                 iv.setVisibility(View.VISIBLE);
@@ -564,7 +566,7 @@ public class CollageMaker {
     }
     private void deselectAllViewsImpl() {
         collageAnimation.dischargeAllSelection();
-        for (ImageViewData viewData : imageViewDatas) {
+        for (ImageViewData viewData : imageViewsData) {
             viewData.putSelected(false);
         }
     }

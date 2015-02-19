@@ -80,4 +80,10 @@ public class ImageViewData {
     public static View getParentFLByIV(ImageView iv) {
         return (View) iv.getParent().getParent();   // it's FrameLayout, actually
     }
+
+    public void clearView() {
+        finishLoading();
+        putSelected(false);
+        loadedDataHash = -1;
+    }
 }

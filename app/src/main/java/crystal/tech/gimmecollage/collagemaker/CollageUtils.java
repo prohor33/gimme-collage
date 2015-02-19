@@ -248,6 +248,7 @@ public class CollageUtils {
             public void onClick(View view) {
                 CollageMaker.deselectAllViews();
                 ImageStorage.ClearAll();
+                CollageMaker.clearViewsData();
             }
         });
     }
