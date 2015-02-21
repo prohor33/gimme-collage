@@ -125,7 +125,7 @@ public class MyDragEventListener implements View.OnDragListener {
     void onDragOverBegin(ImageView iv) {
         iv.setColorFilter(iv.getResources().getColor(R.color.collage_image_drag_sel_clr),
                 PorterDuff.Mode.MULTIPLY);
-        iv.setBackgroundResource(R.drawable.collage_image_back);
+        iv.setBackgroundResource(R.drawable.collage_image_second_back);
         iv.invalidate();
     }
 

@@ -158,11 +158,6 @@ public class CollageMaker {
             final ImageView iv =(ImageView) flImage.findViewById(R.id.ivMain);
             iv.setOnDragListener(new MyDragEventListener());
 
-            // bugfix #46
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2)
-                iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-
             iv.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -278,6 +273,14 @@ public class CollageMaker {
         for (int i = 0; i < getVisibleImageCount(); i++) {
             updateViewPosition(i);
         }
+
+        updateViewsFrames();
+    }
+
+    public void updateViewsFrames() {
+        for (int i = 0; i < getVisibleImageCount(); i++) {
+            updateViewFrame(i);
+        }
     }
 
     public static void updateImageData() {
@@ -286,9 +289,18 @@ public class CollageMaker {
     private void updateImageDataImpl() {
         for (int i = 0; i < getVisibleImageCount(); i++) {
             View v = imageViewsData.get(i).parentFL;
-            ImageView iv = (ImageView)v.findViewById(R.id.ivMain);
-            ImageStorage.fillCollageView(iv, i);
+            ImageView iv = (ImageView) v.findViewById(R.id.ivMain);
+
+            ImageData image = ImageStorage.getCollageImage(i);
+            if (image == null) {
+                iv.setImageDrawable(null);
+                continue; // not so many photos available
+            }
+            ImageViewData viewData = getViewDataByFLViewImpl(ImageViewData.getParentFLByIV(iv));
+            CollageUtils.fillView(iv, image, viewData, image.fromNetwork);
         }
+
+        updateViewsFrames();
     }
 
     public int getVisibleImageCount() {
@@ -325,6 +337,39 @@ public class CollageMaker {
         params.bottomMargin = collageSize.y - start.y - size.y;
         v.setLayoutParams(params);
         v.setRotation(photoPos.angle);
+
+        // bug fix #46
+        ImageView iv =(ImageView) v.findViewById(R.id.ivMain);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (photoPos.angle != 0) {
+                iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            } else {
+                iv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
+        }
+    }
+
+    public void updateViewFrame(int i) {
+        if (i >= imageViewsData.size()) {
+            Log.e(TAG, "Error: updateViewFrame: i = " + i + "size = " + imageViewsData.size());
+            return;
+        }
+        final View v = imageViewsData.get(i).parentFL;
+        PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
+
+        boolean empty_view = ImageStorage.getCollageImage(i) == null;
+        boolean frame = photoPos.frame && !empty_view;
+
+        View rippleView = v.findViewById(R.id.rippleView);
+        int frame_width = frame ? mainActivity.getResources().
+                getDimensionPixelOffset(R.dimen.collage_iv_back_padding) : 0;
+
+        GradientDrawable backShape = (GradientDrawable)
+                mainActivity.getResources().getDrawable(R.drawable.collage_image_back);
+        backShape.setColor(mainActivity.getResources().getColor(getBackgroundColor()));
+
+        rippleView.setBackgroundDrawable(frame ? backShape : null);
+        rippleView.setPadding(frame_width, frame_width, frame_width, frame_width);
     }
 
     public void updateViewPosition(View v) {
@@ -463,13 +508,25 @@ public class CollageMaker {
 
             // crop square in center
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, img_t_size.x, img_t_size.y);
+            final int frame_w = photoPos.frame ? mainActivity.getResources().
+                    getDimensionPixelOffset(R.dimen.collage_iv_back_padding) : 0;
+            bitmap = Bitmap.createScaledBitmap(bitmap, place_size.x - 2 * frame_w,
+                    place_size.y - 2 * frame_w, true);
+
+            if (photoPos.frame) {
+                // prepare frame bitmap
+                Bitmap frameImage = Bitmap.createBitmap(place_size.x, place_size.y, Bitmap.Config.ARGB_8888);
+                Canvas frameCanvas = new Canvas(frameImage);
+                frameCanvas.drawColor(parentActivity.getResources().getColor(backgroundColor));
+                frameCanvas.drawBitmap(bitmap, frame_w, frame_w, new Paint(Paint.FILTER_BITMAP_FLAG));
+                bitmap = frameImage;
+            }
 
             PointF p = new PointF(target_size.x * photoPos.p.x, target_size.y * photoPos.p.y);
             Matrix transform = new Matrix();
             transform.setTranslate(p.x, p.y);
             transform.postRotate(photoPos.angle, p.x, p.y);
-            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, place_size.x, place_size.y, true),
-                    transform, new Paint(Paint.FILTER_BITMAP_FLAG));
+            comboCanvas.drawBitmap(bitmap, transform, new Paint(Paint.FILTER_BITMAP_FLAG));
         }
 
         Log.v(TAG, "Collage is successfully generated!");
@@ -580,7 +637,7 @@ public class CollageMaker {
     private void updateBackgroundColor() {
         GradientDrawable gradientDrawable = (GradientDrawable)rlCollage.getBackground();
         gradientDrawable.setColor(parentActivity.getResources().getColor(backgroundColor));
-//                parentActivity.getResources().getColor(backgroundColor));
+        updateViewsFrames();
     }
 }
 

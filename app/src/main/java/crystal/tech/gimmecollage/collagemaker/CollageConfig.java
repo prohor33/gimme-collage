@@ -13,6 +13,7 @@ import crystal.tech.gimmecollage.collagemaker.CollageMaker.CollageType;
 
 public class CollageConfig {
     private static final String TAG = "CollageConfig";
+    private static final boolean FRAME = true;
 
     private ArrayList<PhotoPosition> m_vPhotoPos = new ArrayList<PhotoPosition>();
     private float collageAspectRatio = 1.0f; // height / width
@@ -130,14 +131,13 @@ public class CollageConfig {
                 collageAspectRatio = 1.2f;
                 float s_x = 0.6f;
                 float s_y = s_x / collageAspectRatio;
-                m_vPhotoPos.add(new PhotoPosition(0.3f, 0.1f, s_x, s_y, 35.0f));
-                m_vPhotoPos.add(new PhotoPosition(0.4f, 0.1f, s_x, s_y, -25.0f));
-                m_vPhotoPos.add(new PhotoPosition(0.3f, 0.55f, s_x, s_y, 25.0f));
-                m_vPhotoPos.add(new PhotoPosition(0.4f, 0.55f, s_x, s_y, -30.0f));
+                m_vPhotoPos.add(new PhotoPosition(0.3f, 0.1f, s_x, s_y, 35.0f, FRAME));
+                m_vPhotoPos.add(new PhotoPosition(0.4f, 0.1f, s_x, s_y, -25.0f, FRAME));
+                m_vPhotoPos.add(new PhotoPosition(0.3f, 0.55f, s_x, s_y, 25.0f, FRAME));
+                m_vPhotoPos.add(new PhotoPosition(0.4f, 0.55f, s_x, s_y, -30.0f, FRAME));
                 break;
             }
             case FiveSquares: {
-                // add color padding
                 collageAspectRatio = 1.0f;
                 float padding = 0.02f;
                 float size_big = (1.0f - padding * 3) / 2.0f;
@@ -147,7 +147,7 @@ public class CollageConfig {
                 m_vPhotoPos.add(new PhotoPosition(padding * 2 + size_big, padding, size_big, size_big));
                 m_vPhotoPos.add(new PhotoPosition(padding * 2 + size_big, padding * 2 + size_big, size_big, size_big));
                 m_vPhotoPos.add(new PhotoPosition(padding, padding * 2 + size_big, size_big, size_big));
-                m_vPhotoPos.add(new PhotoPosition(start_small, start_small, size_small, size_small));
+                m_vPhotoPos.add(new PhotoPosition(start_small, start_small, size_small, size_small, 0.0f, FRAME));
                 break;
             }
             case FourSquareTilt: {
@@ -168,7 +168,6 @@ public class CollageConfig {
                 break;
             }
             case FourSquaresAndRhombus: {
-                // add color padding
                 collageAspectRatio = 1.0f;
                 float padding = 0.02f;
                 float size_big = (1.0f - padding * 3) / 2.0f;
@@ -178,7 +177,7 @@ public class CollageConfig {
                 m_vPhotoPos.add(new PhotoPosition(padding * 2 + size_big, padding, size_big, size_big));
                 m_vPhotoPos.add(new PhotoPosition(padding * 2 + size_big, padding * 2 + size_big, size_big, size_big));
                 m_vPhotoPos.add(new PhotoPosition(padding, padding * 2 + size_big, size_big, size_big));
-                m_vPhotoPos.add(new PhotoPosition(0.5f, start_small, size_small, size_small, 45.0f));
+                m_vPhotoPos.add(new PhotoPosition(0.5f, start_small, size_small, size_small, 45.0f, FRAME));
                 break;
             }
             case FourRectanglesAndSquare: {
@@ -197,29 +196,27 @@ public class CollageConfig {
                 break;
             }
             case FourRectanglesTwoSidesAngle: {
-                // add color padding
                 collageAspectRatio = 1.0f;
                 PointF size1 = new PointF(0.56f, 0.43f);
                 PointF size2 = new PointF(0.43f, 0.55f);
                 float angle = 5.0f;
 
-                m_vPhotoPos.add(new PhotoPosition(0.02f, 0.06f, size1.x, size1.y, -angle)); // 1 (left top)
-                m_vPhotoPos.add(new PhotoPosition(0.015f, 0.435f, size2.x, size2.y, -angle)); // 2
-                m_vPhotoPos.add(new PhotoPosition(0.56f, 0.02f, size2.x, size2.y, angle));  // 4
-                m_vPhotoPos.add(new PhotoPosition(0.42f, 0.51f, size1.x, size1.y, angle));   // 3
+                m_vPhotoPos.add(new PhotoPosition(0.02f, 0.06f, size1.x, size1.y, -angle, FRAME)); // 1 (left top)
+                m_vPhotoPos.add(new PhotoPosition(0.015f, 0.435f, size2.x, size2.y, -angle, FRAME)); // 2
+                m_vPhotoPos.add(new PhotoPosition(0.56f, 0.02f, size2.x, size2.y, angle, FRAME));  // 4
+                m_vPhotoPos.add(new PhotoPosition(0.42f, 0.51f, size1.x, size1.y, angle, FRAME));   // 3
 
                 break;
             }
             case FiveRectanglesTwoSidesAngle: {
-                // add color padding
                 collageAspectRatio = 1.0f;
                 float angle = 5.0f;
 
-                m_vPhotoPos.add(new PhotoPosition(0.68f, 0.03f, 0.31f, 0.37f, angle)); // 1 (left right)
-                m_vPhotoPos.add(new PhotoPosition(0.35f, 0.03f, 0.31f, 0.37f, 0.0f)); // 2
-                m_vPhotoPos.add(new PhotoPosition(0.03f, 0.06f, 0.31f, 0.37f, -angle)); // 3
-                m_vPhotoPos.add(new PhotoPosition(0.03f, 0.41f, 0.45f, 0.57f, -angle)); // 4
-                m_vPhotoPos.add(new PhotoPosition(0.53f, 0.38f, 0.45f, 0.57f, angle)); // 5
+                m_vPhotoPos.add(new PhotoPosition(0.68f, 0.03f, 0.31f, 0.37f, angle, FRAME)); // 1 (left right)
+                m_vPhotoPos.add(new PhotoPosition(0.35f, 0.03f, 0.31f, 0.37f, 0.0f, FRAME)); // 2
+                m_vPhotoPos.add(new PhotoPosition(0.03f, 0.06f, 0.31f, 0.37f, -angle, FRAME)); // 3
+                m_vPhotoPos.add(new PhotoPosition(0.03f, 0.41f, 0.45f, 0.57f, -angle, FRAME)); // 4
+                m_vPhotoPos.add(new PhotoPosition(0.53f, 0.38f, 0.45f, 0.57f, angle, FRAME)); // 5
 
                 break;
             }

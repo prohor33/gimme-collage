@@ -3,21 +3,14 @@ package crystal.tech.gimmecollage.collagemaker;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import crystal.tech.gimmecollage.app.MainActivity;
-import crystal.tech.gimmecollage.app.R;
 
 /**
  * Created by prohor on 29/01/15.
@@ -72,13 +65,12 @@ public class ImageStorage {
     }
 
     public static ImageData getPullImage(int i) {
-        return getInstance().getPullImageByIndex(i);
+        return getInstance().getPullImageImpl(i);
     }
 
     public static ImageData getCollageImage(int i) {
-        return getInstance().getCollageImageByIndex(i);
+        return getInstance().getCollageImageImpl(i);
     }
-
 
     public static void putMainActivity(MainActivity activity) {
         getInstance().mainActivity = activity;
@@ -94,21 +86,8 @@ public class ImageStorage {
     private void fillPullViewImpl(ImageView iv, int i) {
         if (i >= pullImages.size())
             return;
-        ImageData image = getPullImageByIndex(i);
+        ImageData image = getPullImageImpl(i);
         CollageUtils.fillView(iv, image, null, image.fromNetwork);
-    }
-
-    public static void fillCollageView(ImageView iv, int i) {
-        getInstance().fillCollageViewImpl(iv, i);
-    }
-    private void fillCollageViewImpl(ImageView iv, int i) {
-        ImageData image = getCollageImageByIndex(i);
-        if (image == null) {
-            iv.setImageDrawable(null);
-            return; // not so many photos available
-        }
-        ImageViewData viewData = CollageMaker.getViewDataByFLView(ImageViewData.getParentFLByIV(iv));
-        CollageUtils.fillView(iv, image, viewData, image.fromNetwork);
     }
 
     // return true if some images where moved to collage
@@ -144,7 +123,7 @@ public class ImageStorage {
             Log.e(TAG, "trying drop to nowhere");
             return;
         }
-        ImageData pullImageData = getPullImageByIndex(pullIndex, true);
+        ImageData pullImageData = getPullImage(pullIndex, true);
         ImageData collageImageData = replaceCollageImageByIndex(collageIndex, pullImageData);
         addImageToPull(collageImageData);
 
@@ -184,11 +163,11 @@ public class ImageStorage {
 
     // private members only ==========
 
-    private ImageData getPullImageByIndex(int index) {
-        return getPullImageByIndex(index, false);
+    private ImageData getPullImageImpl(int index) {
+        return getPullImage(index, false);
     }
 
-    private ImageData getPullImageByIndex(int index, boolean remove) {
+    private ImageData getPullImage(int index, boolean remove) {
         if (index >= pullImagesOrder.size())
             return null;
         Integer id = pullImagesOrder.get(index);
@@ -198,11 +177,11 @@ public class ImageStorage {
         return imageData;
     }
 
-    private ImageData getCollageImageByIndex(int index) {
-        return getCollageImageByIndex(index, false);
+    private ImageData getCollageImageImpl(int index) {
+        return getCollageImage(index, false);
     }
 
-    private ImageData getCollageImageByIndex(int index, boolean remove) {
+    private ImageData getCollageImage(int index, boolean remove) {
         if (index >= collageImagesOrder.size())
             return null;
         int id = collageImagesOrder.get(index);
@@ -238,12 +217,12 @@ public class ImageStorage {
 
     // removing
     private ImageData grabPullImage() {
-        return getPullImageByIndex(0, true);
+        return getPullImage(0, true);
     }
 
     // removing
     private ImageData grabCollageImage() {
-        return getCollageImageByIndex(collageImagesOrder.size() - 1, true);
+        return getCollageImage(collageImagesOrder.size() - 1, true);
     }
 
     private void removePullImage(Integer id) {
