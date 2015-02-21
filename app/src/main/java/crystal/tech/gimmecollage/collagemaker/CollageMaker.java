@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.ThumbnailUtils;
@@ -416,9 +417,9 @@ public class CollageMaker {
         ivSelector.setLayoutParams(layoutParams);
 
         final int selector_padding = sel_size.y / 20;
+        ivSelector.putPadding(selector_padding);
         sel_size.x -= selector_padding * 2;
         sel_size.y -= selector_padding * 2;
-        Matrix transform = new Matrix();
         for (int i = 0; i < config.getPhotoCount(); i++) {
             PhotoPosition photo_pos = config.getPhotoPos(i);
 
@@ -431,27 +432,10 @@ public class CollageMaker {
             size.x *= sel_size.x;
             size.y *= sel_size.y;
 
-            // rotate point
-            transform.setRotate(photo_pos.angle, p.x, p.y);
-            PointF p1 = CollageUtils.applyMatrix(p, transform);
-            PointF p2 = CollageUtils.applyMatrix(new PointF(p.x + size.x, p.y), transform);
-            PointF p3 = CollageUtils.applyMatrix(new PointF(p.x + size.x,
-                    p.y + size.y), transform);
-            PointF p4 = CollageUtils.applyMatrix(new PointF(p.x, p.y + size.y), transform);
+            Rect rect = new Rect((int)(p.x), (int)(p.y),
+                    (int)(p.x + size.x), (int)(p.y + size.y));
 
-            p1.x += selector_padding;
-            p1.y += selector_padding;
-            p2.x += selector_padding;
-            p2.y += selector_padding;
-            p3.x += selector_padding;
-            p3.y += selector_padding;
-            p4.x += selector_padding;
-            p4.y += selector_padding;
-
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p1, p2));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p2, p3));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p3, p4));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p4, p1));
+            ivSelector.AddRect(new CollageTypeSelectorImageView.RotatedRect(rect, photo_pos.angle));
         }
     }
 
