@@ -81,7 +81,7 @@ public class CollageMaker {
     }
 
     private CollageMaker() {
-        eType = CollageType.WithAngles1; // by default
+        eType = CollageType.FiveRectanglesTwoSidesAngle; // by default
         mCollages = new HashMap<>();
         for (CollageType type : CollageType.values()) {
             mCollages.put(type, new CollageConfig(type));
