@@ -28,6 +28,11 @@ public class ReportFragment extends Fragment {
 
     private OnReportFragmentInteractionListener mListener;
 
+    // Report text
+    private static final String STATE_REPORT_MESSAGE = "reportMessage";
+    String mReportString;
+    EditText mEditText;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -69,6 +74,7 @@ public class ReportFragment extends Fragment {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_report, container, false);
         final EditText editTextReport = (EditText) rootView.findViewById(R.id.editTextReport);
+        mEditText = editTextReport;
 
         Button reportButton = (Button) rootView.findViewById(R.id.buttonReport);
         reportButton.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +93,34 @@ public class ReportFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState != null) {
+            if(mReportString == null || mReportString.isEmpty())
+                mReportString = savedInstanceState.getString(STATE_REPORT_MESSAGE);
+        } else {
+            if(mReportString == null)
+                mReportString = "";
+        }
+
+        Log.d(TAG, "OnActivityCreated(): " + mReportString);
+    }
+
+    @Override
+    public void onResume() {
+        mEditText.setText(mReportString);
+        Log.d(TAG, "onResume(): " + mReportString);
+        super.onResume();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(STATE_REPORT_MESSAGE, "Super saved text!");
+        super.onSaveInstanceState(outState);
     }
 
 //    @Override

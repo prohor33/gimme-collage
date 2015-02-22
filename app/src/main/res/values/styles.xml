@@ -35,6 +35,7 @@
              in the Toolbar, in the Theme.AppCompat theme:  -->
         <item name="android:textColorPrimary">@color/toolbar_text</item>
 
+
         <!-- android:textColorPrimaryInverse is the  color of the title
              text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
         <!-- <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_light</item> -->
