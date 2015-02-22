@@ -83,7 +83,7 @@ public class ImageActionButtons {
             buttonTL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_button_rotate_left));
             buttonBR.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_accept_color));
             buttonBR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_ok));
-            buttonBL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_settings_color));
+            buttonBL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_pallet_color));
             buttonBL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_palette));
         }
     }
