@@ -63,6 +63,20 @@ public class ComplexImageItem {
         }
     }
 
+    public static long[] GenerateIdsArray(List<ComplexImageItem> list) {
+        long[] array = new long[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i).id;
+        }
+        return array;
+    }
+
+    public static void RestoreIdsFromArray(List<ComplexImageItem> list, long[] array) {
+        for(int i = 0; i < array.length; i++) {
+            list.get(i).setId(array[i]);
+        }
+    }
+
     public static String[] GenerateThumbnailsArray(List<ComplexImageItem> list) {
         String[] array = new String[list.size()];
         for(int i = 0; i < list.size(); i++) {

@@ -51,6 +51,7 @@ public class ImagePickerActivity extends ActionBarActivity
 
     static final String STATE_SELECTED_NUM = "selectedNum";
     static final String STATE_SELECTED_IMAGES = "selectedImages";
+    static final String STATE_SELECTED_IDS = "selectedIds";
     static final String STATE_SELECTED_THUMBNAILS = "selectedThumbnails";
     static final String STATE_SELECTED_SELECTED = "selectedSeleted";
 
@@ -91,6 +92,8 @@ public class ImagePickerActivity extends ActionBarActivity
             }
             ComplexImageItem.RestoreImagesFromArray(mSelectedItems,
                     savedInstanceState.getStringArray(STATE_SELECTED_IMAGES));
+            ComplexImageItem.RestoreIdsFromArray(mSelectedItems,
+                    savedInstanceState.getLongArray(STATE_SELECTED_IDS));
             ComplexImageItem.RestoreThumbnailsFromArray(mSelectedItems,
                     savedInstanceState.getStringArray(STATE_SELECTED_THUMBNAILS));
             ComplexImageItem.RestoreSelectedFromArray(mSelectedItems,
@@ -503,6 +506,8 @@ public class ImagePickerActivity extends ActionBarActivity
         savedInstanceState.putInt(STATE_SELECTED_NUM, mSelectedItems.size());
         savedInstanceState.putStringArray(STATE_SELECTED_IMAGES,
                 ComplexImageItem.GenerateImagesArray(mSelectedItems));
+        savedInstanceState.putLongArray(STATE_SELECTED_IDS,
+                ComplexImageItem.GenerateIdsArray(mSelectedItems));
         savedInstanceState.putStringArray(STATE_SELECTED_THUMBNAILS,
                 ComplexImageItem.GenerateThumbnailsArray(mSelectedItems));
         savedInstanceState.putBooleanArray(STATE_SELECTED_SELECTED,
