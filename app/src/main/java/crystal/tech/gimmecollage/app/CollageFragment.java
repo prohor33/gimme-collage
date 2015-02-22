@@ -92,10 +92,7 @@ public class CollageFragment extends Fragment {
 
         if (Settings.showAds) {
             if (Ads.ShowInterstitial()) {
-                GoogleAnalyticsUtils.SendEvent(getActivity(),
-                        R.string.ga_event_category_see_interstitial_back_to_main_activity,
-                        R.string.ga_event_action_see_interstitial_back_to_main_activity,
-                        R.string.ga_event_label_see_interstitial_back_to_main_activity);
+                GoogleAnalyticsUtils.trackShowInterstitialWhenBackToMainActivity(getActivity());
             }
         }
 

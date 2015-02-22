@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.ThumbnailUtils;
@@ -81,7 +82,7 @@ public class CollageMaker {
     }
 
     private CollageMaker() {
-        eType = CollageType.WithAngles1; // by default
+        eType = CollageType.FiveRectanglesTwoSidesAngle; // by default
         mCollages = new HashMap<>();
         for (CollageType type : CollageType.values()) {
             mCollages.put(type, new CollageConfig(type));
@@ -157,6 +158,7 @@ public class CollageMaker {
             });
             final ImageView iv =(ImageView) flImage.findViewById(R.id.ivMain);
             iv.setOnDragListener(new MyDragEventListener());
+
             iv.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -272,6 +274,14 @@ public class CollageMaker {
         for (int i = 0; i < getVisibleImageCount(); i++) {
             updateViewPosition(i);
         }
+
+        updateViewsFrames();
+    }
+
+    public void updateViewsFrames() {
+        for (int i = 0; i < getVisibleImageCount(); i++) {
+            updateViewFrame(i);
+        }
     }
 
     public static void updateImageData() {
@@ -280,9 +290,18 @@ public class CollageMaker {
     private void updateImageDataImpl() {
         for (int i = 0; i < getVisibleImageCount(); i++) {
             View v = imageViewsData.get(i).parentFL;
-            ImageView iv = (ImageView)v.findViewById(R.id.ivMain);
-            ImageStorage.fillCollageView(iv, i);
+            ImageView iv = (ImageView) v.findViewById(R.id.ivMain);
+
+            ImageData image = ImageStorage.getCollageImage(i);
+            if (image == null) {
+                iv.setImageDrawable(null);
+                continue; // not so many photos available
+            }
+            ImageViewData viewData = getViewDataByFLViewImpl(ImageViewData.getParentFLByIV(iv));
+            CollageUtils.fillView(iv, image, viewData, image.fromNetwork);
         }
+
+        updateViewsFrames();
     }
 
     public int getVisibleImageCount() {
@@ -319,6 +338,39 @@ public class CollageMaker {
         params.bottomMargin = collageSize.y - start.y - size.y;
         v.setLayoutParams(params);
         v.setRotation(photoPos.angle);
+
+        // bug fix #46
+        ImageView iv =(ImageView) v.findViewById(R.id.ivMain);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (photoPos.angle != 0) {
+                iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            } else {
+                iv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
+        }
+    }
+
+    public void updateViewFrame(int i) {
+        if (i >= imageViewsData.size()) {
+            Log.e(TAG, "Error: updateViewFrame: i = " + i + "size = " + imageViewsData.size());
+            return;
+        }
+        final View v = imageViewsData.get(i).parentFL;
+        PhotoPosition photoPos = getCollageConf().getPhotoPos(i);
+
+        boolean empty_view = ImageStorage.getCollageImage(i) == null;
+        boolean frame = photoPos.frame && !empty_view;
+
+        View rippleView = v.findViewById(R.id.rippleView);
+        int frame_width = frame ? mainActivity.getResources().
+                getDimensionPixelOffset(R.dimen.collage_iv_back_padding) : 0;
+
+        GradientDrawable backShape = (GradientDrawable)
+                mainActivity.getResources().getDrawable(R.drawable.collage_image_back);
+        backShape.setColor(mainActivity.getResources().getColor(getBackgroundColor()));
+
+        rippleView.setBackgroundDrawable(frame ? backShape : null);
+        rippleView.setPadding(frame_width, frame_width, frame_width, frame_width);
     }
 
     public void updateViewPosition(View v) {
@@ -326,20 +378,10 @@ public class CollageMaker {
     }
 
     public static void saveCollageOnDisk() {
-        GoogleAnalyticsUtils.SendEvent(getInstance().parentActivity,
-                R.string.ga_event_category_save_via_fab,
-                R.string.ga_event_action_save_via_fab,
-                R.string.ga_event_label_save_via_fab);
-
         CollageUtils.getInstance().buildCollage(false);
     }
 
     public static void shareCollage() {
-        GoogleAnalyticsUtils.SendEvent(getInstance().parentActivity,
-                R.string.ga_event_category_share_via_fab,
-                R.string.ga_event_action_share_via_fab,
-                R.string.ga_event_label_share_via_fab);
-
         CollageUtils.getInstance().buildCollage(true);
     }
 
@@ -365,9 +407,9 @@ public class CollageMaker {
         ivSelector.setLayoutParams(layoutParams);
 
         final int selector_padding = sel_size.y / 20;
+        ivSelector.putPadding(selector_padding);
         sel_size.x -= selector_padding * 2;
         sel_size.y -= selector_padding * 2;
-        Matrix transform = new Matrix();
         for (int i = 0; i < config.getPhotoCount(); i++) {
             PhotoPosition photo_pos = config.getPhotoPos(i);
 
@@ -380,31 +422,15 @@ public class CollageMaker {
             size.x *= sel_size.x;
             size.y *= sel_size.y;
 
-            // rotate point
-            transform.setRotate(photo_pos.angle, p.x, p.y);
-            PointF p1 = CollageUtils.applyMatrix(p, transform);
-            PointF p2 = CollageUtils.applyMatrix(new PointF(p.x + size.x, p.y), transform);
-            PointF p3 = CollageUtils.applyMatrix(new PointF(p.x + size.x,
-                    p.y + size.y), transform);
-            PointF p4 = CollageUtils.applyMatrix(new PointF(p.x, p.y + size.y), transform);
+            Rect rect = new Rect((int)(p.x), (int)(p.y),
+                    (int)(p.x + size.x), (int)(p.y + size.y));
 
-            p1.x += selector_padding;
-            p1.y += selector_padding;
-            p2.x += selector_padding;
-            p2.y += selector_padding;
-            p3.x += selector_padding;
-            p3.y += selector_padding;
-            p4.x += selector_padding;
-            p4.y += selector_padding;
-
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p1, p2));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p2, p3));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p3, p4));
-            ivSelector.AddLine(new CollageTypeSelectorImageView.Line(p4, p1));
+            ivSelector.AddRect(new CollageTypeSelectorImageView.RotatedRect(rect, photo_pos.angle));
         }
     }
 
     public Bitmap GenerateCollageImage() {
+
         float aspect_ratio = getCollageConf().getCollageAspectRatio();
         final int bmp_pxl_size = 1024;
         final Point target_size = new Point(bmp_pxl_size, (int)(bmp_pxl_size * aspect_ratio));
@@ -457,13 +483,25 @@ public class CollageMaker {
 
             // crop square in center
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, img_t_size.x, img_t_size.y);
+            final int frame_w = photoPos.frame ? mainActivity.getResources().
+                    getDimensionPixelOffset(R.dimen.collage_iv_back_padding) : 0;
+            bitmap = Bitmap.createScaledBitmap(bitmap, place_size.x - 2 * frame_w,
+                    place_size.y - 2 * frame_w, true);
+
+            if (photoPos.frame) {
+                // prepare frame bitmap
+                Bitmap frameImage = Bitmap.createBitmap(place_size.x, place_size.y, Bitmap.Config.ARGB_8888);
+                Canvas frameCanvas = new Canvas(frameImage);
+                frameCanvas.drawColor(parentActivity.getResources().getColor(backgroundColor));
+                frameCanvas.drawBitmap(bitmap, frame_w, frame_w, new Paint(Paint.FILTER_BITMAP_FLAG));
+                bitmap = frameImage;
+            }
 
             PointF p = new PointF(target_size.x * photoPos.p.x, target_size.y * photoPos.p.y);
             Matrix transform = new Matrix();
             transform.setTranslate(p.x, p.y);
             transform.postRotate(photoPos.angle, p.x, p.y);
-            comboCanvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, place_size.x, place_size.y, true),
-                    transform, new Paint(Paint.FILTER_BITMAP_FLAG));
+            comboCanvas.drawBitmap(bitmap, transform, new Paint(Paint.FILTER_BITMAP_FLAG));
         }
 
         Log.v(TAG, "Collage is successfully generated!");
@@ -544,6 +582,7 @@ public class CollageMaker {
 
         if (imageData == null) {
             // empty collage view
+            GoogleAnalyticsUtils.trackOpenPullViaCollageTouch(mainActivity);
             Application.moveRightDrawer(true);
             return;
         }
@@ -574,7 +613,7 @@ public class CollageMaker {
     private void updateBackgroundColor() {
         GradientDrawable gradientDrawable = (GradientDrawable)rlCollage.getBackground();
         gradientDrawable.setColor(parentActivity.getResources().getColor(backgroundColor));
-//                parentActivity.getResources().getColor(backgroundColor));
+        updateViewsFrames();
     }
 }
 

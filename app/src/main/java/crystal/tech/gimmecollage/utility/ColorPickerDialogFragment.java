@@ -41,7 +41,17 @@ public class ColorPickerDialogFragment extends DialogFragment {
             R.color.color_picker_dialog_item8,
             R.color.color_picker_dialog_item9,
             R.color.color_picker_dialog_item10,
-            R.color.color_picker_dialog_item11
+            R.color.color_picker_dialog_item11,
+            R.color.color_picker_dialog_item12,
+            R.color.color_picker_dialog_item13,
+            R.color.color_picker_dialog_item14,
+            R.color.color_picker_dialog_item15,
+            R.color.color_picker_dialog_item16,
+            R.color.color_picker_dialog_item17,
+            R.color.color_picker_dialog_item18,
+            R.color.color_picker_dialog_item19,
+            R.color.color_picker_dialog_item20,
+            R.color.color_picker_dialog_item21
     };
 
     private int selectedColorIndex = 0;

@@ -23,6 +23,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
 import crystal.tech.gimmecollage.utility.DividerItemDecoration;
 
@@ -76,10 +77,12 @@ public class ImageSourceActivity extends ActionBarActivity {
         // Open AuthActivity or ImageSourceGallery ??
         switch (i) {
             case 0: // Gallery
+                GoogleAnalyticsUtils.trackSelectImageSourceGallery(ImageSourceActivity.this);
                 startActivityForResult(new Intent(ImageSourceActivity.this,
                         ImagePickerActivity.class), GALLERY_REQUEST);
                 break;
             case 1: // Instagram
+                GoogleAnalyticsUtils.trackSelectImageSourceInstagram(ImageSourceActivity.this);
                 // Check if instagram is logged.
                 if(!InstagramAPI.isAuthenticated()) {
                     if(Utils.checkAndNotifyConnection(this)) {
@@ -97,6 +100,7 @@ public class ImageSourceActivity extends ActionBarActivity {
                             startActivityForResult(new Intent(ImageSourceActivity.this,
                                     ImagePickerActivity.class), INSTAGRAM_REQUEST);
                             Log.d(TAG, "onSuccess");
+                            GoogleAnalyticsUtils.trackInstagramAuthSuccess(ImageSourceActivity.this);
                         }
 
                         @Override
@@ -108,6 +112,7 @@ public class ImageSourceActivity extends ActionBarActivity {
                                         "Wrong access token, please try again.",
                                         Toast.LENGTH_LONG).show();
                                 InstagramAPI.resetAuthentication();
+                                GoogleAnalyticsUtils.trackInstagramAuthFailed(ImageSourceActivity.this);
                             }
                         }
                     }).updateSelf();

@@ -4,9 +4,9 @@
 android:shape="rectangle">
 
 <solid android:color="#ffffffff"/>
-
-<stroke android:width="2dp" android:color="#FF7E7E7E" />
-<!--<padding android:left="2dp" android:top="2dp" android:right="2dp"-->
-<!--android:bottom="2dp" />-->
-
+<padding
+    android:left="@dimen/collage_iv_back_padding"
+    android:top="@dimen/collage_iv_back_padding"
+    android:right="@dimen/collage_iv_back_padding"
+    android:bottom="@dimen/collage_iv_back_padding" />
 </shape>

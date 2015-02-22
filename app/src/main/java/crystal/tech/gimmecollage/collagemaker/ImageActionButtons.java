@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.view.GestureRelativeLayout;
 import crystal.tech.gimmecollage.floating_action_btn.FloatingActionButton;
@@ -71,7 +72,7 @@ public class ImageActionButtons {
         buttonBL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSettings(view);
+                onPallet(view);
             }
         });
 
@@ -82,7 +83,7 @@ public class ImageActionButtons {
             buttonTL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_button_rotate_left));
             buttonBR.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_accept_color));
             buttonBR.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_ok));
-            buttonBL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_settings_color));
+            buttonBL.setColor(collageActivity.getResources().getColor(R.color.image_action_btn_pallet_color));
             buttonBL.setDrawable(collageActivity.getResources().getDrawable(R.drawable.ic_action_btn_palette));
         }
     }
@@ -136,6 +137,7 @@ public class ImageActionButtons {
     }
 
     public void onRotateLeft(FrameLayout frameLayout) {
+        GoogleAnalyticsUtils.trackImageActionButtonRotateLeft(collageActivity);
         ImageView iv = (ImageView) frameLayout.findViewById(R.id.ivMain);
         int collageIndex = CollageMaker.getIndexByFLView(frameLayout);
         CollageUtils.rotateImage(iv, ImageStorage.getCollageImage(collageIndex), -90.0f);
@@ -152,12 +154,14 @@ public class ImageActionButtons {
     }
 
     private void onRotateRight(FrameLayout frameLayout) {
+        GoogleAnalyticsUtils.trackImageActionButtonRotateRight(collageActivity);
         ImageView iv = (ImageView) frameLayout.findViewById(R.id.ivMain);
         int collageIndex = CollageMaker.getIndexByFLView(frameLayout);
         CollageUtils.rotateImage(iv, ImageStorage.getCollageImage(collageIndex), 90.0f);
     }
 
-    private void onSettings(View v) {
+    private void onPallet(View v) {
+        GoogleAnalyticsUtils.trackOpenBackgroundColorPickerViaActionButton(collageActivity);
         CollageUtils.showColorPickerDialog();
     }
 

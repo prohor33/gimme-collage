@@ -9,8 +9,9 @@
     <dimen name="simple_drawer_width">80dp</dimen>
     <dimen name="toolbar_elevation">4dp</dimen>
 
-    <!--Collage ImageView-->
+    <!-- Collage  image view -->
     <dimen name="collage_iv_elevation">10dp</dimen>
+    <dimen name="collage_iv_back_padding">3dp</dimen>
 
     <!--Fab-->
     <dimen name="fab_size">78dp</dimen>

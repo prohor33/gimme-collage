@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 import crystal.tech.gimmecollage.collagemaker.CollageUtils;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
@@ -100,17 +101,21 @@ public class MainActivity extends ActionBarActivity implements
         // Handle action buttons
         switch(item.getItemId()) {
             case R.id.action_share:
+                GoogleAnalyticsUtils.trackShareTheResultsViaActionBar(MainActivity.this);
                 CollageMaker.deselectAllViews();
                 CollageMaker.shareCollage();
                 break;
             case R.id.action_save:
+                GoogleAnalyticsUtils.trackSaveTheResultsViaActionBar(MainActivity.this);
                 CollageMaker.deselectAllViews();
                 CollageMaker.saveCollageOnDisk();
                 break;
             case R.id.action_pick_collage_background_color:
+                GoogleAnalyticsUtils.trackOpenBackgroundColorPickerViaActionBar(MainActivity.this);
                 CollageUtils.showColorPickerDialog();
                 break;
             case R.id.action_trash:
+                GoogleAnalyticsUtils.trackTrashViaActionBar(MainActivity.this);
                 CollageMaker.deselectAllViews();
                 ImageStorage.ClearAll();
                 break;

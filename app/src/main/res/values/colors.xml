@@ -4,7 +4,7 @@
 
     <!-- image action buttons color -->
     <color name="image_action_btn_rotate_left_color">#ff51c0c5</color>
-    <color name="image_action_btn_settings_color">#ffafacae</color>
+    <color name="image_action_btn_pallet_color">#fe2321</color>
     <color name="image_action_btn_accept_color">#ff66d849</color>
 
     <!-- ripple color (gray) -->
@@ -27,8 +27,10 @@
     <!-- Main activity colors -->
     <color name="collage_type_selectors_back">#607d8b</color>
     <color name="collage_type_selector_back">#90caf9</color>
-    <color name="collage_type_selector">#ff0a0c0a</color>
-    <color name="collage_type_selector_pushed">#ffe9ebe9</color>
+    <color name="collage_type_selector_fill">#ffc7ced4</color>
+    <color name="collage_type_selector_fill_pushed">#ffd0eeff</color>
+    <color name="collage_type_selector_stroke">#ff0a0c0a</color>
+    <color name="collage_type_selector_stroke_pushed">#ff565856</color>
 
     <!-- Main Colors for navdrawer ... -> cross with upper colors!!! -->
     <color name="drawer_dark_color">#3F51B5</color>     <!-- ??? -->
@@ -50,17 +52,27 @@
 
     <!-- color picker dialog -->
     <color name="color_picker_dialog_item0">#FFFFFF</color>
-    <color name="color_picker_dialog_item1">#ff02b002</color>
+    <color name="color_picker_dialog_item1">#ff57d351</color>
     <color name="color_picker_dialog_item2">#ff06c4bb</color>
-    <color name="color_picker_dialog_item3">#ff000cc5</color>
-    <color name="color_picker_dialog_item4">#ffdb00ff</color>
-    <color name="color_picker_dialog_item5">#ff6e0035</color>
-    <color name="color_picker_dialog_item6">#ffab1900</color>
-    <color name="color_picker_dialog_item7">#ffe66514</color>
-    <color name="color_picker_dialog_item8">#ffffda00</color>
-    <color name="color_picker_dialog_item9">#ff82ffc0</color>
+    <color name="color_picker_dialog_item3">#ff497ac5</color>
+    <color name="color_picker_dialog_item4">#5cfc54ff</color>
+    <color name="color_picker_dialog_item5">#ffff26d2</color>
+    <color name="color_picker_dialog_item6">#ffff4534</color>
+    <color name="color_picker_dialog_item7">#ffff8554</color>
+    <color name="color_picker_dialog_item8">#ffffe96a</color>
+    <color name="color_picker_dialog_item9">#ff9affd0</color>
     <color name="color_picker_dialog_item10">#ff67676a</color>
     <color name="color_picker_dialog_item11">#ff000000</color>
+    <color name="color_picker_dialog_item12">#ffffa7fd</color>
+    <color name="color_picker_dialog_item13">#fffffd06</color>
+    <color name="color_picker_dialog_item14">#ffff1715</color>
+    <color name="color_picker_dialog_item15">#ff13ff0e</color>
+    <color name="color_picker_dialog_item16">#ff2651ff</color>
+    <color name="color_picker_dialog_item17">#ffbd12ff</color>
+    <color name="color_picker_dialog_item18">#ff4d0004</color>
+    <color name="color_picker_dialog_item19">#ff000f78</color>
+    <color name="color_picker_dialog_item20">#ff004207</color>
+    <color name="color_picker_dialog_item21">#ff694100</color>
 
 
     <!-- Common -->
