@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.MainActivity;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.app.Utils;
@@ -223,6 +224,7 @@ public class CollageUtils {
         save_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                GoogleAnalyticsUtils.trackSaveTheResultsViaFab(mainActivity);
                 CollageMaker.deselectAllViews();
                 CollageMaker.saveCollageOnDisk();
             }
@@ -235,6 +237,7 @@ public class CollageUtils {
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                GoogleAnalyticsUtils.trackShareTheResultsViaFab(mainActivity);
                 CollageMaker.deselectAllViews();
                 CollageMaker.shareCollage();
             }
@@ -246,6 +249,7 @@ public class CollageUtils {
         trash_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                GoogleAnalyticsUtils.trackTrashViaFab(mainActivity);
                 CollageMaker.deselectAllViews();
                 ImageStorage.ClearAll();
                 CollageMaker.clearViewsData();

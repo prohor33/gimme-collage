@@ -32,6 +32,7 @@ import java.util.List;
 
 import com.squareup.picasso.Picasso;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.collagemaker.ImageData;
 import crystal.tech.gimmecollage.collagemaker.ImageStorage;
 import crystal.tech.gimmecollage.instagram_api.InstagramAPI;
@@ -384,6 +385,7 @@ public class ImagePickerActivity extends ActionBarActivity
                 return true;
             case R.id.action_confirm:
 
+                GoogleAnalyticsUtils.trackApplyGalleryImagesInActionBar(ImagePickerActivity.this);
                 for (ComplexImageItem imageItem : mSelectedItems) {
                     ImageStorage.addImageToPull(new ImageData(imageItem.getImage(),
                             imageItem.getThumbnail(), imageItem.getId(),

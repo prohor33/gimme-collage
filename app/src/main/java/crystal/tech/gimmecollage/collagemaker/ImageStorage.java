@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.MainActivity;
 
 /**
@@ -117,6 +118,8 @@ public class ImageStorage {
         getInstance().dropPullImageToCollageImpl(pullIndex, collageImageView);
     }
     private void dropPullImageToCollageImpl(int pullIndex, ImageView collageImageView) {
+        GoogleAnalyticsUtils.trackSwapImageFromPull(mainActivity);
+
         View parentFLView = (View) collageImageView.getParent().getParent();
         int collageIndex = CollageMaker.getInstance().getIndexByFLView(parentFLView);
         if (collageIndex < 0 || collageIndex >= collageImages.size()) {
@@ -135,6 +138,8 @@ public class ImageStorage {
         getInstance().dropCollageImageToCollageImpl(collageIndex1, collageImageView);
     }
     private void dropCollageImageToCollageImpl(int collageIndex1, ImageView collageImageView) {
+        GoogleAnalyticsUtils.trackSwapCollageImages(mainActivity);
+
         View parentFLView = (View) collageImageView.getParent().getParent();
         int collageIndex2 = CollageMaker.getInstance().getIndexByFLView(parentFLView);
         if (collageIndex1 == collageIndex2)

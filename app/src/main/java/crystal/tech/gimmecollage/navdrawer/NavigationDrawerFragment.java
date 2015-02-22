@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import crystal.tech.gimmecollage.analytics.GoogleAnalyticsUtils;
 import crystal.tech.gimmecollage.app.R;
 import crystal.tech.gimmecollage.collagemaker.CollageMaker;
 
@@ -187,6 +188,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        GoogleAnalyticsUtils.trackNavigationDrawerSelectItem(getActivity());
         selectItem(position);
     }
 

@@ -378,20 +378,10 @@ public class CollageMaker {
     }
 
     public static void saveCollageOnDisk() {
-        GoogleAnalyticsUtils.SendEvent(getInstance().parentActivity,
-                R.string.ga_event_category_save_via_fab,
-                R.string.ga_event_action_save_via_fab,
-                R.string.ga_event_label_save_via_fab);
-
         CollageUtils.getInstance().buildCollage(false);
     }
 
     public static void shareCollage() {
-        GoogleAnalyticsUtils.SendEvent(getInstance().parentActivity,
-                R.string.ga_event_category_share_via_fab,
-                R.string.ga_event_action_share_via_fab,
-                R.string.ga_event_label_share_via_fab);
-
         CollageUtils.getInstance().buildCollage(true);
     }
 
@@ -440,6 +430,7 @@ public class CollageMaker {
     }
 
     public Bitmap GenerateCollageImage() {
+
         float aspect_ratio = getCollageConf().getCollageAspectRatio();
         final int bmp_pxl_size = 1024;
         final Point target_size = new Point(bmp_pxl_size, (int)(bmp_pxl_size * aspect_ratio));
@@ -591,6 +582,7 @@ public class CollageMaker {
 
         if (imageData == null) {
             // empty collage view
+            GoogleAnalyticsUtils.trackOpenPullViaCollageTouch(mainActivity);
             Application.moveRightDrawer(true);
             return;
         }
