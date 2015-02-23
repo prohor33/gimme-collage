@@ -6,11 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:theme="@style/AppToolbar" >
+    <!-- app:theme="@style/AppToolbar" -->
 
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:popupBackground="@color/toolbar_back" />
+        android:spinnerMode="dialog"
+         />
+    <!-- android:popupBackground="@color/toolbar_back" -->
 
 </android.support.v7.widget.Toolbar>
