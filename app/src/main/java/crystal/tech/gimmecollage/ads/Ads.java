@@ -25,7 +25,7 @@ public class Ads {
         mAdView.setAdUnitId(activity.getResources().getString(R.string.admob_banner_id));
         mAdView.setAdSize(AdSize.BANNER);
 //        mAdView.setAdListener(new ToastAdListener(this));
-        LinearLayout main_lr = (LinearLayout) activity.findViewById(R.id.layoutMain);
+        RelativeLayout main_lr = (RelativeLayout) activity.findViewById(R.id.layoutMain);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         main_lr.addView(mAdView, params);
