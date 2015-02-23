@@ -16,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
+import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -44,6 +45,7 @@ import crystal.tech.gimmecollage.utility.MyDragEventListener;
 public class CollageMaker {
 
     private static final String TAG = "CollageMaker";
+    private static final int DEF_COLLAGE_PXL_SIZE = 1024;
 
     private static CollageMaker instance;
     private CollageType eType = CollageType.Grid;
@@ -429,15 +431,34 @@ public class CollageMaker {
         }
     }
 
-    public Bitmap GenerateCollageImage() {
+    public Bitmap generateCollageImage() {
+        return generateCollageImageImpl(DEF_COLLAGE_PXL_SIZE);
+    }
+
+    public Bitmap generateCollageImageImpl(int bmp_pxl_size) {
+        if (bmp_pxl_size < 50) {
+            Log.e(TAG, "Out of memory, poor memory.");
+            return null;    // poor memory
+        }
+        try {
+            return generateCollageImageWithSize(bmp_pxl_size);
+        } catch (OutOfMemoryError e) {
+            Log.e(TAG, "Out of memory, trying to generate smaller collage: " + bmp_pxl_size / 2 +
+            "x" + bmp_pxl_size / 2);
+            return generateCollageImageImpl(bmp_pxl_size / 2);
+        }
+    }
+
+    public Bitmap generateCollageImageWithSize(final int bmp_pxl_size) {
 
         float aspect_ratio = getCollageConf().getCollageAspectRatio();
-        final int bmp_pxl_size = 1024;
         final Point target_size = new Point(bmp_pxl_size, (int)(bmp_pxl_size * aspect_ratio));
         Bitmap collageImage = Bitmap.createBitmap(target_size.x,
                 target_size.y, Bitmap.Config.ARGB_8888);
         Canvas comboCanvas = new Canvas(collageImage);
         comboCanvas.drawColor(parentActivity.getResources().getColor(backgroundColor));
+
+        boolean small_memory_detected = bmp_pxl_size < DEF_COLLAGE_PXL_SIZE;
 
         for (int i = 0; i < getVisibleImageCount(); i++) {
             FrameLayout fl = imageViewsData.get(i).parentFL;
@@ -456,13 +477,18 @@ public class CollageMaker {
 
             if (!imageData.fromNetwork) {
                 // gallery
-                if (CollageUtils.isFullImageView(iv)) {
+                if (CollageUtils.isFullImageView(iv) && !small_memory_detected) {
                     // reload image with better quality
                     File imgFile = new  File(imageData.dataPath);
                     if(imgFile.exists()) {
-                        bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                        bitmap = CollageUtils.applyDataToBitmap(imageData, bitmap);
-                        Log.d(TAG, "Load image with better quality");
+                        try {
+                            bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                            bitmap = CollageUtils.applyDataToBitmap(imageData, bitmap);
+                            Log.d(TAG, "Load image with better quality");
+                        } catch (OutOfMemoryError e) {
+                            Log.e(TAG, "Out of memory, can't load good quality photos.");
+                            small_memory_detected = true;
+                        }
                     }
                 }
             }

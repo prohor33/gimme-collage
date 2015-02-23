@@ -27,10 +27,10 @@
     <!-- Main activity colors -->
     <color name="collage_type_selectors_back">#607d8b</color>
     <color name="collage_type_selector_back">#90caf9</color>
-    <color name="collage_type_selector_fill">#ffc7ced4</color>
-    <color name="collage_type_selector_fill_pushed">#ffd0eeff</color>
+    <color name="collage_type_selector_fill">#90caf9</color>
+    <color name="collage_type_selector_fill_pushed">#90caf9</color>
     <color name="collage_type_selector_stroke">#ff0a0c0a</color>
-    <color name="collage_type_selector_stroke_pushed">#ff565856</color>
+    <color name="collage_type_selector_stroke_pushed">#fff8ffff</color>
 
     <!-- Main Colors for navdrawer ... -> cross with upper colors!!! -->
     <color name="drawer_dark_color">#3F51B5</color>     <!-- ??? -->

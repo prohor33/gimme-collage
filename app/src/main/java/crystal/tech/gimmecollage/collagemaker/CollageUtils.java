@@ -147,7 +147,7 @@ public class CollageUtils {
 
             @Override
             public Boolean doInBackground() {
-                Bitmap bmpImage = CollageMaker.getInstance().GenerateCollageImage();
+                Bitmap bmpImage = CollageMaker.getInstance().generateCollageImage();
                 if (bmpImage == null)
                     return false;
 
