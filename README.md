@@ -1,4 +1,4 @@
-![alt tag](https://dl.dropboxusercontent.com/u/59969938/Images/gimme_collage_scheme.png)
+![alt tag](https://cloud.githubusercontent.com/assets/5472900/6379758/aa22ae14-bd45-11e4-935a-9c59da90fc6a.png)
 
 #Gimme Collage
 
