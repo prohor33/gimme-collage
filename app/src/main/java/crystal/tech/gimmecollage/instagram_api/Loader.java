@@ -28,7 +28,7 @@ class Loader {
     }
 
     public String fetchUserInfo(String accessToken, String userId) throws IOException {
-        return fetchSomeData(mHost + "users/" + userId + "?access_token=" + accessToken, REQUEST_GET);
+        return fetchSomeData(mHost + "users/" + userId + "/?access_token=" + accessToken, REQUEST_GET);
     }
 
     public String fetchFollows(String accessToken, String userId) throws IOException {

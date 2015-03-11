@@ -15,8 +15,6 @@ public class Storage {
 
     public static class UserInfo {
         public String username;
-        public String bio;
-        public String website;
         public String profile_picture;
         public String full_name;
         public String id;

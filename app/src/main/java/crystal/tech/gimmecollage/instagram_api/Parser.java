@@ -51,8 +51,6 @@ class Parser {
         UserInfo userInfo = new Storage.UserInfo();
 
         userInfo.username = jsonObject.getString("username");
-        userInfo.bio = jsonObject.getString("bio");
-        userInfo.website = jsonObject.getString("website");
         userInfo.profile_picture = jsonObject.getString("profile_picture");
         userInfo.full_name = jsonObject.getString("full_name");
         userInfo.id = jsonObject.getString("id");
