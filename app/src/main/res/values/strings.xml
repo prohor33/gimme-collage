@@ -154,6 +154,16 @@
     <string name="ga_event_action_item_selected_nav_drawer">Navigation Drawer</string>
     <string name="ga_event_label_item_selected_nav_drawer">Select item</string>
 
+    <!-- Add images to pull from gallery event -->
+    <string name="ga_event_category_item_add_images_to_pull_from_gallery">Main GUI</string>
+    <string name="ga_event_action_item_add_images_to_pull_from_gallery">Image Picker</string>
+    <string name="ga_event_label_item_add_images_to_pull_from_gallery">Add images from gallery</string>
+
+    <!-- Add images to pull from instagram event -->
+    <string name="ga_event_category_item_add_images_to_pull_from_instagram">Main GUI</string>
+    <string name="ga_event_action_item_add_images_to_pull_from_instagram">Image Picker</string>
+    <string name="ga_event_label_item_add_images_to_pull_from_instagram">Add images from instagram</string>
+
     <!-- ======================================================================================= -->
 
     <!-- Navigation Drawer -->

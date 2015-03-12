@@ -395,6 +395,13 @@ public class ImagePickerActivity extends ActionBarActivity
                             mRequestCode != ImageSourceActivity.GALLERY_REQUEST));
                 }
 
+                // Analytic
+                if (mRequestCode == ImageSourceActivity.GALLERY_REQUEST) {
+                    GoogleAnalyticsUtils.trackAddImagesToPullFromGallery(ImagePickerActivity.this);
+                } else {
+                    GoogleAnalyticsUtils.trackAddImagesToPullFromInstagram(ImagePickerActivity.this);
+                }
+
                 ImagePickerActivity.this.setResult(RESULT_OK);
                 ImagePickerActivity.this.finish();
                 return true;

@@ -183,4 +183,16 @@ public class GoogleAnalyticsUtils {
                 R.string.ga_event_action_item_selected_nav_drawer,
                 R.string.ga_event_label_item_selected_nav_drawer);
     }
+    public static void trackAddImagesToPullFromGallery(Activity activity) {
+        SendEvent(activity,
+                R.string.ga_event_category_item_add_images_to_pull_from_gallery,
+                R.string.ga_event_action_item_add_images_to_pull_from_gallery,
+                R.string.ga_event_label_item_add_images_to_pull_from_gallery);
+    }
+    public static void trackAddImagesToPullFromInstagram(Activity activity) {
+        SendEvent(activity,
+                R.string.ga_event_category_item_add_images_to_pull_from_instagram,
+                R.string.ga_event_action_item_add_images_to_pull_from_instagram,
+                R.string.ga_event_label_item_add_images_to_pull_from_instagram);
+    }
 }
